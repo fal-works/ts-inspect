@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import { doSomething } from "./index.ts";
+import { inspectWithTsconfig } from "./index.ts";
 
-function main() {
-	doSomething();
+async function main() {
+	await inspectWithTsconfig();
 }
 
-main();
+await main();
