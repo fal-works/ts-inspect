@@ -2,9 +2,7 @@
  * Main entry point for the ts-inspect library providing TypeScript AST inspection utilities.
  */
 
-import type ts from "typescript";
-import { fileExists } from "./core/files.ts";
-import { parseConfig } from "./core/ts/config.ts";
+import { parseConfig, resolveProjectPath } from "./core/ts/config.ts";
 import { type InspectionStatus, type Inspector, runInspectors } from "./inspector/index.ts";
 import { createDefaultInspectors } from "./preset-inspectors/index.ts";
 import {
@@ -46,22 +44,17 @@ export async function inspectFiles(
 }
 
 /**
- * Inspects files based on TypeScript configuration, auto-detecting tsconfig.json if not specified.
+ * Inspects files based on TypeScript project configuration.
+ * Accepts either a directory path or tsconfig.json file path.
+ *
+ * Auto-detects tsconfig.json in current directory if not specified.
  */
-export async function inspectWithTsconfig(
-	tsconfigPath?: string,
+export async function inspectProject(
+	projectPath: string = "",
 	options?: InspectOptions,
 ): Promise<InspectionStatus> {
-	let tsconfig: ts.ParsedCommandLine;
-	if (tsconfigPath) {
-		tsconfig = parseConfig(tsconfigPath);
-	} else if (await fileExists("tsconfig.json")) {
-		tsconfig = parseConfig("tsconfig.json");
-	} else if (await fileExists("jsconfig.json")) {
-		tsconfig = parseConfig("tsconfig.json", true);
-	} else {
-		throw new Error("No tsconfig.json found in the current directory.");
-	}
+	const tsconfigPath = await resolveProjectPath(projectPath);
+	const tsconfig = parseConfig(tsconfigPath, tsconfigPath.endsWith("jsconfig.json"));
 
 	return executeInspection(
 		tsconfig.fileNames,

@@ -62,10 +62,16 @@ Then run: `npm run inspect`.
 ## Quick Start (Programmatic)
 
 ```ts
-import { inspectWithTsconfig } from "@fal-works/ts-inspect";
+import { inspectProject } from "@fal-works/ts-inspect";
 
 // Uses ./tsconfig.json by default
-await inspectWithTsconfig();
+await inspectProject();
+
+// Or specify a project directory containing tsconfig.json
+await inspectProject("./my-project");
+
+// Or specify a tsconfig.json file directly
+await inspectProject("./my-project/tsconfig.json");
 ```
 
 Or specify your own file list:
@@ -103,7 +109,7 @@ An `Inspector<TResult>` has two parts:
 
 ```ts
 import ts from "typescript";
-import { type Inspector, inspectWithTsconfig } from "@fal-works/ts-inspect";
+import { type Inspector, inspectProject } from "@fal-works/ts-inspect";
 
 function createConsoleLogInspector(): Inspector<number> {
   return {
@@ -132,5 +138,5 @@ function createConsoleLogInspector(): Inspector<number> {
   };
 }
 
-await inspectWithTsconfig(undefined, { inspectors: [createConsoleLogInspector()] });
+await inspectProject(undefined, { inspectors: [createConsoleLogInspector()] });
 ```

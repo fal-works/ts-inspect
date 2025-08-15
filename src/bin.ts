@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { inspectWithTsconfig } from "./index.ts";
+import { inspectProject } from "./index.ts";
 
 /**
  * Main entry point for the CLI.
@@ -8,7 +8,7 @@ import { inspectWithTsconfig } from "./index.ts";
  * @returns exit code
  */
 async function main() {
-	switch (await inspectWithTsconfig()) {
+	switch (await inspectProject()) {
 		case "success":
 			return 0;
 		case "warn":
