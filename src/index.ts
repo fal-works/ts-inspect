@@ -1,7 +1,7 @@
 import type ts from "typescript";
 import { fileExists } from "./core/files.ts";
 import { parseConfig } from "./core/ts/config.ts";
-import { type Inspector, runInspectors } from "./inspector/index.ts";
+import { type InspectionStatus, type Inspector, runInspectors } from "./inspector/index.ts";
 import { createDefaultInspectors } from "./preset-inspectors/index.ts";
 import {
 	inferParseSourceFilesOptions,
@@ -18,17 +18,23 @@ function executeInspection(
 	filePaths: string[],
 	sourceFilesOptions?: ParseSourceFilesOptions,
 	inspectors?: Inspector[],
-) {
+): Promise<InspectionStatus> {
 	const resolvedInspectors = inspectors ?? createDefaultInspectors();
 	const srcFilePromises = parseSourceFiles(filePaths, sourceFilesOptions);
-	runInspectors(resolvedInspectors, srcFilePromises);
+	return runInspectors(resolvedInspectors, srcFilePromises);
 }
 
-export async function inspectFiles(filePaths: string[], options?: InspectOptions) {
-	executeInspection(filePaths, options?.sourceFilesOptions, options?.inspectors);
+export async function inspectFiles(
+	filePaths: string[],
+	options?: InspectOptions,
+): Promise<InspectionStatus> {
+	return executeInspection(filePaths, options?.sourceFilesOptions, options?.inspectors);
 }
 
-export async function inspectWithTsconfig(tsconfigPath?: string, options?: InspectOptions) {
+export async function inspectWithTsconfig(
+	tsconfigPath?: string,
+	options?: InspectOptions,
+): Promise<InspectionStatus> {
 	let tsconfig: ts.ParsedCommandLine;
 	if (tsconfigPath) {
 		tsconfig = parseConfig(tsconfigPath);
@@ -38,7 +44,7 @@ export async function inspectWithTsconfig(tsconfigPath?: string, options?: Inspe
 		throw new Error("No tsconfig.json found in the current directory.");
 	}
 
-	executeInspection(
+	return executeInspection(
 		tsconfig.fileNames,
 		inferParseSourceFilesOptions(tsconfig, options?.sourceFilesOptions),
 		options?.inspectors,

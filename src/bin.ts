@@ -2,8 +2,20 @@
 
 import { inspectWithTsconfig } from "./index.ts";
 
+/**
+ * Main entry point for the CLI.
+ *
+ * @returns exit code
+ */
 async function main() {
-	await inspectWithTsconfig();
+	switch (await inspectWithTsconfig()) {
+		case "success":
+			return 0;
+		case "warn":
+			return 0;
+		case "error":
+			return 1;
+	}
 }
 
-await main();
+process.exitCode = await main();
