@@ -9,9 +9,11 @@ import { formatDiagnostics } from "./diagnostics.ts";
 /**
  * Parses a TypeScript configuration file.
  *
+ * @param tsconfigPath - Path to the TypeScript configuration file.
+ * @param allowJs - Set to true for parsing `jsconfig.json` files.
  * @throws Error if reading or parsing the config file fails.
  */
-export function parseConfig(tsconfigPath: string): ts.ParsedCommandLine {
+export function parseConfig(tsconfigPath: string, allowJs?: boolean): ts.ParsedCommandLine {
 	const configFile = ts.readConfigFile(tsconfigPath, ts.sys.readFile);
 	if (configFile.error) {
 		throw new Error(formatDiagnostics([configFile.error]));
@@ -24,6 +26,10 @@ export function parseConfig(tsconfigPath: string): ts.ParsedCommandLine {
 	);
 	if (configParseResult.errors.length) {
 		throw new Error(formatDiagnostics(configParseResult.errors));
+	}
+
+	if (allowJs) {
+		configParseResult.options.allowJs = true;
 	}
 
 	return configParseResult;

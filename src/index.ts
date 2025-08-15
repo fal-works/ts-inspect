@@ -57,6 +57,8 @@ export async function inspectWithTsconfig(
 		tsconfig = parseConfig(tsconfigPath);
 	} else if (await fileExists("tsconfig.json")) {
 		tsconfig = parseConfig("tsconfig.json");
+	} else if (await fileExists("jsconfig.json")) {
+		tsconfig = parseConfig("tsconfig.json", true);
 	} else {
 		throw new Error("No tsconfig.json found in the current directory.");
 	}
