@@ -11,7 +11,7 @@ making it efficient to run many specialized checks without N× performance costs
 - **`inspector/`**: Central framework - abstraction of pluggable inspectors, and execution engine
 - **`source-file/`**: TypeScript Compiler API abstraction layer for source file parsing
 - **`tsconfig/`**: tsconfig resolution and parsing
-- **`preset-inspectors/`**: Concrete inspector implementations
+- **`builtin-inspectors/`**: Concrete inspector implementations
 - **`core/`**: Shared utilities and types
 - **Entry points**: `index.ts` (API) and `bin.ts` (CLI) - thin orchestration layer
 

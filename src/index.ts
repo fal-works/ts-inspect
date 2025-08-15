@@ -2,8 +2,8 @@
  * Main entry point for the ts-inspect library providing TypeScript AST inspection utilities.
  */
 
+import { createDefaultInspectors } from "./builtin-inspectors/index.ts";
 import { type InspectionStatus, type Inspector, runInspectors } from "./inspector/index.ts";
-import { createDefaultInspectors } from "./preset-inspectors/index.ts";
 import {
 	inferParseSourceFilesOptions,
 	type ParseSourceFilesOptions,
@@ -63,6 +63,7 @@ export async function inspectProject(
 	);
 }
 
+export { createAsAssertionInspector } from "./builtin-inspectors/index.ts";
 export type {
 	FileInspectionResult,
 	InspectionStatus,
@@ -70,5 +71,3 @@ export type {
 	NodeInspector,
 	ResultsHandler,
 } from "./inspector/index.ts";
-
-export { createAsAssertionInspector } from "./preset-inspectors/index.ts";
