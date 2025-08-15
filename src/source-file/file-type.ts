@@ -32,7 +32,7 @@ export function createFileTypeValidator<TFileType extends FileType>(
 		const includingFileTypes: ReadonlySet<TFileType> = new Set(fileTypes);
 		return (fileType) => setHasValue(includingFileTypes, fileType);
 	} else {
-		return (fileType): fileType is TFileType => true;
+		return (_): _ is TFileType => true;
 	}
 }
 
