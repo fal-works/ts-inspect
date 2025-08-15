@@ -2,7 +2,6 @@
  * Main entry point for the ts-inspect library providing TypeScript AST inspection utilities.
  */
 
-import { parseConfig, resolveProjectPath } from "./core/ts/config.ts";
 import { type InspectionStatus, type Inspector, runInspectors } from "./inspector/index.ts";
 import { createDefaultInspectors } from "./preset-inspectors/index.ts";
 import {
@@ -10,6 +9,7 @@ import {
 	type ParseSourceFilesOptions,
 	parseSourceFiles,
 } from "./source-file/index.ts";
+import { parseConfig, resolveProjectPath } from "./tsconfig/index.ts";
 
 /**
  * Configuration options for inspection operations.
