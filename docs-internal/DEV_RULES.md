@@ -79,5 +79,6 @@ See [Development Environment](./DEV_ENVIRONMENT.md) for details.
 
 - Use Node.js built-in testing framework
 - Each implementation module has a corresponding adjacent unit test module: `src/mod.ts` → `src/mod.test.ts`
-- Mirror module structure within test `describe()` blocks
+- Use consistent naming: `describe("module-name")` → `describe("functionName")`
 - Place integration tests in `test/` directory
+- Place fixture files in `test/fixtures/` directory
