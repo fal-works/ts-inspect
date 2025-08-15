@@ -50,7 +50,7 @@ export async function inspectFiles(
  * Auto-detects tsconfig.json in current directory if not specified.
  */
 export async function inspectProject(
-	projectPath: string = "",
+	projectPath?: string,
 	options?: InspectOptions,
 ): Promise<InspectionStatus> {
 	const tsconfigPath = await resolveProjectPath(projectPath);

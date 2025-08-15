@@ -40,24 +40,30 @@ export function parseConfig(tsconfigPath: string, allowJs?: boolean): ts.ParsedC
  * Resolves a project path to a JSON config file path. Accepts either:
  * - A direct path to any tsconfig file
  * - A directory path containing either `tsconfig.json` or `jsconfig.json` file
+ *
+ * @params projectPath - The path to resolve. If not provided, defaults to the current directory.
  */
-export async function resolveProjectPath(projectPath: string): Promise<string> {
-	if (projectPath.endsWith(".json")) {
-		return projectPath;
+export async function resolveProjectPath(projectPath?: string): Promise<string> {
+	const path = projectPath || ".";
+
+	if (path.endsWith(".json")) {
+		return path;
 	}
 
-	const absolutePath = resolve(projectPath);
+	const absolutePath = resolve(path);
 
-	if (!(await isDirectory(projectPath))) {
-		throw new Error(`Path is not a directory: ${absolutePath}`);
+	if (!(await isDirectory(path))) {
+		throw new Error(
+			`The specified project path is neither a JSON file nor a directory: ${absolutePath}`,
+		);
 	}
 
 	// Look for config files in the directory
-	const tsconfigPath = join(projectPath, "tsconfig.json");
+	const tsconfigPath = join(path, "tsconfig.json");
 	if (await fileExists(tsconfigPath)) {
 		return tsconfigPath;
 	}
-	const jsconfigPath = join(projectPath, "jsconfig.json");
+	const jsconfigPath = join(path, "jsconfig.json");
 	if (await fileExists(jsconfigPath)) {
 		return jsconfigPath;
 	}
