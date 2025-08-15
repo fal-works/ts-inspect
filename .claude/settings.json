@@ -1,0 +1,25 @@
+{
+	"permissions": {
+		"allow": [
+			"Bash(node src/bin.ts:*)",
+			"Bash(node dist/bin.js:*)",
+			"Bash(node --test:*)",
+			"Bash(npm test:*)",
+			"Bash(npm run test:*)",
+			"Bash(npm run check:*)",
+			"Bash(npm run fix:*)",
+			"Bash(npm run build:*)",
+			"Bash(ls:*)",
+			"Bash(touch:*)",
+			"Bash(mkdir:*)",
+			"Bash(find:*)",
+			"Bash(grep:*)",
+			"Bash(rm TMP_:*)",
+			"Bash(rm src:*)",
+			"Bash(mv src:*)",
+			"Bash(npx tsc:*)",
+			"Bash(git diff:*)"
+		],
+		"deny": ["Bash(pnpm run:*)"]
+	}
+}
