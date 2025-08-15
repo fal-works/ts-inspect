@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { parseArgs } from "node:util";
 import { inspectProject } from "./index.ts";
 
 /**
@@ -8,7 +9,16 @@ import { inspectProject } from "./index.ts";
  * @returns exit code
  */
 async function main() {
-	switch (await inspectProject()) {
+	const { values } = parseArgs({
+		options: {
+			project: {
+				type: "string",
+				short: "p",
+			},
+		},
+	});
+
+	switch (await inspectProject(values.project)) {
 		case "success":
 			return 0;
 		case "warn":
