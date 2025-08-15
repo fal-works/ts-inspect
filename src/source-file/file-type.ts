@@ -36,20 +36,6 @@ export function getFileTypeFromExtension(fileName: string): FileType | null {
 }
 
 /**
- * Creates a validator function to check if a file type is included in the allowed types.
- */
-export function createFileTypeValidator<TFileType extends FileType>(
-	fileTypes: readonly TFileType[] | undefined,
-): (fileType: FileType) => fileType is TFileType {
-	if (fileTypes) {
-		const includingFileTypes: ReadonlySet<TFileType> = new Set(fileTypes);
-		return (fileType): fileType is TFileType => setHasValue(includingFileTypes, fileType);
-	} else {
-		return (_): _ is TFileType => true;
-	}
-}
-
-/**
  * Maps a file type to TypeScript's ScriptKind enumeration.
  */
 export function getScriptKind(fileType: FileType): ts.ScriptKind {
@@ -64,5 +50,19 @@ export function getScriptKind(fileType: FileType): ts.ScriptKind {
 			return ts.ScriptKind.JSX;
 		case "json":
 			return ts.ScriptKind.JSON;
+	}
+}
+
+/**
+ * Creates a validator function to check if a file type is included in the allowed types.
+ */
+export function createFileTypeValidator<TFileType extends FileType>(
+	fileTypes: readonly TFileType[] | undefined,
+): (fileType: FileType) => fileType is TFileType {
+	if (fileTypes) {
+		const includingFileTypes: ReadonlySet<TFileType> = new Set(fileTypes);
+		return (fileType): fileType is TFileType => setHasValue(includingFileTypes, fileType);
+	} else {
+		return (_): _ is TFileType => true;
 	}
 }

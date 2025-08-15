@@ -6,11 +6,16 @@ import type ts from "typescript";
 import type { ParsedSourceFile } from "../source-file/index.ts";
 
 /**
- * An inspector that analyzes TypeScript AST nodes and processes results.
+ * Status returned by inspection operations.
  */
-export interface Inspector<TResult = unknown> {
-	nodeInspectorFactory: (srcFile: ts.SourceFile) => NodeInspector<TResult>;
-	resultsHandler: ResultsHandler<TResult>;
+export type InspectionStatus = "error" | "warn" | "success";
+
+/**
+ * Result object of inspecting a single file.
+ */
+export interface FileInspectionResult<TResult> {
+	srcFile: ParsedSourceFile;
+	result: TResult;
 }
 
 /**
@@ -33,14 +38,9 @@ export type ResultsHandler<TResult> = (
 ) => InspectionStatus;
 
 /**
- * Result object of inspecting a single file.
+ * An inspector that analyzes TypeScript AST nodes and processes results.
  */
-export interface FileInspectionResult<TResult> {
-	srcFile: ParsedSourceFile;
-	result: TResult;
+export interface Inspector<TResult = unknown> {
+	nodeInspectorFactory: (srcFile: ts.SourceFile) => NodeInspector<TResult>;
+	resultsHandler: ResultsHandler<TResult>;
 }
-
-/**
- * Status returned by inspection operations.
- */
-export type InspectionStatus = "error" | "warn" | "success";
