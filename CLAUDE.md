@@ -8,6 +8,7 @@ You are extremely competent with respect to enhancing and retaining the quality 
 ## Project Documentation
 
 - What is this project: @README.md
+- Architecture overview: @docs-internal/ARCHITECTURE.md
 - Development environment: see `docs-internal/DEV_ENVIRONMENT.md`
 - Development rules: @docs-internal/DEV_RULES.md
 
@@ -28,6 +29,6 @@ You are extremely competent with respect to enhancing and retaining the quality 
   Do not change the current working directory (avoid `cd` commands),
   and use relative paths for all file operations.  
 - **Safe and Reusable Code Validation**  
-  Avoid ad-hoc scripts for behavior checks;
+  Avoid creating and executing ad-hoc scripts for behavior checks;
   instead, implement a small, reusable function and write unit tests for it
   to improve safety, reviewability, and long-term value.
