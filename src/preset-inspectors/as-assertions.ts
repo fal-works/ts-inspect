@@ -17,9 +17,9 @@ type AsAssertionInspectionResult = AsAssertionFinding[];
 
 const IGNORE_COMMENT = "UNAVOIDABLE_AS";
 
-export const asAssertionFriendlyWarningMessage = () =>
+const asAssertionFriendlyWarningMessage = () =>
 	`
-💡 TIPS:
+💡 Tip:
 Review these type assertions carefully. In most cases, \`as\` should be your last resort.
 - **Prefer assignability over assertion:**
   If a value already matches a target type,
