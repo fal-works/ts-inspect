@@ -1,6 +1,13 @@
+/**
+ * Types for source files after parsing.
+ */
+
 import type ts from "typescript";
 import type { FileType } from "./file-type.ts";
 
+/**
+ * Represents a parsed source file with its TypeScript AST and metadata.
+ */
 export interface ParsedSourceFile {
 	file: ts.SourceFile;
 	metadata: ParsedSourceFileMetadata;

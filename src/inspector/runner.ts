@@ -1,3 +1,7 @@
+/**
+ * Inspector execution engine that runs multiple inspectors on source files.
+ */
+
 import ts from "typescript";
 import type { ParsedSourceFile } from "../source-file/index.ts";
 import type { FileInspectionResult, InspectionStatus, Inspector } from "./inspector.ts";

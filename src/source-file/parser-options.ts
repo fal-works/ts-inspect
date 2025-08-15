@@ -1,6 +1,13 @@
+/**
+ * Configuration options for TypeScript source file parsing.
+ */
+
 import ts from "typescript";
 import type { FileType } from "./file-type.ts";
 
+/**
+ * Configuration options for parsing source files.
+ */
 export interface ParseSourceFilesOptions {
 	fileTypes?: FileType[];
 	excludeTest?: boolean;
@@ -8,6 +15,9 @@ export interface ParseSourceFilesOptions {
 	languageVersionOrOptions?: Parameters<typeof ts.createSourceFile>[2];
 }
 
+/**
+ * Infers which file types to include based on TypeScript configuration.
+ */
 function inferFileTypes(config: ts.ParsedCommandLine): FileType[] {
 	const fileTypes: FileType[] = ["ts", "tsx"];
 
@@ -19,7 +29,7 @@ function inferFileTypes(config: ts.ParsedCommandLine): FileType[] {
 }
 
 /**
- * Creates options for `ts.createSourceFile` based on the given config.
+ * Infers options for `ts.createSourceFile` based on TypeScript configuration.
  *
  * NOTE: TypeScript itself has a function `getCreateSourceFileOptions()` but it is not exposed for external use.
  * This function `inferCreateSourceFileOptions()` should replicate the behavior but actually this is quite incomplete.
@@ -43,6 +53,9 @@ function inferCreateSourceFileOptions(config: ts.ParsedCommandLine): ts.CreateSo
 	};
 }
 
+/**
+ * Infers all options for parsing source files based on TypeScript configuration.
+ */
 export function inferParseSourceFilesOptions(
 	config: ts.ParsedCommandLine,
 	userOptions?: ParseSourceFilesOptions,

@@ -1,15 +1,18 @@
+/**
+ * Source file parsing functionality.
+ */
+
 import { readFile } from "node:fs/promises";
 import ts from "typescript";
 import { createFileTypeValidator, getFileTypeFromExtension, getScriptKind } from "./file-type.ts";
 import type { ParsedSourceFile } from "./parsed.ts";
-import {
-	inferParseSourceFilesOptions,
-	
-	type ParseSourceFilesOptions,
-} from "./parser-options.ts";
+import { inferParseSourceFilesOptions, type ParseSourceFilesOptions } from "./parser-options.ts";
 
 const testFileNameDefaultRegex = /\.test\.(ts|tsx|js|jsx)$/;
 
+/**
+ * Parses multiple source files and returns TypeScript AST with metadata for each file.
+ */
 export function parseSourceFiles(
 	filePaths: readonly string[],
 	options: ParseSourceFilesOptions = {},
@@ -53,6 +56,9 @@ export function parseSourceFiles(
 	return promises;
 }
 
+/**
+ * Parses source files from a TypeScript configuration.
+ */
 export function parseSourceFilesFromConfig(
 	config: ts.ParsedCommandLine,
 	options?: ParseSourceFilesOptions,

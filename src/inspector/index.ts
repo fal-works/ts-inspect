@@ -1,3 +1,7 @@
+/**
+ * Inspector type definitions and runner exports.
+ */
+
 export type {
 	FileInspectionResult,
 	InspectionStatus,

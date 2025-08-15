@@ -1,6 +1,13 @@
+/**
+ * Core inspector type definitions for TypeScript AST inspection.
+ */
+
 import type ts from "typescript";
 import type { ParsedSourceFile } from "../source-file/index.ts";
 
+/**
+ * An inspector that analyzes TypeScript AST nodes and processes results.
+ */
 export interface Inspector<TResult = unknown> {
 	nodeInspectorFactory: (srcFile: ts.SourceFile) => NodeInspector<TResult>;
 	resultsHandler: ResultsHandler<TResult>;
@@ -18,13 +25,22 @@ export type NodeInspector<TResult> = (
 	recentResult: TResult | null,
 ) => TResult | null | undefined;
 
+/**
+ * Processes inspection results from all files and returns a status.
+ */
 export type ResultsHandler<TResult> = (
 	resultPerFile: FileInspectionResult<TResult>[],
 ) => InspectionStatus;
 
+/**
+ * Result object of inspecting a single file.
+ */
 export interface FileInspectionResult<TResult> {
 	srcFile: ParsedSourceFile;
 	result: TResult;
 }
 
+/**
+ * Status returned by inspection operations.
+ */
 export type InspectionStatus = "error" | "warn" | "success";

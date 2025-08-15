@@ -1,3 +1,7 @@
+/**
+ * TypeScript diagnostic formatting utilities.
+ */
+
 import ts from "typescript";
 
 const host: ts.FormatDiagnosticsHost = {
@@ -6,6 +10,9 @@ const host: ts.FormatDiagnosticsHost = {
 	getNewLine: () => "\n",
 };
 
+/**
+ * Formats TypeScript diagnostics for display.
+ */
 export function formatDiagnostics(
 	diagnostics: ts.Diagnostic[],
 	withColorAndContext = true,
