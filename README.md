@@ -47,17 +47,12 @@ Run against the project in the current working directory (auto-detects `tsconfig
 npx @fal-works/ts-inspect
 ```
 
-Or add to `package.json` scripts:
+Specify a different project directory or config file with `--project` (or `-p`):
 
-```jsonc
-{
-  "scripts": {
-    "inspect": "ts-inspect"
-  }
-}
+```bash
+npx @fal-works/ts-inspect -p ./my-project
+npx @fal-works/ts-inspect -p ./custom-tsconfig.json
 ```
-
-Then run: `npm run inspect`.
 
 ## Quick Start (Programmatic)
 
