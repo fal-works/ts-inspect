@@ -12,7 +12,7 @@ import type { InspectionStatus } from "./status.ts";
  * then runs the results handler for each inspector.
  */
 export async function runInspectors(
-	// biome-ignore lint/suspicious/noExplicitAny: The type of inspectors is flexible and can vary.
+	// biome-ignore lint/suspicious/noExplicitAny: We can't use the unknown type here because this should accept inspectors with variadic types.
 	inspectors: Inspector<any>[],
 	srcFiles: Promise<ParsedSourceFile>[],
 ): Promise<InspectionStatus> {

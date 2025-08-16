@@ -16,7 +16,7 @@ import { parseConfig, resolveProjectPath } from "./tsconfig/index.ts";
  */
 export interface InspectOptions {
 	sourceFilesOptions?: ParseSourceFilesOptions;
-	// biome-ignore lint/suspicious/noExplicitAny: The type of inspectors is flexible and can vary.
+	// biome-ignore lint/suspicious/noExplicitAny: We can't use the unknown type here because this should accept inspectors with variadic types.
 	inspectors?: Inspector<any>[];
 }
 
