@@ -107,10 +107,10 @@ const displayResults: ResultsHandler<TypeAssertionInspectionResult> = (resultPer
 			console.warn("⚠️ ", `${file}:${found.line}`, "-", `${found.snippet}`);
 		}
 	}
-	console.log(); // empty line
+	console.warn(); // empty line
 	console.warn(noTypeAssertionsFriendlyWarningMessage());
 	console.groupEnd();
-	console.log(); // empty line
+	console.warn(); // empty line
 
 	return "warn";
 };
