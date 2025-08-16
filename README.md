@@ -27,7 +27,7 @@ It performs a single depth-first pass per source file and lets multiple inspecto
 - Uses TypeScript Compiler API for accurate parsing of TS / JS / TSX / JSX / etc.
 - Ships with a default inspector: suspicious type assertions.
 - Customizable with a tiny API surface: define just a node visitor + a result handler.
-- Minimal runtime dependencies (TypeScript >= 5.0, Node.js >= 22).
+- Minimal runtime dependencies (TypeScript >= 5.0, Node.js >= 22.6).
 
 ## Installation
 
