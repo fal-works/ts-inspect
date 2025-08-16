@@ -1,14 +1,10 @@
 /**
- * Core inspector type definitions for TypeScript AST inspection.
+ * Inspector type definitions for TypeScript AST inspection.
  */
 
 import type ts from "typescript";
 import type { ParsedSourceFile } from "../source-file/index.ts";
-
-/**
- * Status returned by inspection operations.
- */
-export type InspectionStatus = "error" | "warn" | "success";
+import type { InspectionStatus } from "./status.ts";
 
 /**
  * Result object of inspecting a single file.

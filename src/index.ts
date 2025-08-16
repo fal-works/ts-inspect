@@ -72,3 +72,4 @@ export type {
 	NodeInspector,
 	ResultsHandler,
 } from "./inspector/index.ts";
+export { translateStatusToExitCode } from "./inspector/index.ts";

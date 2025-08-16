@@ -1,12 +1,12 @@
-import { type Inspector, inspectProject } from "@fal-works/ts-inspect";
+import { type Inspector, inspectProject, translateStatusToExitCode } from "@fal-works/ts-inspect";
 import ts from "typescript";
 
 function createConsoleLogInspector(): Inspector<number> {
 	return {
-		nodeInspectorFactory: (sf) => (node, count) => {
+		nodeInspectorFactory: (srcFile) => (node, count) => {
 			if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
 				const expr = node.expression;
-				if (expr.expression.getText(sf) === "console" && expr.name.text === "log") {
+				if (expr.expression.getText(srcFile) === "console" && expr.name.text === "log") {
 					return (count ?? 0) + 1;
 				}
 			}
@@ -28,17 +28,5 @@ function createConsoleLogInspector(): Inspector<number> {
 	};
 }
 
-const result = await inspectProject(undefined, { inspectors: [createConsoleLogInspector()] });
-
-// TODO: this should be provided by the library
-switch (result) {
-	case "success":
-		process.exitCode = 0;
-		break;
-	case "warn":
-		process.exitCode = 0;
-		break;
-	case "error":
-		process.exitCode = 1;
-		break;
-}
+const status = await inspectProject(undefined, { inspectors: [createConsoleLogInspector()] });
+process.exitCode = translateStatusToExitCode(status);

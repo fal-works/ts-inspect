@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { parseArgs } from "node:util";
-import { inspectProject } from "./index.ts";
+import { inspectProject, translateStatusToExitCode } from "./index.ts";
 
 /**
  * Main entry point for the CLI.
@@ -18,14 +18,9 @@ async function main() {
 		},
 	});
 
-	switch (await inspectProject(values.project)) {
-		case "success":
-			return 0;
-		case "warn":
-			return 0;
-		case "error":
-			return 1;
-	}
+	const status = await inspectProject(values.project);
+
+	return translateStatusToExitCode(status);
 }
 
 process.exitCode = await main();

@@ -1,12 +1,13 @@
 /**
- * Inspector type definitions and runner exports.
+ * Inspector type definitions and functionality exports.
  */
 
 export type {
 	FileInspectionResult,
-	InspectionStatus,
 	Inspector,
 	NodeInspector,
 	ResultsHandler,
 } from "./inspector.ts";
 export { runInspectors } from "./runner.ts";
+export type { InspectionStatus } from "./status.ts";
+export { translateStatusToExitCode } from "./status.ts";
