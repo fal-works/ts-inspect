@@ -99,18 +99,17 @@ export function createNoTypeAssertionsInspector(
 const displayResults: ResultsHandler<TypeAssertionInspectionResult> = (resultPerFile) => {
 	if (resultPerFile.length === 0) return "success";
 
-	console.warn(`Found suspicious type assertions:`);
-	console.group();
+	console.group(`Found suspicious type assertions:`);
 	for (const r of resultPerFile) {
 		const file = r.srcFile.file.fileName;
 		for (const found of r.result) {
-			console.warn("⚠️ ", `${file}:${found.line}`, "-", `${found.snippet}`);
+			console.log("⚠️ ", `${file}:${found.line}`, "-", `${found.snippet}`);
 		}
 	}
-	console.warn(); // empty line
-	console.warn(noTypeAssertionsFriendlyWarningMessage());
+	process.stdout.write("\n"); // empty line
+	console.log(noTypeAssertionsFriendlyWarningMessage());
 	console.groupEnd();
-	console.warn(); // empty line
+	process.stdout.write("\n"); // empty line
 
 	return "warn";
 };
