@@ -1,3 +1,7 @@
+/**
+ * Node inspector for detecting suspicious type assertions.
+ */
+
 import ts from "typescript";
 import type { NodeInspectorFactory } from "../../inspector/index.ts";
 import { hasIgnoreComment, isAsConst, isUnknownAssertion } from "./ast-node.ts";

@@ -1,3 +1,7 @@
+/**
+ * Results handler for collecting and informing type assertion findings.
+ */
+
 import type { ResultsHandler } from "../../inspector/index.ts";
 import { IGNORE_COMMENT } from "./constants.ts";
 import type { TypeAssertionInspectionResult } from "./types.ts";
@@ -24,7 +28,9 @@ But be aware that this is an exceptional case.
 /**
  * Default results handler for `TypeAssertionInspectionResult`.
  */
-export const defaultResultsHandler: ResultsHandler<TypeAssertionInspectionResult> = (resultPerFile) => {
+export const defaultResultsHandler: ResultsHandler<TypeAssertionInspectionResult> = (
+	resultPerFile,
+) => {
 	if (resultPerFile.length === 0) return "success";
 
 	console.group(`Found suspicious type assertions:`);
