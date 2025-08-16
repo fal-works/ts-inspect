@@ -40,13 +40,13 @@ export function errorTypeToMessage(errorType: TsInspectErrorType): string {
  * Not intended for reporting inspection or linting issues.
  */
 export class TsInspectError extends Error {
+	override name = "TsInspectError";
 	type: TsInspectErrorType;
 
 	constructor(type: TsInspectErrorType) {
 		const options: ErrorOptions | undefined =
 			type.errorCode === "unexpected-exception" ? { cause: type.caught } : undefined;
 		super(errorTypeToMessage(type), options);
-		this.name = "TsInspectError";
 		this.type = type;
 	}
 }
