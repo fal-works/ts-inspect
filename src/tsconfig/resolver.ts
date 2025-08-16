@@ -10,7 +10,7 @@ import { fileExists, isDirectory } from "../core/files.ts";
  * - A direct path to any tsconfig file
  * - A directory path containing either `tsconfig.json` or `jsconfig.json` file
  *
- * @params projectPath - The path to resolve. If not provided, defaults to the current directory.
+ * @param projectPath - The path to resolve. If not provided, defaults to the current directory.
  * @returns The resolved path to the tsconfig or jsconfig file.
  */
 export async function resolveProjectPath(projectPath?: string): Promise<string> {
