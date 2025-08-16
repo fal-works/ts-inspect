@@ -2,7 +2,7 @@ import assert from "node:assert";
 import { describe, it } from "node:test";
 import { defaultResultsHandler } from "./results-handler.ts";
 
-describe("results-handler", () => {
+describe("builtin-inspectors/no-type-assertions/results-handler", () => {
 	describe("defaultResultsHandler", () => {
 		function captureStdout(fn: () => void): string {
 			const originalWrite = process.stdout.write;

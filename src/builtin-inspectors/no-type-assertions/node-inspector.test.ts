@@ -4,7 +4,7 @@ import ts from "typescript";
 import { createNodeInspectorFactory } from "./node-inspector.ts";
 import type { TypeAssertionInspectionResult } from "./types.ts";
 
-describe("node-inspector", () => {
+describe("builtin-inspectors/no-type-assertions/node-inspector", () => {
 	describe("createNodeInspectorFactory", () => {
 		function createTestSourceFile(code: string): ts.SourceFile {
 			return ts.createSourceFile("test.ts", code, ts.ScriptTarget.Latest, true);

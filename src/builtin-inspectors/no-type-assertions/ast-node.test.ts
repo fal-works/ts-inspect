@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 import ts from "typescript";
 import { hasIgnoreComment, isAsConst, isUnknownAssertion } from "./ast-node.ts";
 
-describe("ast-node", () => {
+describe("builtin-inspectors/no-type-assertions/ast-node", () => {
 	function createTestSourceFile(code: string): ts.SourceFile {
 		return ts.createSourceFile("test.ts", code, ts.ScriptTarget.Latest, true);
 	}

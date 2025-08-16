@@ -8,7 +8,7 @@ import {
 	getScriptKind,
 } from "./file-type.ts";
 
-describe("file-type", () => {
+describe("source-file/file-type", () => {
 	describe("getFileTypeFromExtension", () => {
 		it("returns correct types for TypeScript extensions", () => {
 			assert.strictEqual(getFileTypeFromExtension("file.ts"), "ts");

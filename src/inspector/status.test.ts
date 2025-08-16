@@ -6,7 +6,7 @@ import assert from "node:assert";
 import { describe, it } from "node:test";
 import { translateStatusToExitCode } from "./status.ts";
 
-describe("status", () => {
+describe("inspector/status", () => {
 	describe("translateStatusToExitCode", () => {
 		it("returns 0 for success status", () => {
 			const result = translateStatusToExitCode("success");

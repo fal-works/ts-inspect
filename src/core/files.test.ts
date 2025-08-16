@@ -2,7 +2,7 @@ import assert from "node:assert";
 import { describe, it } from "node:test";
 import { fileExists, isDirectory } from "./files.ts";
 
-describe("files", () => {
+describe("core/files", () => {
 	describe("fileExists", () => {
 		it("returns true for existing files", async () => {
 			const result = await fileExists("test/fixtures/tsconfig.json");

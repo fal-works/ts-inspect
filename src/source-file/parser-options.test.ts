@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 import ts from "typescript";
 import { inferParseSourceFilesOptions, type ParseSourceFilesOptions } from "./parser-options.ts";
 
-describe("parser-options", () => {
+describe("source-file/parser-options", () => {
 	describe("inferParseSourceFilesOptions", () => {
 		it("infers file types from TypeScript config with allowJs", () => {
 			const mockConfig: ts.ParsedCommandLine = {

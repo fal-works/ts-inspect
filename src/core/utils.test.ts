@@ -2,7 +2,7 @@ import assert from "node:assert";
 import { describe, it } from "node:test";
 import { setHasValue } from "./utils.ts";
 
-describe("utils", () => {
+describe("core/utils", () => {
 	describe("setHasValue", () => {
 		it("returns true for values in the set", () => {
 			const set = new Set(["a", "b", "c"]);
