@@ -61,32 +61,54 @@ describe("bin", () => {
 			assert.strictEqual(typeof stderr, "string");
 		});
 
-		it("exits with non-zero code for non-existent project", async () => {
+		it("exits with code 2 for non-existent project (fatal error)", async () => {
 			const nonExistentPath = join("test", "fixtures", "non-existent-project");
 			try {
 				await execFileAsync("node", [binPath, "--project", nonExistentPath], {
 					cwd: process.cwd(),
 				});
-				// If it doesn't throw, that's also acceptable behavior
+				assert.fail("Expected command to throw an error for non-existent project");
 			} catch (error) {
-				// Should exit with non-zero code for invalid project
+				// Should exit with code 2 for fatal configuration error
 				assert.ok(error instanceof Error);
 				assert.ok("code" in error);
-				assert.notStrictEqual(error.code, 0);
+				assert.strictEqual(error.code, 2);
+				// Should output error to stderr
+				assert.ok("stderr" in error);
+				assert.ok(typeof error.stderr === "string");
+				assert.ok(error.stderr.length > 0);
 			}
 		});
 
-		it("exits with non-zero code for unknown option", async () => {
+		it("exits with code 2 for unknown option (fatal error)", async () => {
 			try {
 				await execFileAsync("node", [binPath, "--unknown-option"], {
 					cwd: process.cwd(),
 				});
 				assert.fail("Expected command to throw an error for unknown option");
 			} catch (error) {
-				// Should exit with non-zero code for unknown option
+				// Should exit with code 2 for argument parsing error
 				assert.ok(error instanceof Error);
 				assert.ok("code" in error);
-				assert.notStrictEqual(error.code, 0);
+				assert.strictEqual(error.code, 2);
+			}
+		});
+
+		it("exits with code 2 for invalid project path format", async () => {
+			try {
+				await execFileAsync("node", [binPath, "--project", "src/index.ts"], {
+					cwd: process.cwd(),
+				});
+				assert.fail("Expected command to throw an error for invalid project path");
+			} catch (error) {
+				// Should exit with code 2 for fatal configuration error (not a directory or JSON file)
+				assert.ok(error instanceof Error);
+				assert.ok("code" in error);
+				assert.strictEqual(error.code, 2);
+				// Should output error to stderr
+				assert.ok("stderr" in error);
+				assert.ok(typeof error.stderr === "string");
+				assert.ok(error.stderr.includes("TsInspectError"));
 			}
 		});
 	});
