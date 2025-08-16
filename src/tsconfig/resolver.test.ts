@@ -1,5 +1,6 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
+import { TsInspectError } from "../error.ts";
 import { resolveProjectPath } from "./resolver.ts";
 
 describe("tsconfig/resolver", () => {
@@ -32,25 +33,41 @@ describe("tsconfig/resolver", () => {
 			assert.ok(result.endsWith(".json"));
 		});
 
-		it("throws error for non-existent directory", async () => {
+		it("throws TsInspectError with invalid-project-path for non-existent directory", async () => {
 			await assert.rejects(
 				async () => await resolveProjectPath("non/existent/directory"),
-				/The specified project path is neither a JSON file nor a directory/,
+				(error: unknown) => {
+					assert.ok(error instanceof TsInspectError);
+					assert.strictEqual(error.type.errorCode, "invalid-project-path");
+					assert.ok(typeof error.type.path === "string");
+					assert.ok(error.type.path.length > 0);
+					return true;
+				},
 			);
 		});
 
-		it("throws error for directory without config files", async () => {
+		it("throws TsInspectError with config-file-not-found for directory without config files", async () => {
 			await assert.rejects(
 				async () => await resolveProjectPath("test/fixtures/empty-directory"),
-				/No tsconfig.json or jsconfig.json found in directory/,
+				(error: unknown) => {
+					assert.ok(error instanceof TsInspectError);
+					assert.strictEqual(error.type.errorCode, "config-file-not-found");
+					assert.ok(error.type.directoryPath.includes("empty-directory"));
+					return true;
+				},
 			);
 		});
 
-		it("throws error for file that is not a directory and not a .json file", async () => {
-			// Create a temporary non-json file for this test
+		it("throws TsInspectError with invalid-project-path for file that is not a directory and not a .json file", async () => {
 			await assert.rejects(
 				async () => await resolveProjectPath("src/index.ts"),
-				/The specified project path is neither a JSON file nor a directory/,
+				(error: unknown) => {
+					assert.ok(error instanceof TsInspectError);
+					assert.strictEqual(error.type.errorCode, "invalid-project-path");
+					assert.ok(typeof error.type.path === "string");
+					assert.ok(error.type.path.length > 0);
+					return true;
+				},
 			);
 		});
 	});

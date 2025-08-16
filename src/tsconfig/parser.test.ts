@@ -1,5 +1,6 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
+import { TsInspectError } from "../error.ts";
 import { parseConfig } from "./parser.ts";
 
 describe("tsconfig/parser", () => {
@@ -26,17 +27,29 @@ describe("tsconfig/parser", () => {
 			assert.strictEqual(result.options.allowJs, true);
 		});
 
-		it("throws error for non-existent config file", () => {
+		it("throws TsInspectError with config-file-read-failure for non-existent config file", () => {
 			assert.throws(
 				() => parseConfig("test/fixtures/non-existent-config.json"),
-				/Cannot read file/,
+				(error: unknown) => {
+					assert.ok(error instanceof TsInspectError);
+					assert.strictEqual(error.type.errorCode, "config-file-read-failure");
+					assert.ok(Array.isArray(error.type.diagnostics));
+					assert.ok(error.type.diagnostics.length > 0);
+					return true;
+				},
 			);
 		});
 
-		it("throws error for invalid config file", () => {
+		it("throws TsInspectError with config-parse-failure for invalid config file", () => {
 			assert.throws(
 				() => parseConfig("test/fixtures/invalid-tsconfig.json"),
-				// TypeScript will report errors about invalid target and unknown option
+				(error: unknown) => {
+					assert.ok(error instanceof TsInspectError);
+					assert.strictEqual(error.type.errorCode, "config-parse-failure");
+					assert.ok(Array.isArray(error.type.diagnostics));
+					assert.ok(error.type.diagnostics.length > 0);
+					return true;
+				},
 			);
 		});
 

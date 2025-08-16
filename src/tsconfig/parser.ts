@@ -4,7 +4,7 @@
 
 import { dirname } from "node:path";
 import ts from "typescript";
-import { formatDiagnostics } from "../core/ts/diagnostics.ts";
+import { TsInspectError } from "../error.ts";
 
 /**
  * Parses a TypeScript configuration file.
@@ -16,7 +16,10 @@ import { formatDiagnostics } from "../core/ts/diagnostics.ts";
 export function parseConfig(tsconfigPath: string, allowJs?: boolean): ts.ParsedCommandLine {
 	const configFile = ts.readConfigFile(tsconfigPath, ts.sys.readFile);
 	if (configFile.error) {
-		throw new Error(formatDiagnostics([configFile.error]));
+		throw new TsInspectError({
+			errorCode: "config-file-read-failure",
+			diagnostics: [configFile.error],
+		});
 	}
 
 	const configParseResult = ts.parseJsonConfigFileContent(
@@ -25,7 +28,10 @@ export function parseConfig(tsconfigPath: string, allowJs?: boolean): ts.ParsedC
 		dirname(tsconfigPath),
 	);
 	if (configParseResult.errors.length) {
-		throw new Error(formatDiagnostics(configParseResult.errors));
+		throw new TsInspectError({
+			errorCode: "config-parse-failure",
+			diagnostics: configParseResult.errors,
+		});
 	}
 
 	if (allowJs) {
