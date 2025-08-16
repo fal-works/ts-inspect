@@ -14,13 +14,22 @@ const binPath = join("dist", "bin.js");
 
 describe("bin", () => {
 	describe("CLI execution", () => {
-		it("executes without error when no project argument provided", async () => {
-			const { stdout, stderr } = await execFileAsync("node", [binPath], {
-				cwd: process.cwd(),
-			});
-			// Should not throw and should have some output or empty output
-			assert.strictEqual(typeof stdout, "string");
-			assert.strictEqual(typeof stderr, "string");
+		it("executes when no project argument provided (may find issues)", async () => {
+			try {
+				const { stdout, stderr } = await execFileAsync("node", [binPath], {
+					cwd: process.cwd(),
+				});
+				// If no exception thrown, exit code was 0 (no issues found)
+				assert.strictEqual(typeof stdout, "string");
+				assert.strictEqual(typeof stderr, "string");
+			} catch (error) {
+				// If exception thrown, should be exit code 1 (issues found) not 2 (fatal error)
+				assert.ok(error instanceof Error);
+				assert.ok("code" in error);
+				assert.ok(error.code === 1, `Expected exit code 1 but got ${error.code}`);
+				assert.ok("stdout" in error);
+				assert.strictEqual(typeof error.stdout, "string");
+			}
 		});
 
 		it("executes without error with --project argument", async () => {
@@ -41,12 +50,22 @@ describe("bin", () => {
 			assert.strictEqual(typeof stderr, "string");
 		});
 
-		it("executes without error with --exclude-test argument", async () => {
-			const { stdout, stderr } = await execFileAsync("node", [binPath, "--exclude-test"], {
-				cwd: process.cwd(),
-			});
-			assert.strictEqual(typeof stdout, "string");
-			assert.strictEqual(typeof stderr, "string");
+		it("executes with --exclude-test argument (may find issues)", async () => {
+			try {
+				const { stdout, stderr } = await execFileAsync("node", [binPath, "--exclude-test"], {
+					cwd: process.cwd(),
+				});
+				// If no exception thrown, exit code was 0 (no issues found)
+				assert.strictEqual(typeof stdout, "string");
+				assert.strictEqual(typeof stderr, "string");
+			} catch (error) {
+				// If exception thrown, should be exit code 1 (issues found) not 2 (fatal error)
+				assert.ok(error instanceof Error);
+				assert.ok("code" in error);
+				assert.ok(error.code === 1, `Expected exit code 1 but got ${error.code}`);
+				assert.ok("stdout" in error);
+				assert.strictEqual(typeof error.stdout, "string");
+			}
 		});
 	});
 
@@ -61,32 +80,73 @@ describe("bin", () => {
 			assert.strictEqual(typeof stderr, "string");
 		});
 
-		it("exits with non-zero code for non-existent project", async () => {
+		it("exits with code 1 for inspection errors (code quality issues)", async () => {
+			const projectPath = join("test", "fixtures", "project-with-type-assertions");
+			try {
+				await execFileAsync("node", [binPath, "--project", projectPath], {
+					cwd: process.cwd(),
+				});
+				assert.fail("Expected command to exit with code 1 for type assertion findings");
+			} catch (error) {
+				// Should exit with code 1 for inspection errors (code quality issues)
+				assert.ok(error instanceof Error);
+				assert.ok("code" in error);
+				assert.strictEqual(error.code, 1);
+				// Should output findings to stdout
+				assert.ok("stdout" in error);
+				assert.ok(typeof error.stdout === "string");
+				assert.ok(error.stdout.includes("Found suspicious type assertions"));
+			}
+		});
+
+		it("exits with code 2 for non-existent project (fatal error)", async () => {
 			const nonExistentPath = join("test", "fixtures", "non-existent-project");
 			try {
 				await execFileAsync("node", [binPath, "--project", nonExistentPath], {
 					cwd: process.cwd(),
 				});
-				// If it doesn't throw, that's also acceptable behavior
+				assert.fail("Expected command to throw an error for non-existent project");
 			} catch (error) {
-				// Should exit with non-zero code for invalid project
+				// Should exit with code 2 for fatal configuration error
 				assert.ok(error instanceof Error);
 				assert.ok("code" in error);
-				assert.notStrictEqual(error.code, 0);
+				assert.strictEqual(error.code, 2);
+				// Should output error to stderr
+				assert.ok("stderr" in error);
+				assert.ok(typeof error.stderr === "string");
+				assert.ok(error.stderr.length > 0);
 			}
 		});
 
-		it("exits with non-zero code for unknown option", async () => {
+		it("exits with code 2 for unknown option (fatal error)", async () => {
 			try {
 				await execFileAsync("node", [binPath, "--unknown-option"], {
 					cwd: process.cwd(),
 				});
 				assert.fail("Expected command to throw an error for unknown option");
 			} catch (error) {
-				// Should exit with non-zero code for unknown option
+				// Should exit with code 2 for argument parsing error
 				assert.ok(error instanceof Error);
 				assert.ok("code" in error);
-				assert.notStrictEqual(error.code, 0);
+				assert.strictEqual(error.code, 2);
+			}
+		});
+
+		it("exits with code 2 for invalid project path format", async () => {
+			try {
+				await execFileAsync("node", [binPath, "--project", "src/index.ts"], {
+					cwd: process.cwd(),
+				});
+				assert.fail("Expected command to throw an error for invalid project path");
+			} catch (error) {
+				// Should exit with code 2 for fatal configuration error (not a directory or JSON file)
+				assert.ok(error instanceof Error);
+				assert.ok("code" in error);
+				assert.strictEqual(error.code, 2);
+				// Should output error to stderr
+				assert.ok("stderr" in error);
+				assert.ok(typeof error.stderr === "string");
+				assert.ok(error.stderr.includes("TsInspectError"));
 			}
 		});
 	});

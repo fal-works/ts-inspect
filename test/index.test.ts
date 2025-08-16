@@ -5,6 +5,7 @@
 import assert from "node:assert";
 import { join } from "node:path";
 import { describe, it } from "node:test";
+import { TsInspectError } from "../src/error.ts";
 import { inspectFiles, inspectProject } from "../src/index.ts";
 import { executeNodeScript } from "./test-utils.ts";
 
@@ -32,6 +33,23 @@ describe("index", () => {
 				inspectors: [],
 			});
 			assert.strictEqual(result, "success");
+		});
+
+		it("wraps unexpected exceptions with TsInspectError", async () => {
+			// Test with a completely malformed inspector to trigger an error before inspection
+			const malformedInspector = null as any;
+
+			await assert.rejects(
+				async () => await inspectFiles(["test/fixtures/src/sample.ts"], {
+					inspectors: [malformedInspector],
+				}),
+				(error: unknown) => {
+					assert.ok(error instanceof TsInspectError);
+					assert.strictEqual(error.type.errorCode, "unexpected-exception");
+					assert.ok(error.type.caught instanceof TypeError);
+					return true;
+				},
+			);
 		});
 	});
 
@@ -62,6 +80,19 @@ describe("index", () => {
 				inspectors: [],
 			});
 			assert.strictEqual(result, "success");
+		});
+
+		it("throws TsInspectError for known configuration errors", async () => {
+			// Test with non-existent project path - should be a known TsInspectError, not wrapped
+			await assert.rejects(
+				async () => await inspectProject("/completely/non/existent/project"),
+				(error: unknown) => {
+					assert.ok(error instanceof TsInspectError);
+					// Should be invalid-project-path, not unexpected-exception
+					assert.strictEqual(error.type.errorCode, "invalid-project-path");
+					return true;
+				},
+			);
 		});
 	});
 

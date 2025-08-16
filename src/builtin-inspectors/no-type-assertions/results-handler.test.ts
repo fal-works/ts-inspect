@@ -70,7 +70,7 @@ describe("builtin-inspectors/no-type-assertions/results-handler", () => {
 			assert.strictEqual(result, "success");
 		});
 
-		it("returns warn status when assertions found", () => {
+		it("returns error status when assertions found", () => {
 			const mockResults = [
 				{
 					srcFile: { file: { fileName: "test.ts" } } as any,
@@ -78,7 +78,7 @@ describe("builtin-inspectors/no-type-assertions/results-handler", () => {
 				},
 			];
 			const result = defaultResultsHandler(mockResults);
-			assert.strictEqual(result, "warn");
+			assert.strictEqual(result, "error");
 		});
 	});
 });

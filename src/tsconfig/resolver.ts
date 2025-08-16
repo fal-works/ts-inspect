@@ -4,6 +4,7 @@
 
 import { join, resolve } from "node:path";
 import { fileExists, isDirectory } from "../core/files.ts";
+import { TsInspectError } from "../error.ts";
 
 /**
  * Resolves a project path. Accepts either:
@@ -23,9 +24,10 @@ export async function resolveProjectPath(projectPath?: string): Promise<string> 
 	const absolutePath = resolve(path);
 
 	if (!(await isDirectory(path))) {
-		throw new Error(
-			`The specified project path is neither a JSON file nor a directory: ${absolutePath}`,
-		);
+		throw new TsInspectError({
+			errorCode: "invalid-project-path",
+			path: absolutePath,
+		});
 	}
 
 	// Look for config files in the directory
@@ -38,5 +40,8 @@ export async function resolveProjectPath(projectPath?: string): Promise<string> 
 		return jsconfigPath;
 	}
 
-	throw new Error(`No tsconfig.json or jsconfig.json found in directory: ${absolutePath}`);
+	throw new TsInspectError({
+		errorCode: "config-file-not-found",
+		directoryPath: absolutePath,
+	});
 }

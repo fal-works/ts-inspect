@@ -7,9 +7,9 @@ import { IGNORE_COMMENT } from "./constants.ts";
 import type { TypeAssertionInspectionResult } from "./types.ts";
 
 /**
- * Generates a friendly warning message about type assertions.
+ * Generates a friendly message about type assertions.
  */
-const noTypeAssertionsFriendlyWarningMessage = () =>
+const noTypeAssertionsFriendlyMessage = () =>
 	`
 💡 Tip:
 Review these type assertions carefully. In most cases, type assertions (like \`as T\`) should be your last resort.
@@ -37,13 +37,13 @@ export const defaultResultsHandler: ResultsHandler<TypeAssertionInspectionResult
 	for (const r of resultPerFile) {
 		const file = r.srcFile.file.fileName;
 		for (const found of r.result) {
-			console.log("⚠️ ", `${file}:${found.line}`, "-", `${found.snippet}`);
+			console.log("❌ ", `${file}:${found.line}`, "-", `${found.snippet}`);
 		}
 	}
 	process.stdout.write("\n"); // empty line
-	console.log(noTypeAssertionsFriendlyWarningMessage());
+	console.log(noTypeAssertionsFriendlyMessage());
 	console.groupEnd();
 	process.stdout.write("\n"); // empty line
 
-	return "warn";
+	return "error";
 };
