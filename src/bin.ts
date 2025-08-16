@@ -4,11 +4,9 @@ import { parseArgs } from "node:util";
 import { inspectProject, translateStatusToExitCode } from "./index.ts";
 
 /**
- * Main entry point for the CLI.
- *
- * @returns exit code
+ * Main CLI function without catching fatal errors.
  */
-async function main() {
+async function mainInternal(): Promise<0 | 1> {
 	const { values } = parseArgs({
 		options: {
 			project: {
@@ -28,6 +26,23 @@ async function main() {
 	});
 
 	return translateStatusToExitCode(status);
+}
+
+/**
+ * Main entry point for the CLI.
+ *
+ * @returns Exit code:
+ * - `0`: Success: Tool ran successfully, no issues found or just warnings
+ * - `1`: Inspection error: Tool ran successfully, but found code quality issues that need to be fixed
+ * - `2`: Fatal error: Tool failed to run due to configuration/runtime errors or unexpected exceptions
+ */
+async function main(): Promise<0 | 1 | 2> {
+	try {
+		return await mainInternal();
+	} catch (err) {
+		console.error(err);
+		return 2;
+	}
 }
 
 process.exitCode = await main();
