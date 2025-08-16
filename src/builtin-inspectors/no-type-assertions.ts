@@ -1,7 +1,7 @@
 import ts from "typescript";
 import type { Inspector, ResultsHandler } from "../inspector/index.ts";
 
-type AsAssertionFinding = {
+type TypeAssertionFinding = {
 	/**
 	 * The line number where the assertion occurs (1-based).
 	 */
@@ -13,24 +13,24 @@ type AsAssertionFinding = {
 	snippet: string;
 };
 
-type AsAssertionInspectionResult = AsAssertionFinding[];
+type TypeAssertionInspectionResult = TypeAssertionFinding[];
 
-const IGNORE_COMMENT = "UNAVOIDABLE_AS";
+const IGNORE_COMMENT = "ignore-no-type-assertions";
 
-const asAssertionFriendlyWarningMessage = () =>
+const noTypeAssertionsFriendlyWarningMessage = () =>
 	`
 💡 Tip:
-Review these type assertions carefully. In most cases, \`as\` should be your last resort.
-- **Prefer assignability over assertion:**
+Review these type assertions carefully. In most cases, type assertions (like \`as T\`) should be your last resort.
+- Prefer assignability over assertion:
   If a value already matches a target type,
   just declare it with that type or pass it to a function that accepts that type.
-- **Avoid \`as\` to work around design issues:**
+- Avoid type assertions to work around design issues:
   Needing assertions often means the types aren’t aligned.
   Consider redesigning the types or the data flow so the compiler can infer types safely.
 
-If you truly must keep \`as\` e.g. this is an isolated utility function
-or a third-party library integration, add a comment: /* UNAVOIDABLE_AS */
-But be aware that this is a highly exceptional case.
+If you truly must keep it e.g. it is an isolated utility function
+or a third-party library integration, add a comment: /* ${IGNORE_COMMENT} */
+But be aware that this is an exceptional case.
 `.trim();
 
 function isAsConst(asExpr: ts.AsExpression): boolean {
@@ -43,7 +43,7 @@ function isAsConst(asExpr: ts.AsExpression): boolean {
 	);
 }
 
-function hasUnavoidableAsComment(sf: ts.SourceFile, node: ts.Node): boolean {
+function hasIgnoreComment(sf: ts.SourceFile, node: ts.Node): boolean {
 	const text = sf.getFullText();
 
 	// Check leading comments
@@ -63,12 +63,12 @@ function hasUnavoidableAsComment(sf: ts.SourceFile, node: ts.Node): boolean {
 	return false;
 }
 
-export function createAsAssertionInspector(
-	resultsHandler?: ResultsHandler<AsAssertionInspectionResult>,
-): Inspector<AsAssertionInspectionResult> {
+export function createNoTypeAssertionsInspector(
+	resultsHandler?: ResultsHandler<TypeAssertionInspectionResult>,
+): Inspector<TypeAssertionInspectionResult> {
 	return {
 		nodeInspectorFactory: (srcFile) => (node, recentResult) => {
-			if (ts.isAsExpression(node) && !isAsConst(node) && !hasUnavoidableAsComment(srcFile, node)) {
+			if (ts.isAsExpression(node) && !isAsConst(node) && !hasIgnoreComment(srcFile, node)) {
 				const { line } = srcFile.getLineAndCharacterOfPosition(node.getStart(srcFile, false));
 				const result = recentResult ?? [];
 				result.push({
@@ -80,11 +80,11 @@ export function createAsAssertionInspector(
 				return undefined;
 			}
 		},
-		resultsHandler: resultsHandler ?? displayAsAssertionResults,
+		resultsHandler: resultsHandler ?? displayResults,
 	};
 }
 
-const displayAsAssertionResults: ResultsHandler<AsAssertionInspectionResult> = (resultPerFile) => {
+const displayResults: ResultsHandler<TypeAssertionInspectionResult> = (resultPerFile) => {
 	if (resultPerFile.length === 0) return "success";
 
 	console.warn(`Found suspicious type assertions:`);
@@ -96,7 +96,7 @@ const displayAsAssertionResults: ResultsHandler<AsAssertionInspectionResult> = (
 		}
 	}
 	console.log(); // empty line
-	console.warn(asAssertionFriendlyWarningMessage());
+	console.warn(noTypeAssertionsFriendlyWarningMessage());
 	console.groupEnd();
 	console.log(); // empty line
 

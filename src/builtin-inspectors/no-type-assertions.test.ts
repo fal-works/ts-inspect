@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
 import ts from "typescript";
-import { createAsAssertionInspector } from "./as-assertions.ts";
+import { createNoTypeAssertionsInspector } from "./no-type-assertions.ts";
 
 describe("as-assertions", () => {
 	describe("createAsAssertionInspector", () => {
@@ -11,7 +11,7 @@ describe("as-assertions", () => {
 
 		function runInspectorOnCode(code: string) {
 			const sourceFile = createTestSourceFile(code);
-			const inspector = createAsAssertionInspector();
+			const inspector = createNoTypeAssertionsInspector();
 			const nodeInspector = inspector.nodeInspectorFactory(sourceFile);
 
 			let result: any;
@@ -112,7 +112,7 @@ const z = 2;
 		it("calls custom results handler", () => {
 			const customHandler = () => "success" as const;
 
-			const inspector = createAsAssertionInspector(customHandler);
+			const inspector = createNoTypeAssertionsInspector(customHandler);
 			assert.strictEqual(inspector.resultsHandler, customHandler);
 		});
 	});
