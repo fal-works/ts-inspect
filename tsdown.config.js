@@ -4,8 +4,8 @@ export default defineConfig([
 	{
 		entry: { index: "src/index.ts" },
 		outDir: "dist",
-		platform: "neutral",
-		target: ["es2022"],
+		platform: "node",
+		target: ["node22", "es2022"],
 		dts: true,
 		sourcemap: true,
 	},

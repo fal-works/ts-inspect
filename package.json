@@ -35,14 +35,14 @@
 	"author": "FAL",
 	"license": "Apache-2.0",
 	"engines": {
-		"node": ">=22.0.0"
+		"node": ">=22.6.0"
 	},
 	"dependencies": {},
 	"devDependencies": {
 		"@biomejs/biome": "^2.2.0",
-		"@types/node": "^24.2.1",
+		"@types/node": "^24.3.0",
 		"tsdown": "^0.14.1",
-		"typescript": "^5.9.2"
+		"typescript": "~5.0.0"
 	},
 	"peerDependencies": {
 		"typescript": ">=5.0.0"
