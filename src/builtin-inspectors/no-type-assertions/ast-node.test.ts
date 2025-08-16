@@ -8,7 +8,7 @@ describe("ast-node", () => {
 		return ts.createSourceFile("test.ts", code, ts.ScriptTarget.Latest, true);
 	}
 
-	function findFirstAsExpression(sourceFile: ts.SourceFile): ts.AsExpression | null {
+	function findFirstAsExpression(srcFile: ts.SourceFile): ts.AsExpression | null {
 		let result: ts.AsExpression | null = null;
 		function visit(node: ts.Node) {
 			if (ts.isAsExpression(node) && !result) {
@@ -17,11 +17,11 @@ describe("ast-node", () => {
 			}
 			ts.forEachChild(node, visit);
 		}
-		visit(sourceFile);
+		visit(srcFile);
 		return result;
 	}
 
-	function findFirstTypeAssertion(sourceFile: ts.SourceFile): ts.TypeAssertion | null {
+	function findFirstTypeAssertion(srcFile: ts.SourceFile): ts.TypeAssertion | null {
 		let result: ts.TypeAssertion | null = null;
 		function visit(node: ts.Node) {
 			if (ts.isTypeAssertionExpression(node) && !result) {
@@ -30,11 +30,11 @@ describe("ast-node", () => {
 			}
 			ts.forEachChild(node, visit);
 		}
-		visit(sourceFile);
+		visit(srcFile);
 		return result;
 	}
 
-	function findFirstTypeNode(sourceFile: ts.SourceFile): ts.TypeNode | null {
+	function findFirstTypeNode(srcFile: ts.SourceFile): ts.TypeNode | null {
 		let result: ts.TypeNode | null = null;
 		function visit(node: ts.Node) {
 			if (ts.isAsExpression(node) && !result) {
@@ -47,15 +47,15 @@ describe("ast-node", () => {
 			}
 			ts.forEachChild(node, visit);
 		}
-		visit(sourceFile);
+		visit(srcFile);
 		return result;
 	}
 
 	describe("isAsConst", () => {
 		it("returns true for 'as const' expressions", () => {
 			const code = `const x = [1, 2, 3] as const;`;
-			const sourceFile = createTestSourceFile(code);
-			const asExpr = findFirstAsExpression(sourceFile);
+			const srcFile = createTestSourceFile(code);
+			const asExpr = findFirstAsExpression(srcFile);
 
 			assert.ok(asExpr !== null);
 			assert.strictEqual(isAsConst(asExpr), true);
@@ -63,8 +63,8 @@ describe("ast-node", () => {
 
 		it("returns false for regular type assertions", () => {
 			const code = `const x = value as string;`;
-			const sourceFile = createTestSourceFile(code);
-			const asExpr = findFirstAsExpression(sourceFile);
+			const srcFile = createTestSourceFile(code);
+			const asExpr = findFirstAsExpression(srcFile);
 
 			assert.ok(asExpr !== null);
 			assert.strictEqual(isAsConst(asExpr), false);
@@ -72,8 +72,8 @@ describe("ast-node", () => {
 
 		it("returns false for 'as any' expressions", () => {
 			const code = `const x = value as any;`;
-			const sourceFile = createTestSourceFile(code);
-			const asExpr = findFirstAsExpression(sourceFile);
+			const srcFile = createTestSourceFile(code);
+			const asExpr = findFirstAsExpression(srcFile);
 
 			assert.ok(asExpr !== null);
 			assert.strictEqual(isAsConst(asExpr), false);
@@ -84,8 +84,8 @@ describe("ast-node", () => {
 				type CustomConst = string;
 				const x = value as CustomConst;
 			`;
-			const sourceFile = createTestSourceFile(code);
-			const asExpr = findFirstAsExpression(sourceFile);
+			const srcFile = createTestSourceFile(code);
+			const asExpr = findFirstAsExpression(srcFile);
 
 			assert.ok(asExpr !== null);
 			assert.strictEqual(isAsConst(asExpr), false);
@@ -93,8 +93,8 @@ describe("ast-node", () => {
 
 		it("returns false for generic const with type arguments", () => {
 			const code = `const x = value as const<string>;`;
-			const sourceFile = createTestSourceFile(code);
-			const asExpr = findFirstAsExpression(sourceFile);
+			const srcFile = createTestSourceFile(code);
+			const asExpr = findFirstAsExpression(srcFile);
 
 			assert.ok(asExpr !== null);
 			assert.strictEqual(isAsConst(asExpr), false);
@@ -104,8 +104,8 @@ describe("ast-node", () => {
 	describe("isUnknownAssertion", () => {
 		it("returns true for 'unknown' type nodes", () => {
 			const code = `const x = value as unknown;`;
-			const sourceFile = createTestSourceFile(code);
-			const typeNode = findFirstTypeNode(sourceFile);
+			const srcFile = createTestSourceFile(code);
+			const typeNode = findFirstTypeNode(srcFile);
 
 			assert.ok(typeNode !== null);
 			assert.strictEqual(isUnknownAssertion(typeNode), true);
@@ -113,8 +113,8 @@ describe("ast-node", () => {
 
 		it("returns true for angle bracket 'unknown' assertions", () => {
 			const code = `const x = <unknown>value;`;
-			const sourceFile = createTestSourceFile(code);
-			const typeNode = findFirstTypeNode(sourceFile);
+			const srcFile = createTestSourceFile(code);
+			const typeNode = findFirstTypeNode(srcFile);
 
 			assert.ok(typeNode !== null);
 			assert.strictEqual(isUnknownAssertion(typeNode), true);
@@ -122,8 +122,8 @@ describe("ast-node", () => {
 
 		it("returns false for other type assertions", () => {
 			const code = `const x = value as string;`;
-			const sourceFile = createTestSourceFile(code);
-			const typeNode = findFirstTypeNode(sourceFile);
+			const srcFile = createTestSourceFile(code);
+			const typeNode = findFirstTypeNode(srcFile);
 
 			assert.ok(typeNode !== null);
 			assert.strictEqual(isUnknownAssertion(typeNode), false);
@@ -131,8 +131,8 @@ describe("ast-node", () => {
 
 		it("returns false for 'any' type assertions", () => {
 			const code = `const x = value as any;`;
-			const sourceFile = createTestSourceFile(code);
-			const typeNode = findFirstTypeNode(sourceFile);
+			const srcFile = createTestSourceFile(code);
+			const typeNode = findFirstTypeNode(srcFile);
 
 			assert.ok(typeNode !== null);
 			assert.strictEqual(isUnknownAssertion(typeNode), false);
@@ -144,62 +144,62 @@ describe("ast-node", () => {
 			const code = `const x = 
 				/* ignore-no-type-assertions */
 				value as any;`;
-			const sourceFile = createTestSourceFile(code);
-			const asExpr = findFirstAsExpression(sourceFile);
+			const srcFile = createTestSourceFile(code);
+			const asExpr = findFirstAsExpression(srcFile);
 
 			assert.ok(asExpr !== null);
-			assert.strictEqual(hasIgnoreComment(sourceFile, asExpr, "ignore-no-type-assertions"), true);
+			assert.strictEqual(hasIgnoreComment(srcFile, asExpr, "ignore-no-type-assertions"), true);
 		});
 
 		it("returns true when ignore comment is present after the node", () => {
 			const code = `const x = value as any /* ignore-no-type-assertions */;`;
-			const sourceFile = createTestSourceFile(code);
-			const asExpr = findFirstAsExpression(sourceFile);
+			const srcFile = createTestSourceFile(code);
+			const asExpr = findFirstAsExpression(srcFile);
 
 			assert.ok(asExpr !== null);
-			assert.strictEqual(hasIgnoreComment(sourceFile, asExpr, "ignore-no-type-assertions"), true);
+			assert.strictEqual(hasIgnoreComment(srcFile, asExpr, "ignore-no-type-assertions"), true);
 		});
 
 		it("returns false when no ignore comment is present", () => {
 			const code = `const x = value as any;`;
-			const sourceFile = createTestSourceFile(code);
-			const asExpr = findFirstAsExpression(sourceFile);
+			const srcFile = createTestSourceFile(code);
+			const asExpr = findFirstAsExpression(srcFile);
 
 			assert.ok(asExpr !== null);
-			assert.strictEqual(hasIgnoreComment(sourceFile, asExpr, "ignore-no-type-assertions"), false);
+			assert.strictEqual(hasIgnoreComment(srcFile, asExpr, "ignore-no-type-assertions"), false);
 		});
 
 		it("returns false when different comment text is present", () => {
 			const code = `const x = value as any /* some other comment */;`;
-			const sourceFile = createTestSourceFile(code);
-			const asExpr = findFirstAsExpression(sourceFile);
+			const srcFile = createTestSourceFile(code);
+			const asExpr = findFirstAsExpression(srcFile);
 
 			assert.ok(asExpr !== null);
-			assert.strictEqual(hasIgnoreComment(sourceFile, asExpr, "ignore-no-type-assertions"), false);
+			assert.strictEqual(hasIgnoreComment(srcFile, asExpr, "ignore-no-type-assertions"), false);
 		});
 
 		it("works with angle bracket assertions", () => {
 			const code = `const x = 
 				/* ignore-no-type-assertions */
 				<any>value;`;
-			const sourceFile = createTestSourceFile(code);
-			const typeAssertion = findFirstTypeAssertion(sourceFile);
+			const srcFile = createTestSourceFile(code);
+			const typeAssertion = findFirstTypeAssertion(srcFile);
 
 			assert.ok(typeAssertion !== null);
 			assert.strictEqual(
-				hasIgnoreComment(sourceFile, typeAssertion, "ignore-no-type-assertions"),
+				hasIgnoreComment(srcFile, typeAssertion, "ignore-no-type-assertions"),
 				true,
 			);
 		});
 
 		it("allows custom ignore comment text", () => {
 			const code = `const x = value as any /* custom-ignore */;`;
-			const sourceFile = createTestSourceFile(code);
-			const asExpr = findFirstAsExpression(sourceFile);
+			const srcFile = createTestSourceFile(code);
+			const asExpr = findFirstAsExpression(srcFile);
 
 			assert.ok(asExpr !== null);
-			assert.strictEqual(hasIgnoreComment(sourceFile, asExpr, "custom-ignore"), true);
-			assert.strictEqual(hasIgnoreComment(sourceFile, asExpr, "ignore-no-type-assertions"), false);
+			assert.strictEqual(hasIgnoreComment(srcFile, asExpr, "custom-ignore"), true);
+			assert.strictEqual(hasIgnoreComment(srcFile, asExpr, "ignore-no-type-assertions"), false);
 		});
 	});
 });

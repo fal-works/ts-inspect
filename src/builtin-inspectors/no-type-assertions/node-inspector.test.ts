@@ -11,8 +11,8 @@ describe("node-inspector", () => {
 		}
 
 		function runInspectorOnCode(code: string): TypeAssertionInspectionResult | null {
-			const sourceFile = createTestSourceFile(code);
-			const nodeInspector = createNodeInspectorFactory(sourceFile);
+			const srcFile = createTestSourceFile(code);
+			const nodeInspector = createNodeInspectorFactory(srcFile);
 
 			let result: TypeAssertionInspectionResult | null = null;
 			function visit(node: ts.Node) {
@@ -23,7 +23,7 @@ describe("node-inspector", () => {
 				ts.forEachChild(node, visit);
 			}
 
-			visit(sourceFile);
+			visit(srcFile);
 			return result;
 		}
 
