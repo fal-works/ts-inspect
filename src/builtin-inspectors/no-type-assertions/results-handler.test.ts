@@ -60,8 +60,8 @@ describe("builtin-inspectors/no-type-assertions/results-handler", () => {
 			});
 
 			assert.ok(output.includes("Found suspicious type assertions:"));
-			assert.ok(output.includes("⚠️  test.ts:1 - value as any"));
-			assert.ok(output.includes("⚠️  test.ts:2 - data as string"));
+			assert.ok(output.includes("❌  test.ts:1 - value as any"));
+			assert.ok(output.includes("❌  test.ts:2 - data as string"));
 			assert.ok(output.includes("💡 Tip:"));
 		});
 
