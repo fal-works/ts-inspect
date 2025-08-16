@@ -52,6 +52,14 @@ npx @fal-works/ts-inspect
 - `--project`, `-p` - Specify project directory or `tsconfig.json` path
 - `--exclude-test` - Exclude files (e.g. `*.test.ts`) from parsing source files
 
+### Exit Codes
+
+The CLI uses standard exit codes to indicate different outcomes:
+
+- Code `0`: Success - no issues found or only warnings
+- Code `1`: Inspection error - found code quality issues that need to be fixed
+- Code `2`: Fatal error - configuration problems, invalid arguments, or runtime errors
+
 ## Quick Start (Programmatic)
 
 ```ts
@@ -81,14 +89,14 @@ The default inspector flags potentially unnecessary or risky type assertions in 
 
 - `as const`
 - `as unknown` and `<unknown>expr` (safe type narrowing)
-- Assertions explicitly annotated with the inline comment `/* ignore-no-type-assertions */` either immediately before or after the node.
+- Assertions explicitly annotated with the inline comment `/* ignore-no-type-assertions */` either immediately before or after the node
 
-Example warning output:
+Example error output:
 
 ```
 Found suspicious type assertions:
-⚠️  src/example.ts:42 - user as any
-⚠️  src/example.ts:58 - <string>data
+❌  src/example.ts:42 - user as any
+❌  src/example.ts:58 - <string>data
 
 💡 Tip: (guidance message ...)
 ```
