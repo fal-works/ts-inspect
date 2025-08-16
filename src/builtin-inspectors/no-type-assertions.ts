@@ -68,7 +68,10 @@ export function createNoTypeAssertionsInspector(
 ): Inspector<TypeAssertionInspectionResult> {
 	return {
 		nodeInspectorFactory: (srcFile) => (node, recentResult) => {
-			if (ts.isAsExpression(node) && !isAsConst(node) && !hasIgnoreComment(srcFile, node)) {
+			if (
+				(ts.isAsExpression(node) && !isAsConst(node) && !hasIgnoreComment(srcFile, node)) ||
+				(ts.isTypeAssertionExpression(node) && !hasIgnoreComment(srcFile, node))
+			) {
 				const { line } = srcFile.getLineAndCharacterOfPosition(node.getStart(srcFile, false));
 				const result = recentResult ?? [];
 				result.push({

@@ -44,17 +44,17 @@ describe("as-assertions", () => {
 			assert.strictEqual(result, undefined);
 		});
 
-		it("ignores assertions with UNAVOIDABLE_AS comment before", () => {
+		it("ignores assertions with ignore comment before", () => {
 			const code = `const x = 
-				/* UNAVOIDABLE_AS */
+				/* ignore-no-type-assertions */
 				value as any;`;
 			const result = runInspectorOnCode(code);
 
 			assert.strictEqual(result, undefined);
 		});
 
-		it("ignores assertions with UNAVOIDABLE_AS comment after", () => {
-			const code = `const x = value as any /* UNAVOIDABLE_AS */;`;
+		it("ignores assertions with ignore comment after", () => {
+			const code = `const x = value as any /* ignore-no-type-assertions */;`;
 			const result = runInspectorOnCode(code);
 
 			assert.strictEqual(result, undefined);
@@ -105,6 +105,60 @@ const z = 2;
 			assert.ok(result);
 			assert.strictEqual(result.length, 1);
 			assert.strictEqual(result[0].snippet, "value as CustomConst");
+		});
+
+		it("detects angle bracket type assertions", () => {
+			const code = `const x = <any>value;`;
+			const result = runInspectorOnCode(code);
+
+			assert.ok(result);
+			assert.strictEqual(result.length, 1);
+			assert.strictEqual(result[0].line, 1);
+			assert.strictEqual(result[0].snippet, "<any>value");
+		});
+
+		it("detects multiple angle bracket type assertions", () => {
+			const code = `
+				const x = <any>value1;
+				const y = <string>value2;
+			`;
+			const result = runInspectorOnCode(code);
+
+			assert.ok(result);
+			assert.strictEqual(result.length, 2);
+			assert.strictEqual(result[0].snippet, "<any>value1");
+			assert.strictEqual(result[1].snippet, "<string>value2");
+		});
+
+		it("ignores angle bracket assertions with ignore comment", () => {
+			const code = `const x = 
+				/* ignore-no-type-assertions */
+				<any>value;`;
+			const result = runInspectorOnCode(code);
+
+			assert.strictEqual(result, undefined);
+		});
+
+		it("detects both as and angle bracket assertions in same code", () => {
+			const code = `
+				const x = value1 as any;
+				const y = <string>value2;
+			`;
+			const result = runInspectorOnCode(code);
+
+			assert.ok(result);
+			assert.strictEqual(result.length, 2);
+			assert.strictEqual(result[0].snippet, "value1 as any");
+			assert.strictEqual(result[1].snippet, "<string>value2");
+		});
+
+		it("handles complex angle bracket expressions", () => {
+			const code = `const x = (<SomeType>obj.prop).method();`;
+			const result = runInspectorOnCode(code);
+
+			assert.ok(result);
+			assert.strictEqual(result.length, 1);
+			assert.strictEqual(result[0].snippet, "<SomeType>obj.prop");
 		});
 	});
 
