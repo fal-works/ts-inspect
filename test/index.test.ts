@@ -40,9 +40,11 @@ describe("index", () => {
 			const malformedInspector = null as any;
 
 			await assert.rejects(
-				async () => await inspectFiles(["test/fixtures/src/sample.ts"], {
-					inspectors: [malformedInspector],
-				}),
+				async () => {
+					return await inspectFiles(["test/fixtures/src/sample.ts"], {
+						inspectors: [malformedInspector],
+					});
+				},
 				(error: unknown) => {
 					assert.ok(error instanceof TsInspectError);
 					assert.strictEqual(error.type.errorCode, "unexpected-exception");
