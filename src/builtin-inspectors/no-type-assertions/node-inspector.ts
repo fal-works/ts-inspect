@@ -5,19 +5,24 @@ import { IGNORE_COMMENT } from "./constants.ts";
 import type { TypeAssertionInspectionResult } from "./types.ts";
 
 /**
+ * Determines if a TypeScript AST node is a suspicious type assertion.
+ */
+function isSuspiciousTypeAssertion(srcFile: ts.SourceFile, node: ts.Node): boolean {
+	if ((ts.isAsExpression(node) && !isAsConst(node)) || ts.isTypeAssertionExpression(node)) {
+		if (!isUnknownAssertion(node.type) && !hasIgnoreComment(srcFile, node, IGNORE_COMMENT)) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
  * Creates a node inspector factory for detecting suspicious type assertions.
  */
 export const createNodeInspectorFactory: NodeInspectorFactory<TypeAssertionInspectionResult> =
 	(srcFile) => (node, recentResult) => {
-		if (
-			(ts.isAsExpression(node) &&
-				!isAsConst(node) &&
-				!isUnknownAssertion(node.type) &&
-				!hasIgnoreComment(srcFile, node, IGNORE_COMMENT)) ||
-			(ts.isTypeAssertionExpression(node) &&
-				!isUnknownAssertion(node.type) &&
-				!hasIgnoreComment(srcFile, node, IGNORE_COMMENT))
-		) {
+		if (isSuspiciousTypeAssertion(srcFile, node)) {
 			const { line } = srcFile.getLineAndCharacterOfPosition(node.getStart(srcFile, false));
 			const result = recentResult ?? [];
 			result.push({
