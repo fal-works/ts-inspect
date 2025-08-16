@@ -16,7 +16,8 @@ import { parseConfig, resolveProjectPath } from "./tsconfig/index.ts";
  */
 export interface InspectOptions {
 	sourceFilesOptions?: ParseSourceFilesOptions;
-	inspectors?: Inspector[];
+	// biome-ignore lint/suspicious/noExplicitAny: The type of inspectors is flexible and can vary.
+	inspectors?: Inspector<any>[];
 }
 
 /**
