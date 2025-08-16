@@ -77,18 +77,20 @@ import { inspectFiles } from "@fal-works/ts-inspect";
 await inspectFiles(["src/foo.ts", "src/bar.tsx"]);
 ```
 
-## Built‑in Inspector: Suspicious `as` Assertions
+## Built‑in Inspector: Suspicious Type Assertions
 
-The default inspector flags potentially unnecessary or risky `as` type assertions, excluding:
+The default inspector flags potentially unnecessary or risky type assertions in both syntaxes (`as T` and `<T>expr`), excluding:
 
 - `as const`
-- Assertions explicitly annotated with the inline comment `/* UNAVOIDABLE_AS */` either immediately before or after the node.
+- `as unknown` and `<unknown>expr` (safe type narrowing)
+- Assertions explicitly annotated with the inline comment `/* ignore-no-type-assertions */` either immediately before or after the node.
 
 Example warning output:
 
 ```
 Found suspicious type assertions:
 ⚠️  src/example.ts:42 - user as any
+⚠️  src/example.ts:58 - <string>data
 
 💡 Tip: (guidance message ...)
 ```
