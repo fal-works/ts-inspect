@@ -6,6 +6,7 @@ export type {
 	FileInspectionResult,
 	Inspector,
 	NodeInspector,
+	NodeInspectorFactory,
 	ResultsHandler,
 } from "./inspector.ts";
 export { runInspectors } from "./runner.ts";

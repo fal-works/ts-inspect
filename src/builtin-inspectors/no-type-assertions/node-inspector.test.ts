@@ -1,21 +1,18 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
 import ts from "typescript";
-import {
-	createNoTypeAssertionsInspector,
-	type TypeAssertionInspectionResult,
-} from "./no-type-assertions.ts";
+import { createNodeInspectorFactory } from "./node-inspector.ts";
+import type { TypeAssertionInspectionResult } from "./types.ts";
 
-describe("as-assertions", () => {
-	describe("createAsAssertionInspector", () => {
+describe("node-inspector", () => {
+	describe("createNodeInspectorFactory", () => {
 		function createTestSourceFile(code: string): ts.SourceFile {
 			return ts.createSourceFile("test.ts", code, ts.ScriptTarget.Latest, true);
 		}
 
 		function runInspectorOnCode(code: string): TypeAssertionInspectionResult | null {
-			const sourceFile = createTestSourceFile(code);
-			const inspector = createNoTypeAssertionsInspector();
-			const nodeInspector = inspector.nodeInspectorFactory(sourceFile);
+			const srcFile = createTestSourceFile(code);
+			const nodeInspector = createNodeInspectorFactory(srcFile);
 
 			let result: TypeAssertionInspectionResult | null = null;
 			function visit(node: ts.Node) {
@@ -26,7 +23,7 @@ describe("as-assertions", () => {
 				ts.forEachChild(node, visit);
 			}
 
-			visit(sourceFile);
+			visit(srcFile);
 			return result;
 		}
 
@@ -176,97 +173,6 @@ const z = 2;
 			assert.ok(result !== null);
 			assert.strictEqual(result.length, 1);
 			assert.strictEqual(result[0].snippet, "<SomeType>obj.prop");
-		});
-	});
-
-	describe("inspector with custom results handler", () => {
-		it("calls custom results handler", () => {
-			const customHandler = () => "success" as const;
-
-			const inspector = createNoTypeAssertionsInspector(customHandler);
-			assert.strictEqual(inspector.resultsHandler, customHandler);
-		});
-	});
-
-	describe("default results handler output", () => {
-		function captureStdout(fn: () => void): string {
-			const originalWrite = process.stdout.write;
-			const originalLog = console.log;
-			const originalGroup = console.group;
-			const originalGroupEnd = console.groupEnd;
-
-			let output = "";
-
-			process.stdout.write = (chunk: any) => {
-				output += chunk.toString();
-				return true;
-			};
-			console.log = (...args: any[]) => {
-				output += args.join(" ");
-				output += "\n";
-			};
-			console.group = (label?: string) => {
-				if (label) {
-					output += label;
-					output += "\n";
-				}
-			};
-			console.groupEnd = () => {
-				// no-op for testing
-			};
-
-			try {
-				fn();
-			} finally {
-				process.stdout.write = originalWrite;
-				console.log = originalLog;
-				console.group = originalGroup;
-				console.groupEnd = originalGroupEnd;
-			}
-
-			return output;
-		}
-
-		it("outputs to stdout when type assertions are found", () => {
-			const inspector = createNoTypeAssertionsInspector();
-			const mockResults = [
-				{
-					srcFile: {
-						file: { fileName: "test.ts" },
-					} as any,
-					result: [
-						{ line: 1, snippet: "value as any" },
-						{ line: 2, snippet: "data as string" },
-					],
-				},
-			];
-
-			const output = captureStdout(() => {
-				inspector.resultsHandler(mockResults);
-			});
-
-			assert.ok(output.includes("Found suspicious type assertions:"));
-			assert.ok(output.includes("⚠️  test.ts:1 - value as any"));
-			assert.ok(output.includes("⚠️  test.ts:2 - data as string"));
-			assert.ok(output.includes("💡 Tip:"));
-		});
-
-		it("returns success status when no assertions found", () => {
-			const inspector = createNoTypeAssertionsInspector();
-			const result = inspector.resultsHandler([]);
-			assert.strictEqual(result, "success");
-		});
-
-		it("returns warn status when assertions found", () => {
-			const inspector = createNoTypeAssertionsInspector();
-			const mockResults = [
-				{
-					srcFile: { file: { fileName: "test.ts" } } as any,
-					result: [{ line: 1, snippet: "value as any" }],
-				},
-			];
-			const result = inspector.resultsHandler(mockResults);
-			assert.strictEqual(result, "warn");
 		});
 	});
 });

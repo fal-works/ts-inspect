@@ -27,6 +27,11 @@ export type NodeInspector<TResult> = (
 ) => TResult | null | undefined;
 
 /**
+ * Factory function that creates a NodeInspector for a given source file.
+ */
+export type NodeInspectorFactory<TResult> = (srcFile: ts.SourceFile) => NodeInspector<TResult>;
+
+/**
  * Processes inspection results from all files and returns a status.
  */
 export type ResultsHandler<TResult> = (
@@ -37,6 +42,6 @@ export type ResultsHandler<TResult> = (
  * An inspector that analyzes TypeScript AST nodes and processes results.
  */
 export interface Inspector<TResult = unknown> {
-	nodeInspectorFactory: (srcFile: ts.SourceFile) => NodeInspector<TResult>;
+	nodeInspectorFactory: NodeInspectorFactory<TResult>;
 	resultsHandler: ResultsHandler<TResult>;
 }
