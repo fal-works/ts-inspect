@@ -30,7 +30,11 @@ export function isUnknownAssertion(type: ts.TypeNode): boolean {
  * Checks if a node has an ignore comment.
  * @package
  */
-export function hasIgnoreComment(srcFile: ts.SourceFile, node: ts.Node, ignoreComment: string): boolean {
+export function hasIgnoreComment(
+	srcFile: ts.SourceFile,
+	node: ts.Node,
+	ignoreComment: string,
+): boolean {
 	const text = srcFile.getFullText();
 
 	// Check leading comments
