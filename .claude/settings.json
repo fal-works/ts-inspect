@@ -10,6 +10,7 @@
 			"Bash(npm run fix:*)",
 			"Bash(npm run build:*)",
 			"Bash(ls:*)",
+			"Bash(cat:*)",
 			"Bash(touch:*)",
 			"Bash(mkdir:*)",
 			"Bash(find:*)",
