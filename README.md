@@ -105,8 +105,8 @@ An `Inspector<TResult>` has two parts:
 ### Example: Count `console.log` Calls
 
 ```ts
-import ts from "typescript";
 import { type Inspector, inspectProject } from "@fal-works/ts-inspect";
+import ts from "typescript";
 
 function createConsoleLogInspector(): Inspector<number> {
   return {
@@ -125,13 +125,13 @@ function createConsoleLogInspector(): Inspector<number> {
       for (const { srcFile, result } of perFile) {
         if (result > 0) {
           total += result;
-          console.warn(`${srcFile.file.fileName}: ${result} console.log calls`);
+          console.log(`${srcFile.file.fileName}: ${result} console.log calls`);
         }
       }
       if (total === 0) return "success";
-      console.warn(`Total console.log calls: ${total}`);
-      return "warn";
-    }
+      console.log(`Total console.log calls: ${total}`);
+      return "error";
+    },
   };
 }
 

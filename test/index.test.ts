@@ -6,6 +6,7 @@ import assert from "node:assert";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import { inspectFiles, inspectProject } from "../src/index.ts";
+import { executeNodeScript } from "./test-utils.ts";
 
 describe("index", () => {
 	describe("inspectFiles", () => {
@@ -61,6 +62,19 @@ describe("index", () => {
 				inspectors: [],
 			});
 			assert.strictEqual(result, "success");
+		});
+	});
+
+	describe("custom inspector integration", () => {
+		it("can run examples/custom-inspector.ts script", async () => {
+			const customInspectorPath = join("examples", "custom-inspector.ts");
+
+			const result = await executeNodeScript(customInspectorPath);
+
+			// The script should run with error findings (exit code 1) and detect console.log calls
+			assert.strictEqual(result.code, 1);
+			assert.ok(result.stdout.includes("console.log calls")); // findings go to stdout
+			assert.strictEqual(result.stderr, ""); // tool/config/runtime errors go to stderr
 		});
 	});
 });
