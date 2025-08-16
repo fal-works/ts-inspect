@@ -1,7 +1,10 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
 import ts from "typescript";
-import { createNoTypeAssertionsInspector } from "./no-type-assertions.ts";
+import {
+	createNoTypeAssertionsInspector,
+	type TypeAssertionInspectionResult,
+} from "./no-type-assertions.ts";
 
 describe("as-assertions", () => {
 	describe("createAsAssertionInspector", () => {
@@ -9,12 +12,12 @@ describe("as-assertions", () => {
 			return ts.createSourceFile("test.ts", code, ts.ScriptTarget.Latest, true);
 		}
 
-		function runInspectorOnCode(code: string) {
+		function runInspectorOnCode(code: string): TypeAssertionInspectionResult | null {
 			const sourceFile = createTestSourceFile(code);
 			const inspector = createNoTypeAssertionsInspector();
 			const nodeInspector = inspector.nodeInspectorFactory(sourceFile);
 
-			let result: any;
+			let result: TypeAssertionInspectionResult | null = null;
 			function visit(node: ts.Node) {
 				const newResult = nodeInspector(node, result);
 				if (newResult !== undefined) {
@@ -31,7 +34,7 @@ describe("as-assertions", () => {
 			const code = `const x = value as any;`;
 			const result = runInspectorOnCode(code);
 
-			assert.ok(result);
+			assert.ok(result !== null);
 			assert.strictEqual(result.length, 1);
 			assert.strictEqual(result[0].line, 1);
 			assert.strictEqual(result[0].snippet, "value as any");
@@ -41,7 +44,21 @@ describe("as-assertions", () => {
 			const code = `const x = [1, 2, 3] as const;`;
 			const result = runInspectorOnCode(code);
 
-			assert.strictEqual(result, undefined);
+			assert.strictEqual(result, null);
+		});
+
+		it("ignores as unknown assertions", () => {
+			const code = `const x = value as unknown;`;
+			const result = runInspectorOnCode(code);
+
+			assert.strictEqual(result, null);
+		});
+
+		it("ignores angle bracket unknown assertions", () => {
+			const code = `const x = <unknown>value;`;
+			const result = runInspectorOnCode(code);
+
+			assert.strictEqual(result, null);
 		});
 
 		it("ignores assertions with ignore comment before", () => {
@@ -50,14 +67,14 @@ describe("as-assertions", () => {
 				value as any;`;
 			const result = runInspectorOnCode(code);
 
-			assert.strictEqual(result, undefined);
+			assert.strictEqual(result, null);
 		});
 
 		it("ignores assertions with ignore comment after", () => {
 			const code = `const x = value as any /* ignore-no-type-assertions */;`;
 			const result = runInspectorOnCode(code);
 
-			assert.strictEqual(result, undefined);
+			assert.strictEqual(result, null);
 		});
 
 		it("detects multiple suspicious assertions", () => {
@@ -67,7 +84,7 @@ describe("as-assertions", () => {
 			`;
 			const result = runInspectorOnCode(code);
 
-			assert.ok(result);
+			assert.ok(result !== null);
 			assert.strictEqual(result.length, 2);
 			assert.strictEqual(result[0].snippet, "value1 as any");
 			assert.strictEqual(result[1].snippet, "value2 as string");
@@ -81,7 +98,7 @@ const z = 2;
 			`;
 			const result = runInspectorOnCode(code);
 
-			assert.ok(result);
+			assert.ok(result !== null);
 			assert.strictEqual(result.length, 1);
 			assert.strictEqual(result[0].line, 3);
 		});
@@ -90,7 +107,7 @@ const z = 2;
 			const code = `const x = (obj.prop as SomeType).method();`;
 			const result = runInspectorOnCode(code);
 
-			assert.ok(result);
+			assert.ok(result !== null);
 			assert.strictEqual(result.length, 1);
 			assert.strictEqual(result[0].snippet, "obj.prop as SomeType");
 		});
@@ -102,7 +119,7 @@ const z = 2;
 			`;
 			const result = runInspectorOnCode(code);
 
-			assert.ok(result);
+			assert.ok(result !== null);
 			assert.strictEqual(result.length, 1);
 			assert.strictEqual(result[0].snippet, "value as CustomConst");
 		});
@@ -111,7 +128,7 @@ const z = 2;
 			const code = `const x = <any>value;`;
 			const result = runInspectorOnCode(code);
 
-			assert.ok(result);
+			assert.ok(result !== null);
 			assert.strictEqual(result.length, 1);
 			assert.strictEqual(result[0].line, 1);
 			assert.strictEqual(result[0].snippet, "<any>value");
@@ -124,7 +141,7 @@ const z = 2;
 			`;
 			const result = runInspectorOnCode(code);
 
-			assert.ok(result);
+			assert.ok(result !== null);
 			assert.strictEqual(result.length, 2);
 			assert.strictEqual(result[0].snippet, "<any>value1");
 			assert.strictEqual(result[1].snippet, "<string>value2");
@@ -136,7 +153,7 @@ const z = 2;
 				<any>value;`;
 			const result = runInspectorOnCode(code);
 
-			assert.strictEqual(result, undefined);
+			assert.strictEqual(result, null);
 		});
 
 		it("detects both as and angle bracket assertions in same code", () => {
@@ -146,7 +163,7 @@ const z = 2;
 			`;
 			const result = runInspectorOnCode(code);
 
-			assert.ok(result);
+			assert.ok(result !== null);
 			assert.strictEqual(result.length, 2);
 			assert.strictEqual(result[0].snippet, "value1 as any");
 			assert.strictEqual(result[1].snippet, "<string>value2");
@@ -156,7 +173,7 @@ const z = 2;
 			const code = `const x = (<SomeType>obj.prop).method();`;
 			const result = runInspectorOnCode(code);
 
-			assert.ok(result);
+			assert.ok(result !== null);
 			assert.strictEqual(result.length, 1);
 			assert.strictEqual(result[0].snippet, "<SomeType>obj.prop");
 		});

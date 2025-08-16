@@ -13,7 +13,7 @@ type TypeAssertionFinding = {
 	snippet: string;
 };
 
-type TypeAssertionInspectionResult = TypeAssertionFinding[];
+export type TypeAssertionInspectionResult = TypeAssertionFinding[];
 
 const IGNORE_COMMENT = "ignore-no-type-assertions";
 
@@ -43,6 +43,10 @@ function isAsConst(asExpr: ts.AsExpression): boolean {
 	);
 }
 
+function isUnknownAssertion(type: ts.TypeNode): boolean {
+	return type.kind === ts.SyntaxKind.UnknownKeyword;
+}
+
 function hasIgnoreComment(sf: ts.SourceFile, node: ts.Node): boolean {
 	const text = sf.getFullText();
 
@@ -69,8 +73,13 @@ export function createNoTypeAssertionsInspector(
 	return {
 		nodeInspectorFactory: (srcFile) => (node, recentResult) => {
 			if (
-				(ts.isAsExpression(node) && !isAsConst(node) && !hasIgnoreComment(srcFile, node)) ||
-				(ts.isTypeAssertionExpression(node) && !hasIgnoreComment(srcFile, node))
+				(ts.isAsExpression(node) &&
+					!isAsConst(node) &&
+					!isUnknownAssertion(node.type) &&
+					!hasIgnoreComment(srcFile, node)) ||
+				(ts.isTypeAssertionExpression(node) &&
+					!isUnknownAssertion(node.type) &&
+					!hasIgnoreComment(srcFile, node))
 			) {
 				const { line } = srcFile.getLineAndCharacterOfPosition(node.getStart(srcFile, false));
 				const result = recentResult ?? [];
