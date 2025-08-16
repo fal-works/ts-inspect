@@ -15,10 +15,17 @@ async function main() {
 				type: "string",
 				short: "p",
 			},
+			"exclude-test": {
+				type: "boolean",
+			},
 		},
 	});
 
-	const status = await inspectProject(values.project);
+	const status = await inspectProject(values.project, {
+		sourceFilesOptions: {
+			excludeTest: values["exclude-test"],
+		},
+	});
 
 	return translateStatusToExitCode(status);
 }

@@ -47,12 +47,10 @@ Run against the project in the current working directory (auto-detects `tsconfig
 npx @fal-works/ts-inspect
 ```
 
-Specify a different project directory or config file with `--project` (or `-p`):
+### CLI Options
 
-```bash
-npx @fal-works/ts-inspect -p ./my-project
-npx @fal-works/ts-inspect -p ./custom-tsconfig.json
-```
+- `--project`, `-p` - Specify project directory or `tsconfig.json` path
+- `--exclude-test` - Exclude files (e.g. `*.test.ts`) from parsing source files
 
 ## Quick Start (Programmatic)
 

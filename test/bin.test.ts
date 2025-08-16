@@ -40,6 +40,14 @@ describe("bin", () => {
 			assert.strictEqual(typeof stdout, "string");
 			assert.strictEqual(typeof stderr, "string");
 		});
+
+		it("executes without error with --exclude-test argument", async () => {
+			const { stdout, stderr } = await execFileAsync("node", [binPath, "--exclude-test"], {
+				cwd: process.cwd(),
+			});
+			assert.strictEqual(typeof stdout, "string");
+			assert.strictEqual(typeof stderr, "string");
+		});
 	});
 
 	describe("Exit codes", () => {
@@ -64,7 +72,21 @@ describe("bin", () => {
 				// Should exit with non-zero code for invalid project
 				assert.ok(error instanceof Error);
 				assert.ok("code" in error);
-				assert.notStrictEqual((error as any).code, 0);
+				assert.notStrictEqual(error.code, 0);
+			}
+		});
+
+		it("exits with non-zero code for unknown option", async () => {
+			try {
+				await execFileAsync("node", [binPath, "--unknown-option"], {
+					cwd: process.cwd(),
+				});
+				assert.fail("Expected command to throw an error for unknown option");
+			} catch (error) {
+				// Should exit with non-zero code for unknown option
+				assert.ok(error instanceof Error);
+				assert.ok("code" in error);
+				assert.notStrictEqual(error.code, 0);
 			}
 		});
 	});
