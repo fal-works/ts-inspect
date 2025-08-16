@@ -3,6 +3,7 @@
  */
 
 import { createDefaultInspectors } from "./builtin-inspectors/index.ts";
+import { type TsInspectError, wrapUnexpectedExceptionsAsync } from "./error.ts";
 import { type InspectionStatus, type Inspector, runInspectors } from "./inspector/index.ts";
 import {
 	inferParseSourceFilesOptions,
@@ -34,23 +35,16 @@ function executeInspection(
 	return runInspectors(resolvedInspectors, srcFilePromises);
 }
 
-/**
- * Inspects the specified files.
- */
-export async function inspectFiles(
+/** @see inspectFiles */
+async function inspectFilesInternal(
 	filePaths: string[],
 	options?: InspectOptions,
 ): Promise<InspectionStatus> {
 	return executeInspection(filePaths, options?.sourceFilesOptions, options?.inspectors);
 }
 
-/**
- * Inspects files based on TypeScript project configuration.
- * Accepts either a directory path or tsconfig.json file path.
- *
- * Auto-detects tsconfig.json in current directory if not specified.
- */
-export async function inspectProject(
+/** @see inspectProject */
+async function inspectProjectInternal(
 	projectPath?: string,
 	options?: InspectOptions,
 ): Promise<InspectionStatus> {
@@ -64,6 +58,23 @@ export async function inspectProject(
 	);
 }
 
+/**
+ * Inspects the specified files.
+ *
+ * @throws {TsInspectError} for fatal runtime errors.
+ */
+export const inspectFiles = wrapUnexpectedExceptionsAsync(inspectFilesInternal);
+
+/**
+ * Inspects files based on TypeScript project configuration.
+ * Accepts either a directory path or tsconfig.json file path.
+ *
+ * Auto-detects tsconfig.json in current directory if not specified.
+ *
+ * @throws {TsInspectError} for fatal runtime errors.
+ */
+export const inspectProject = wrapUnexpectedExceptionsAsync(inspectProjectInternal);
+
 export { createAsAssertionInspector } from "./builtin-inspectors/index.ts";
 export type {
 	FileInspectionResult,
@@ -73,3 +84,4 @@ export type {
 	ResultsHandler,
 } from "./inspector/index.ts";
 export { translateStatusToExitCode } from "./inspector/index.ts";
+export type { TsInspectError };
