@@ -9,10 +9,10 @@ import type { FileType } from "./file-type.ts";
  * Configuration options for parsing source files.
  */
 export interface ParseSourceFilesOptions {
-	fileTypes?: FileType[];
-	excludeTest?: boolean;
-	testFileNameRegex?: RegExp;
-	languageVersionOrOptions?: Parameters<typeof ts.createSourceFile>[2];
+	fileTypes?: FileType[] | undefined;
+	excludeTest?: boolean | undefined;
+	testFileNameRegex?: RegExp | undefined;
+	languageVersionOrOptions?: Parameters<typeof ts.createSourceFile>[2] | undefined;
 }
 
 /**
