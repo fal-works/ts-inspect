@@ -22,9 +22,9 @@ But be aware that this is an exceptional case.
 `.trim();
 
 /**
- * Default results handler that displays type assertion findings.
+ * Default results handler for `TypeAssertionInspectionResult`.
  */
-export const displayResults: ResultsHandler<TypeAssertionInspectionResult> = (resultPerFile) => {
+export const defaultResultsHandler: ResultsHandler<TypeAssertionInspectionResult> = (resultPerFile) => {
 	if (resultPerFile.length === 0) return "success";
 
 	console.group(`Found suspicious type assertions:`);

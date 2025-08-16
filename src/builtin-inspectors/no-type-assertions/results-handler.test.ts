@@ -1,9 +1,9 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { displayResults } from "./results-handler.ts";
+import { defaultResultsHandler } from "./results-handler.ts";
 
 describe("results-handler", () => {
-	describe("displayResults", () => {
+	describe("defaultResultsHandler", () => {
 		function captureStdout(fn: () => void): string {
 			const originalWrite = process.stdout.write;
 			const originalLog = console.log;
@@ -56,7 +56,7 @@ describe("results-handler", () => {
 			];
 
 			const output = captureStdout(() => {
-				displayResults(mockResults);
+				defaultResultsHandler(mockResults);
 			});
 
 			assert.ok(output.includes("Found suspicious type assertions:"));
@@ -66,7 +66,7 @@ describe("results-handler", () => {
 		});
 
 		it("returns success status when no assertions found", () => {
-			const result = displayResults([]);
+			const result = defaultResultsHandler([]);
 			assert.strictEqual(result, "success");
 		});
 
@@ -77,7 +77,7 @@ describe("results-handler", () => {
 					result: [{ line: 1, snippet: "value as any" }],
 				},
 			];
-			const result = displayResults(mockResults);
+			const result = defaultResultsHandler(mockResults);
 			assert.strictEqual(result, "warn");
 		});
 	});
