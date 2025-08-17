@@ -4,8 +4,8 @@ import { parseArgs } from "node:util";
 import {
 	type InspectOptions,
 	inspectProject,
-	jsonReporter,
 	type Reporter,
+	rawJsonReporter,
 	summaryReporter,
 	translateSeverityToExitCode,
 } from "./index.ts";
@@ -36,11 +36,13 @@ async function mainInternal(): Promise<0 | 1> {
 			case "summary":
 				reporter = summaryReporter;
 				break;
-			case "json":
-				reporter = jsonReporter;
+			case "raw-json":
+				reporter = rawJsonReporter;
 				break;
 			default:
-				throw new Error(`Unknown reporter: ${values.reporter}. Available options: summary, json`);
+				throw new Error(
+					`Unknown reporter: ${values.reporter}. Available options: summary, raw-json`,
+				);
 		}
 	}
 

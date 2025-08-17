@@ -90,12 +90,12 @@ describe("bin", () => {
 			}
 		});
 
-		it("executes with --reporter=json argument", async () => {
+		it("executes with --reporter=raw-json argument", async () => {
 			const projectPath = join("test", "fixtures", "project-with-tsconfig");
 			try {
 				const { stdout, stderr } = await execFileAsync(
 					"node",
-					[binPath, "--project", projectPath, "--reporter", "json"],
+					[binPath, "--project", projectPath, "--reporter", "raw-json"],
 					{
 						cwd: process.cwd(),
 					},

@@ -51,7 +51,7 @@ npx @fal-works/ts-inspect
 
 - `--project`, `-p` - Specify project directory or `tsconfig.json` path
 - `--exclude-test` - Exclude files (e.g. `*.test.ts`) from parsing source files
-- `--reporter` - Output format: `summary` (default, human-readable) or `json` (machine-readable)
+- `--reporter` - Output format: `summary` (default, human-readable) or `raw-json` (machine-readable)
 
 ### Exit Codes
 
@@ -195,13 +195,13 @@ You can select built-in reporters or create custom ones.
 ### Built-in Reporters
 
 ```ts
-import { inspectProject, summaryReporter, jsonReporter } from "@fal-works/ts-inspect";
+import { inspectProject, summaryReporter, rawJsonReporter } from "@fal-works/ts-inspect";
 
 // Use the summary reporter (default - human-readable output)
 await inspectProject("./my-project", { reporter: summaryReporter });
 
-// Use the JSON reporter (machine-readable output)
-await inspectProject("./my-project", { reporter: jsonReporter });
+// Use the raw JSON reporter (machine-readable output)
+await inspectProject("./my-project", { reporter: rawJsonReporter });
 ```
 
 ### Custom Reporters

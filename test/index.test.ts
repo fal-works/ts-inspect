@@ -6,7 +6,7 @@ import assert from "node:assert";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import { TsInspectError } from "../src/error.ts";
-import { inspectFiles, inspectProject, jsonReporter, summaryReporter } from "../src/index.ts";
+import { inspectFiles, inspectProject, rawJsonReporter, summaryReporter } from "../src/index.ts";
 import { executeNodeScript } from "./test-utils.ts";
 
 describe("index", () => {
@@ -53,11 +53,11 @@ describe("index", () => {
 			);
 		});
 
-		it("accepts jsonReporter without error", async () => {
+		it("accepts rawJsonReporter without error", async () => {
 			const filePaths = [join("test", "fixtures", "src", "sample.ts")];
 
 			const result = await inspectFiles(filePaths, {
-				reporter: jsonReporter,
+				reporter: rawJsonReporter,
 			});
 			assert.ok(result === null || ["error", "warning", "info"].includes(result));
 		});

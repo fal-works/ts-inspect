@@ -119,5 +119,5 @@ export type {
 	NodeInspector,
 	ResultsBuilder,
 } from "./inspector/index.ts";
-export { jsonReporter, type Reporter, summaryReporter } from "./reporter/index.ts";
+export { type Reporter, rawJsonReporter, summaryReporter } from "./reporter/index.ts";
 export type { TsInspectError };
