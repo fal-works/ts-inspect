@@ -3,7 +3,14 @@
  */
 
 import { createPrinter, type Printer } from "../core/printer.ts";
-import type { DiagnosticSeverity, RichDiagnostic, SimpleDiagnostic } from "../diagnostics/index.ts";
+import type {
+	DiagnosticSeverity,
+	LocationDiagnostic,
+	ModuleDiagnostic,
+	ProjectDiagnostic,
+	RichDiagnostic,
+	SimpleDiagnostic,
+} from "../diagnostics/index.ts";
 import { getWorstSeverity } from "../diagnostics/index.ts";
 import type { InspectorResult } from "../inspector/index.ts";
 import type { Reporter } from "./reporter.ts";
@@ -18,46 +25,70 @@ const icons: Record<DiagnosticSeverity, string> = {
 };
 
 /**
- * Formats a single simple diagnostic item using the printer.
+ * Formats a location diagnostic.
+ */
+function formatLocationDiagnostic(
+	diagnostic: LocationDiagnostic,
+	icon: string,
+	printer: Printer,
+): void {
+	const snippet = diagnostic.snippet ? ` - ${diagnostic.snippet}` : "";
+	printer.println(`${icon} ${diagnostic.file}:${diagnostic.line}${snippet}`);
+}
+
+/**
+ * Formats a module diagnostic.
+ */
+function formatModuleDiagnostic(
+	diagnostic: ModuleDiagnostic,
+	icon: string,
+	printer: Printer,
+): void {
+	printer.println(`${icon} ${diagnostic.file}`);
+}
+
+/**
+ * Formats a project diagnostic.
+ */
+function formatProjectDiagnostic(
+	_diagnostic: ProjectDiagnostic,
+	icon: string,
+	printer: Printer,
+): void {
+	printer.println(`${icon} (project-level issue)`);
+}
+
+/**
+ * Formats a simple diagnostic item using the printer.
  */
 function formatSimpleDiagnostic(diagnostic: SimpleDiagnostic, printer: Printer): void {
 	const icon = icons[diagnostic.severity];
 
 	if (diagnostic.type === "location") {
-		const snippet = diagnostic.snippet ? ` - ${diagnostic.snippet}` : "";
-		printer.println(`${icon} ${diagnostic.file}:${diagnostic.line}${snippet}`);
+		formatLocationDiagnostic(diagnostic, icon, printer);
 	} else if (diagnostic.type === "module") {
-		printer.println(`${icon} ${diagnostic.file}`);
-	} else if (diagnostic.type === "project") {
-		printer.println(`${icon} (project-level issue)`);
+		formatModuleDiagnostic(diagnostic, icon, printer);
 	}
 }
 
 /**
- * Formats a single rich diagnostic item using the printer.
+ * Formats a rich diagnostic item using the printer.
  */
 function formatRichDiagnostic(diagnostic: RichDiagnostic, printer: Printer): void {
 	const icon = icons[diagnostic.severity];
 
+	// First print the base diagnostic
 	if (diagnostic.type === "location") {
-		const snippet = diagnostic.snippet ? ` - ${diagnostic.snippet}` : "";
-		printer.println(`${icon} ${diagnostic.file}:${diagnostic.line}${snippet}`);
-		printer.println(diagnostic.message);
-		if (diagnostic.advices) {
-			printer.println(diagnostic.advices);
-		}
+		formatLocationDiagnostic(diagnostic, icon, printer);
 	} else if (diagnostic.type === "module") {
-		printer.println(`${icon} ${diagnostic.file}`);
-		printer.println(diagnostic.message);
-		if (diagnostic.advices) {
-			printer.println(diagnostic.advices);
-		}
+		formatModuleDiagnostic(diagnostic, icon, printer);
 	} else if (diagnostic.type === "project") {
-		printer.println(`${icon} ${diagnostic.message}`);
-		if (diagnostic.advices) {
-			printer.println(diagnostic.advices);
-		}
+		formatProjectDiagnostic(diagnostic, icon, printer);
 	}
+
+	// Then add the rich-specific content
+	printer.println(diagnostic.message);
+	if (diagnostic.advices) printer.println(diagnostic.advices);
 }
 
 /**

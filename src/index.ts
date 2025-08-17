@@ -99,16 +99,15 @@ export type {
 	Diagnostic,
 	DiagnosticSeverity,
 	Diagnostics,
+	LocationDiagnostic,
+	ModuleDiagnostic,
+	ProjectDiagnostic,
 	RichDiagnostic,
 	RichDiagnostics,
 	RichLocationDiagnostic,
 	RichModuleDiagnostic,
-	RichProjectDiagnostic,
 	SimpleDiagnostic,
 	SimpleDiagnostics,
-	SimpleLocationDiagnostic,
-	SimpleModuleDiagnostic,
-	SimpleProjectDiagnostic,
 } from "./diagnostics/index.ts";
 export { translateSeverityToExitCode } from "./diagnostics/index.ts";
 export type {

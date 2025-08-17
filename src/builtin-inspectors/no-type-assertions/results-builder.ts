@@ -2,7 +2,7 @@
  * Results builder for collecting and structuring type assertion findings.
  */
 
-import type { SimpleDiagnostics, SimpleLocationDiagnostic } from "../../diagnostics/index.ts";
+import type { LocationDiagnostic, SimpleDiagnostics } from "../../diagnostics/index.ts";
 import type { InspectorResult, ResultsBuilder } from "../../inspector/index.ts";
 import { IGNORE_COMMENT } from "./constants.ts";
 import type { TypeAssertionInspectionResult } from "./types.ts";
@@ -31,7 +31,7 @@ But be aware that this is an exceptional case.
 export const defaultResultsBuilder: ResultsBuilder<TypeAssertionInspectionResult> = (
 	resultPerFile,
 ) => {
-	const diagnosticItems: SimpleLocationDiagnostic[] = [];
+	const diagnosticItems: LocationDiagnostic[] = [];
 
 	for (const r of resultPerFile) {
 		const file = r.srcFile.file.fileName;

@@ -6,14 +6,13 @@
 export type {
 	Diagnostic,
 	DiagnosticSeverity,
+	LocationDiagnostic,
+	ModuleDiagnostic,
+	ProjectDiagnostic,
 	RichDiagnostic,
 	RichLocationDiagnostic,
 	RichModuleDiagnostic,
-	RichProjectDiagnostic,
 	SimpleDiagnostic,
-	SimpleLocationDiagnostic,
-	SimpleModuleDiagnostic,
-	SimpleProjectDiagnostic,
 } from "./item-types.ts";
 
 // Export all list types
