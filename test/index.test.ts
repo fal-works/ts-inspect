@@ -137,4 +137,18 @@ describe("index", () => {
 			assert.strictEqual(result.stderr, ""); // tool/config/runtime errors go to stderr
 		});
 	});
+
+	describe("custom reporter integration", () => {
+		it("can run examples/custom-reporter.ts script", async () => {
+			const customReporterPath = join("examples", "custom-reporter.ts");
+
+			const result = await executeNodeScript(customReporterPath);
+
+			// The script should run with error findings (exit code 1) and use custom formatting
+			assert.strictEqual(result.code, 1);
+			assert.ok(result.stdout.includes("Found 1 inspector results")); // custom reporter output
+			assert.ok(result.stdout.includes("no-type-assertions:")); // custom inspector name format
+			assert.strictEqual(result.stderr, ""); // tool/config/runtime errors go to stderr
+		});
+	});
 });
