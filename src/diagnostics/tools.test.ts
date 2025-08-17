@@ -97,9 +97,9 @@ describe("diagnostics/tools", () => {
 			const diagnostics: Diagnostics = {
 				type: "simple",
 				items: [
-					{ type: "location", severity: "warning", file: "test.ts", line: 1 },
-					{ type: "location", severity: "error", file: "test.ts", line: 2 },
-					{ type: "location", severity: "info", file: "test.ts", line: 3 },
+					{ type: "location", severity: "warning", file: "test.ts", location: { line: 1 } },
+					{ type: "location", severity: "error", file: "test.ts", location: { line: 2 } },
+					{ type: "location", severity: "info", file: "test.ts", location: { line: 3 } },
 				],
 			};
 			assert.strictEqual(getWorstSeverity(diagnostics), "error");
@@ -109,12 +109,18 @@ describe("diagnostics/tools", () => {
 			const diagnostics: Diagnostics = {
 				type: "rich",
 				items: [
-					{ type: "location", severity: "info", file: "test.ts", line: 1, message: "Info message" },
+					{
+						type: "location",
+						severity: "info",
+						file: "test.ts",
+						location: { line: 1 },
+						message: "Info message",
+					},
 					{
 						type: "location",
 						severity: "warning",
 						file: "test.ts",
-						line: 2,
+						location: { line: 2 },
 						message: "Warning message",
 					},
 				],
@@ -134,7 +140,12 @@ describe("diagnostics/tools", () => {
 					diagnostics: {
 						type: "simple" as const,
 						items: [
-							{ type: "location" as const, severity: "warning" as const, file: "test.ts", line: 1 },
+							{
+								type: "location" as const,
+								severity: "warning" as const,
+								file: "test.ts",
+								location: { line: 1 },
+							},
 						],
 					},
 				},
@@ -142,7 +153,12 @@ describe("diagnostics/tools", () => {
 					diagnostics: {
 						type: "simple" as const,
 						items: [
-							{ type: "location" as const, severity: "error" as const, file: "test.ts", line: 2 },
+							{
+								type: "location" as const,
+								severity: "error" as const,
+								file: "test.ts",
+								location: { line: 2 },
+							},
 						],
 					},
 				},
@@ -150,7 +166,12 @@ describe("diagnostics/tools", () => {
 					diagnostics: {
 						type: "simple" as const,
 						items: [
-							{ type: "location" as const, severity: "info" as const, file: "test.ts", line: 3 },
+							{
+								type: "location" as const,
+								severity: "info" as const,
+								file: "test.ts",
+								location: { line: 3 },
+							},
 						],
 					},
 				},
