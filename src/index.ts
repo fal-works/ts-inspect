@@ -4,7 +4,13 @@
 
 import { createDefaultInspectors } from "./builtin-inspectors/index.ts";
 import { type TsInspectError, wrapUnexpectedExceptionsAsync } from "./error.ts";
-import { type InspectionStatus, type Inspector, runInspectors } from "./inspector/index.ts";
+import {
+	type DiagnosticSeverity,
+	getOverallWorstSeverity,
+	type Inspector,
+	runInspectors,
+} from "./inspector/index.ts";
+import { summaryReporter } from "./reporter/index.ts";
 import {
 	inferParseSourceFilesOptions,
 	type ParseSourceFilesOptions,
@@ -24,22 +30,31 @@ export interface InspectOptions {
 /**
  * Executes inspection on the provided file paths with the given options and/or inspectors.
  */
-function executeInspection(
+async function executeInspection(
 	filePaths: string[],
 	sourceFilesOptions: ParseSourceFilesOptions | undefined,
 	inspectors: Inspector[] | undefined,
-): Promise<InspectionStatus> {
+): Promise<DiagnosticSeverity | null> {
 	const resolvedInspectors = inspectors ?? createDefaultInspectors();
 	const srcFilePromises = parseSourceFiles(filePaths, sourceFilesOptions);
 
-	return runInspectors(resolvedInspectors, srcFilePromises);
+	const results = await runInspectors(resolvedInspectors, srcFilePromises);
+
+	// Format and output results using the summary reporter
+	const output = summaryReporter(results);
+	if (output) {
+		console.log(output);
+	}
+
+	// Return the overall severity directly
+	return getOverallWorstSeverity(results);
 }
 
 /** @see inspectFiles */
 async function inspectFilesInternal(
 	filePaths: string[],
 	options?: InspectOptions,
-): Promise<InspectionStatus> {
+): Promise<DiagnosticSeverity | null> {
 	return executeInspection(filePaths, options?.sourceFilesOptions, options?.inspectors);
 }
 
@@ -47,7 +62,7 @@ async function inspectFilesInternal(
 async function inspectProjectInternal(
 	projectPath?: string,
 	options?: InspectOptions,
-): Promise<InspectionStatus> {
+): Promise<DiagnosticSeverity | null> {
 	const tsconfigPath = await resolveProjectPath(projectPath);
 	const tsconfig = parseConfig(tsconfigPath, tsconfigPath.endsWith("jsconfig.json"));
 
@@ -77,11 +92,18 @@ export const inspectProject = wrapUnexpectedExceptionsAsync(inspectProjectIntern
 
 export { createAsAssertionInspector } from "./builtin-inspectors/index.ts";
 export type {
+	DiagnosticItem,
+	DiagnosticSeverity,
+	Diagnostics,
 	FileInspectionResult,
-	InspectionStatus,
 	Inspector,
+	InspectorResult,
+	ModuleDiagnostic,
 	NodeInspector,
-	ResultsHandler,
+	ProjectDiagnostic,
+	ResultsBuilder,
+	RichLocationDiagnostic,
+	SimpleLocationDiagnostic,
 } from "./inspector/index.ts";
-export { translateStatusToExitCode } from "./inspector/index.ts";
+export { translateSeverityToExitCode } from "./inspector/index.ts";
 export type { TsInspectError };

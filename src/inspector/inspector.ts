@@ -4,7 +4,7 @@
 
 import type ts from "typescript";
 import type { ParsedSourceFile } from "../source-file/index.ts";
-import type { InspectionStatus } from "./status.ts";
+import type { InspectorResult } from "./diagnostics.ts";
 
 /**
  * Result object of inspecting a single file.
@@ -32,16 +32,23 @@ export type NodeInspector<TResult> = (
 export type NodeInspectorFactory<TResult> = (srcFile: ts.SourceFile) => NodeInspector<TResult>;
 
 /**
- * Processes inspection results from all files and returns a status.
+ * Builds structured results from raw inspection data.
+ *
+ * @param resultPerFile - Array of raw inspection results per file.
+ * @returns A structured `InspectorResult` containing diagnostics and other metadata.
  */
-export type ResultsHandler<TResult> = (
+export type ResultsBuilder<TResult> = (
 	resultPerFile: FileInspectionResult<TResult>[],
-) => InspectionStatus;
+) => InspectorResult;
 
 /**
  * An inspector that analyzes TypeScript AST nodes and processes results.
  */
 export interface Inspector<TResult = unknown> {
+	/** Inspector name for reporting */
+	name: string;
+	/** Factory function to create a node inspector for a source file */
 	nodeInspectorFactory: NodeInspectorFactory<TResult>;
-	resultsHandler: ResultsHandler<TResult>;
+	/** Function to build structured results from raw inspection data */
+	resultsBuilder: ResultsBuilder<TResult>;
 }

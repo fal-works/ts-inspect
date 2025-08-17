@@ -8,7 +8,8 @@ making it efficient to run many specialized checks without N× performance costs
 
 ## Module Responsibility Boundaries
 
-- **`inspector/`**: Central framework - abstraction of pluggable inspectors, and execution engine
+- **`inspector/`**: Central framework - abstraction of pluggable inspectors, diagnostic types, and execution engine
+- **`reporter/`**: Output formatting and presentation layer (console, JSON, etc.)
 - **`source-file/`**: TypeScript Compiler API abstraction layer for source file parsing
 - **`tsconfig/`**: tsconfig resolution and parsing
 - **`builtin-inspectors/`**: Concrete inspector implementations
@@ -20,5 +21,19 @@ making it efficient to run many specialized checks without N× performance costs
 1. **Configuration Resolution**: Process tsconfig.json/jsconfig.json if project-based inspection
 2. **Concurrent Parsing**: Source files parsed to TypeScript AST in parallel (non-blocking)
 3. **Per-File Inspection**: Single AST traversal executes all inspectors per file, each inspector accumulating its own results
-4. **Per-Inspector Aggregation**: Each inspector's `ResultsHandler` independently processes accumulated results of all files
-5. **Status Determination**: Final status = worst status among all inspector results
+4. **Per-Inspector Aggregation**: Each inspector's `ResultsBuilder` independently processes accumulated results of all files into structured diagnostic data
+5. **Reporting**: Reporter functions format the diagnostic results for output (console, JSON, etc.)
+6. **Exit Code Determination**: Final exit code determined by worst severity among all diagnostic results
+
+## Diagnostic System
+
+The framework uses a structured diagnostic system with four main types:
+
+- **`SimpleLocationDiagnostic`**: File + line + snippet (inspector provides global message/advice)
+- **`RichLocationDiagnostic`**: File + line + snipped + message per diagnostic + advice per diagnostic
+- **`ModuleDiagnostic`**: File-level issues without specific line numbers
+- **`ProjectDiagnostic`**: Project-wide issues (architecture, dependencies, etc.)
+
+Each diagnostic has a severity (`error`, `warning`, `info`) that determines the final exit code:
+- `error` diagnostics → exit code 1
+- `warning`/`info` diagnostics → exit code 0

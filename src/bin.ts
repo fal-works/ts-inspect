@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { parseArgs } from "node:util";
-import { inspectProject, translateStatusToExitCode } from "./index.ts";
+import { inspectProject, translateSeverityToExitCode } from "./index.ts";
 
 /**
  * Main CLI function without catching fatal errors.
@@ -25,7 +25,7 @@ async function mainInternal(): Promise<0 | 1> {
 		},
 	});
 
-	return translateStatusToExitCode(status);
+	return translateSeverityToExitCode(status);
 }
 
 /**

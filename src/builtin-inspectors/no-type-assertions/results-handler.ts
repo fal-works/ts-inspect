@@ -1,8 +1,12 @@
 /**
- * Results handler for collecting and informing type assertion findings.
+ * Results builder for collecting and structuring type assertion findings.
  */
 
-import type { ResultsHandler } from "../../inspector/index.ts";
+import type {
+	InspectorResult,
+	ResultsBuilder,
+	SimpleLocationDiagnostic,
+} from "../../inspector/index.ts";
 import { IGNORE_COMMENT } from "./constants.ts";
 import type { TypeAssertionInspectionResult } from "./types.ts";
 
@@ -10,8 +14,7 @@ import type { TypeAssertionInspectionResult } from "./types.ts";
  * Generates a friendly message about type assertions.
  */
 const noTypeAssertionsFriendlyMessage = () =>
-	`
-💡 Tip:
+	`Tip:
 Review these type assertions carefully. In most cases, type assertions (like \`as T\`) should be your last resort.
 - Prefer assignability over assertion:
   If a value already matches a target type,
@@ -26,24 +29,35 @@ But be aware that this is an exceptional case.
 `.trim();
 
 /**
- * Default results handler for `TypeAssertionInspectionResult`.
+ * Default results builder for `TypeAssertionInspectionResult`.
  */
-export const defaultResultsHandler: ResultsHandler<TypeAssertionInspectionResult> = (
+export const defaultResultsBuilder: ResultsBuilder<TypeAssertionInspectionResult> = (
 	resultPerFile,
 ) => {
-	if (resultPerFile.length === 0) return "success";
+	const diagnostics: SimpleLocationDiagnostic[] = [];
 
-	console.group(`Found suspicious type assertions:`);
 	for (const r of resultPerFile) {
 		const file = r.srcFile.file.fileName;
 		for (const found of r.result) {
-			console.log("❌ ", `${file}:${found.line}`, "-", `${found.snippet}`);
+			diagnostics.push({
+				type: "location-simple",
+				severity: "error",
+				file,
+				line: found.line,
+				snippet: found.snippet,
+			});
 		}
 	}
-	process.stdout.write("\n"); // empty line
-	console.log(noTypeAssertionsFriendlyMessage());
-	console.groupEnd();
-	process.stdout.write("\n"); // empty line
 
-	return "error";
+	const result: InspectorResult = {
+		inspectorName: "no-type-assertions",
+		diagnostics,
+	};
+
+	if (diagnostics.length > 0) {
+		result.message = "Found suspicious type assertions:";
+		result.advices = noTypeAssertionsFriendlyMessage();
+	}
+
+	return result;
 };

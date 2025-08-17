@@ -2,9 +2,9 @@
  * No-type-assertions inspector - detects suspicious type assertions.
  */
 
-import type { Inspector, ResultsHandler } from "../../inspector/index.ts";
+import type { Inspector, ResultsBuilder } from "../../inspector/index.ts";
 import { createNodeInspectorFactory } from "./node-inspector.ts";
-import { defaultResultsHandler } from "./results-handler.ts";
+import { defaultResultsBuilder } from "./results-handler.ts";
 import type { TypeAssertionInspectionResult } from "./types.ts";
 
 export type { TypeAssertionFinding, TypeAssertionInspectionResult } from "./types.ts";
@@ -12,13 +12,14 @@ export type { TypeAssertionFinding, TypeAssertionInspectionResult } from "./type
 /**
  * Creates an inspector that detects suspicious type assertions.
  *
- * @param resultsHandler - Optional custom results handler.
+ * @param resultsBuilder - Optional custom results builder.
  */
 export function createNoTypeAssertionsInspector(
-	resultsHandler?: ResultsHandler<TypeAssertionInspectionResult>,
+	resultsBuilder?: ResultsBuilder<TypeAssertionInspectionResult>,
 ): Inspector<TypeAssertionInspectionResult> {
 	return {
+		name: "no-type-assertions",
 		nodeInspectorFactory: createNodeInspectorFactory,
-		resultsHandler: resultsHandler ?? defaultResultsHandler,
+		resultsBuilder: resultsBuilder ?? defaultResultsBuilder,
 	};
 }

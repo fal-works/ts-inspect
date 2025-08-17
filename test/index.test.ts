@@ -18,13 +18,12 @@ describe("index", () => {
 			];
 
 			const result = await inspectFiles(filePaths);
-			assert.strictEqual(typeof result, "string");
-			assert.ok(["success", "warn", "error"].includes(result));
+			assert.ok(result === null || ["error", "warning", "info"].includes(result));
 		});
 
-		it("returns success status for empty file list", async () => {
+		it("returns null status for empty file list", async () => {
 			const result = await inspectFiles([]);
-			assert.strictEqual(result, "success");
+			assert.strictEqual(result, null);
 		});
 
 		it("accepts custom inspector options without error", async () => {
@@ -32,7 +31,7 @@ describe("index", () => {
 			const result = await inspectFiles(filePaths, {
 				inspectors: [],
 			});
-			assert.strictEqual(result, "success");
+			assert.strictEqual(result, null);
 		});
 
 		it("wraps unexpected exceptions with TsInspectError", async () => {
@@ -59,21 +58,18 @@ describe("index", () => {
 		it("does not throw error with tsconfig.json project", async () => {
 			const projectPath = join("test", "fixtures", "project-with-tsconfig");
 			const result = await inspectProject(projectPath);
-			assert.strictEqual(typeof result, "string");
-			assert.ok(["success", "warn", "error"].includes(result));
+			assert.ok(result === null || ["error", "warning", "info"].includes(result));
 		});
 
 		it("does not throw error with jsconfig.json project", async () => {
 			const projectPath = join("test", "fixtures", "project-with-jsconfig");
 			const result = await inspectProject(projectPath);
-			assert.strictEqual(typeof result, "string");
-			assert.ok(["success", "warn", "error"].includes(result));
+			assert.ok(result === null || ["error", "warning", "info"].includes(result));
 		});
 
 		it("does not throw error when using default tsconfig discovery", async () => {
 			const result = await inspectProject();
-			assert.strictEqual(typeof result, "string");
-			assert.ok(["success", "warn", "error"].includes(result));
+			assert.ok(result === null || ["error", "warning", "info"].includes(result));
 		});
 
 		it("accepts custom inspector options without error", async () => {
@@ -81,7 +77,7 @@ describe("index", () => {
 			const result = await inspectProject(projectPath, {
 				inspectors: [],
 			});
-			assert.strictEqual(result, "success");
+			assert.strictEqual(result, null);
 		});
 
 		it("throws TsInspectError for known configuration errors", async () => {

@@ -1,48 +1,11 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { defaultResultsHandler } from "./results-handler.ts";
+import type { SimpleLocationDiagnostic } from "../../inspector/index.ts";
+import { defaultResultsBuilder } from "./results-handler.ts";
 
 describe("builtin-inspectors/no-type-assertions/results-handler", () => {
-	describe("defaultResultsHandler", () => {
-		function captureStdout(fn: () => void): string {
-			const originalWrite = process.stdout.write;
-			const originalLog = console.log;
-			const originalGroup = console.group;
-			const originalGroupEnd = console.groupEnd;
-
-			let output = "";
-
-			process.stdout.write = (chunk: any) => {
-				output += chunk.toString();
-				return true;
-			};
-			console.log = (...args: any[]) => {
-				output += args.join(" ");
-				output += "\n";
-			};
-			console.group = (label?: string) => {
-				if (label) {
-					output += label;
-					output += "\n";
-				}
-			};
-			console.groupEnd = () => {
-				// no-op for testing
-			};
-
-			try {
-				fn();
-			} finally {
-				process.stdout.write = originalWrite;
-				console.log = originalLog;
-				console.group = originalGroup;
-				console.groupEnd = originalGroupEnd;
-			}
-
-			return output;
-		}
-
-		it("outputs to stdout when type assertions are found", () => {
+	describe("defaultResultsBuilder", () => {
+		it("returns structured result when type assertions are found", () => {
 			const mockResults = [
 				{
 					srcFile: {
@@ -55,30 +18,58 @@ describe("builtin-inspectors/no-type-assertions/results-handler", () => {
 				},
 			];
 
-			const output = captureStdout(() => {
-				defaultResultsHandler(mockResults);
+			const result = defaultResultsBuilder(mockResults);
+
+			assert.strictEqual(result.inspectorName, "no-type-assertions");
+			assert.strictEqual(result.message, "Found suspicious type assertions:");
+			assert.ok(result.advices?.includes("Tip:"));
+
+			const diagnostics = result.diagnostics as SimpleLocationDiagnostic[];
+			assert.strictEqual(diagnostics.length, 2);
+
+			assert.deepStrictEqual(diagnostics[0], {
+				type: "location-simple",
+				severity: "error",
+				file: "test.ts",
+				line: 1,
+				snippet: "value as any",
 			});
 
-			assert.ok(output.includes("Found suspicious type assertions:"));
-			assert.ok(output.includes("❌  test.ts:1 - value as any"));
-			assert.ok(output.includes("❌  test.ts:2 - data as string"));
-			assert.ok(output.includes("💡 Tip:"));
+			assert.deepStrictEqual(diagnostics[1], {
+				type: "location-simple",
+				severity: "error",
+				file: "test.ts",
+				line: 2,
+				snippet: "data as string",
+			});
 		});
 
-		it("returns success status when no assertions found", () => {
-			const result = defaultResultsHandler([]);
-			assert.strictEqual(result, "success");
+		it("returns empty diagnostics when no assertions found", () => {
+			const result = defaultResultsBuilder([]);
+
+			assert.strictEqual(result.inspectorName, "no-type-assertions");
+			assert.strictEqual(result.diagnostics.length, 0);
+			assert.strictEqual(result.message, undefined);
+			assert.strictEqual(result.advices, undefined);
 		});
 
-		it("returns error status when assertions found", () => {
+		it("handles multiple files with assertions", () => {
 			const mockResults = [
 				{
-					srcFile: { file: { fileName: "test.ts" } } as any,
+					srcFile: { file: { fileName: "test1.ts" } } as any,
 					result: [{ line: 1, snippet: "value as any" }],
 				},
+				{
+					srcFile: { file: { fileName: "test2.ts" } } as any,
+					result: [{ line: 5, snippet: "data as string" }],
+				},
 			];
-			const result = defaultResultsHandler(mockResults);
-			assert.strictEqual(result, "error");
+			const result = defaultResultsBuilder(mockResults);
+
+			const diagnostics = result.diagnostics as SimpleLocationDiagnostic[];
+			assert.strictEqual(diagnostics.length, 2);
+			assert.strictEqual(diagnostics[0].file, "test1.ts");
+			assert.strictEqual(diagnostics[1].file, "test2.ts");
 		});
 	});
 });

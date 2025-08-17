@@ -4,18 +4,18 @@
 
 import ts from "typescript";
 import type { ParsedSourceFile } from "../source-file/index.ts";
+import type { InspectorResults } from "./diagnostics.ts";
 import type { FileInspectionResult, Inspector } from "./inspector.ts";
-import type { InspectionStatus } from "./status.ts";
 
 /**
  * Inspects all the given source files using the provided inspectors,
- * then runs the results handler for each inspector.
+ * then runs the results builder for each inspector.
  */
 export async function runInspectors(
 	// biome-ignore lint/suspicious/noExplicitAny: We can't use the unknown type here because this should accept inspectors with variadic types.
 	inspectors: Inspector<any>[],
 	srcFiles: Promise<ParsedSourceFile>[],
-): Promise<InspectionStatus> {
+): Promise<InspectorResults> {
 	const inspectorCount = inspectors.length;
 
 	const settled = await Promise.allSettled(
@@ -45,7 +45,6 @@ export async function runInspectors(
 		{ length: inspectorCount },
 		() => [],
 	);
-	let status: InspectionStatus = "success";
 
 	for (const processedFile of settled) {
 		if (processedFile.status === "fulfilled") {
@@ -60,19 +59,17 @@ export async function runInspectors(
 			console.error(processedFile.reason);
 			console.groupEnd();
 			console.error(); // empty line
-			status = "error";
+			// Continue processing other files even if one fails
 		}
 	}
+
+	const results: InspectorResults = [];
 
 	for (let i = 0; i < inspectorCount; ++i) {
 		const resultPerFile = resultsPerInspector[i];
-		const inspectorStatus = inspectors[i].resultsHandler(resultPerFile);
-		if (inspectorStatus === "error") {
-			status = "error";
-		} else if (status !== "error" && inspectorStatus === "warn") {
-			status = "warn";
-		}
+		const inspectorResult = inspectors[i].resultsBuilder(resultPerFile);
+		results.push(inspectorResult);
 	}
 
-	return status;
+	return results;
 }
