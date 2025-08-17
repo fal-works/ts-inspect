@@ -13,8 +13,8 @@ export interface Printer {
 	print(text: string): void;
 	/** Print text with newline */
 	println(text: string): void;
-	/** Print a single newline */
-	newLine(): void;
+	/** Print a single newline. If maxEmptyLines is specified, only writes newline if consecutive empty lines don't reach the limit */
+	newLine(maxEmptyLines?: number): void;
 	/** Start a new group with optional heading and increase indentation */
 	group(heading?: string): void;
 	/** End current group and decrease indentation */
@@ -29,6 +29,7 @@ export function createPrinter(output: Writable): Printer {
 	let indentLevel = 0;
 	const indentUnit = "  "; // 2 spaces
 	let atLineStart = true;
+	let consecutiveLineFeeds = 0;
 
 	function writeText(text: string): void {
 		if (atLineStart && text.length > 0) {
@@ -36,13 +37,20 @@ export function createPrinter(output: Writable): Printer {
 				output.write(indentUnit);
 			}
 			atLineStart = false;
+			consecutiveLineFeeds = 0; // Reset when writing content
 		}
 		output.write(text);
 	}
 
-	function newLine(): void {
+	function newLine(maxEmptyLines?: number): void {
+		// Convert maxEmptyLines to maxConsecutiveLineFeeds
+		if (maxEmptyLines !== undefined && consecutiveLineFeeds >= maxEmptyLines + 1) {
+			return; // Don't write newline if limit reached
+		}
+
 		output.write("\n");
 		atLineStart = true;
+		consecutiveLineFeeds++;
 	}
 
 	return {
@@ -61,9 +69,7 @@ export function createPrinter(output: Writable): Printer {
 			newLine();
 		},
 
-		newLine(): void {
-			newLine();
-		},
+		newLine,
 
 		group(heading?: string): void {
 			if (heading) {

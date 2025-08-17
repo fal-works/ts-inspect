@@ -207,5 +207,76 @@ describe("core/printer", () => {
 			const expected = "Group:\n  Content\n  More content\n";
 			assert.strictEqual(output.getOutput(), expected);
 		});
+
+		it("newLine(maxEmptyLines) prevents excessive empty lines", () => {
+			const output = new MockWritable();
+			const printer = createPrinter(output);
+			printer.print("Content");
+			printer.newLine(2); // Ends current line (1st linefeed)
+			printer.newLine(2); // Creates 1st empty line (2nd linefeed)
+			printer.newLine(2); // Creates 2nd empty line (3rd linefeed)
+			printer.newLine(2); // Should be blocked - would create 3rd empty line
+			printer.newLine(2); // Should be blocked - would create 3rd empty line
+			printer.print("After");
+
+			assert.strictEqual(output.getOutput(), "Content\n\n\nAfter");
+		});
+
+		it("newLine() without maxEmptyLines always adds newlines", () => {
+			const output = new MockWritable();
+			const printer = createPrinter(output);
+			printer.print("Content");
+			printer.newLine(); // No limit
+			printer.newLine(); // No limit
+			printer.newLine(); // No limit
+			printer.print("After");
+
+			assert.strictEqual(output.getOutput(), "Content\n\n\nAfter");
+		});
+
+		it("newLine(maxEmptyLines) resets count when content is written", () => {
+			const output = new MockWritable();
+			const printer = createPrinter(output);
+			printer.print("First");
+			printer.newLine(1); // Ends current line (1st linefeed)
+			printer.newLine(1); // Creates 1st empty line (2nd linefeed)
+			printer.newLine(1); // Should be blocked - would create 2nd empty line
+			printer.print("Content"); // Resets counter
+			printer.newLine(1); // Ends current line (1st linefeed after reset)
+			printer.newLine(1); // Creates 1st empty line (2nd linefeed after reset)
+			printer.newLine(1); // Should be blocked - would create 2nd empty line
+			printer.print("Last");
+
+			assert.strictEqual(output.getOutput(), "First\n\nContent\n\nLast");
+		});
+
+		it("newLine(0) prevents empty lines but allows ending current line", () => {
+			const output = new MockWritable();
+			const printer = createPrinter(output);
+			printer.print("Content");
+			printer.newLine(0); // Should add newline since not at line start (ending current line)
+			printer.print("After");
+			printer.newLine(0); // Should add newline since not at line start (ending current line)
+			printer.newLine(0); // Should be ignored since already at line start (would create empty line)
+			printer.newLine(0); // Should be ignored since already at line start (would create empty line)
+			printer.print("Final");
+
+			assert.strictEqual(output.getOutput(), "Content\nAfter\nFinal");
+		});
+
+		it("newLine(0) allows exactly one linefeed before blocking", () => {
+			const output = new MockWritable();
+			const printer = createPrinter(output);
+
+			printer.print("Content");
+			printer.newLine(0); // Ends current line (1st linefeed, allowed)
+			printer.print("After"); // Resets counter
+			printer.newLine(0); // Ends current line (1st linefeed after reset, allowed)
+			printer.newLine(0); // Should be blocked - would create empty line
+			printer.newLine(0); // Should be blocked - would create empty line
+			printer.print("Final");
+
+			assert.strictEqual(output.getOutput(), "Content\nAfter\nFinal");
+		});
 	});
 });
