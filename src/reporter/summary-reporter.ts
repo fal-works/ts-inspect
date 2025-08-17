@@ -3,13 +3,9 @@
  */
 
 import { createPrinter, type Printer } from "../core/printer.ts";
-import type {
-	DiagnosticSeverity,
-	InspectorResult,
-	RichDiagnostic,
-	SimpleDiagnostic,
-} from "../inspector/index.ts";
-import { getWorstSeverity } from "../inspector/index.ts";
+import type { DiagnosticSeverity, RichDiagnostic, SimpleDiagnostic } from "../diagnostics/index.ts";
+import { getWorstSeverity } from "../diagnostics/index.ts";
+import type { InspectorResult } from "../inspector/index.ts";
 import type { Reporter } from "./reporter.ts";
 
 /**

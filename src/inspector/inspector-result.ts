@@ -2,7 +2,7 @@
  * Inspector result types and structures.
  */
 
-import type { Diagnostics } from "./diagnostics.ts";
+import type { Diagnostics } from "../diagnostics/index.ts";
 
 /**
  * Structured result returned by an inspector's ResultsBuilder.

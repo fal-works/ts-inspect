@@ -1,12 +1,14 @@
 /**
- * Diagnostic types for inspection results.
+ * Individual diagnostic item type definitions.
  */
 
-import type { DiagnosticSeverity } from "./severity.ts";
-
-export { getOverallWorstSeverity, getWorstSeverity } from "./diagnostics-tools.ts";
-
-// Base interfaces
+/**
+ * Severity levels for diagnostics.
+ * - `error`: Issues that should be fixed (causes exit code 1)
+ * - `warning`: Issues that should be reviewed but don't cause failure (exit code 0)
+ * - `info`: Informational notices (exit code 0)
+ */
+export type DiagnosticSeverity = "error" | "warning" | "info";
 
 /**
  * Base properties shared by all diagnostic types.
@@ -125,35 +127,3 @@ export type RichDiagnostic = RichLocationDiagnostic | RichModuleDiagnostic | Ric
  * Useful for generic processing of diagnostic arrays.
  */
 export type Diagnostic = SimpleDiagnostic | RichDiagnostic;
-
-// Diagnostic pattern interfaces
-
-/**
- * Simple diagnostics pattern for condensed reporting.
- * Use this when all diagnostics have the same meaning and the
- * inspector provides a single message/advice for all of them.
- */
-export interface SimpleDiagnostics {
-	/** Discriminant value for the diagnostic pattern */
-	type: "simple";
-	/** Array of simple diagnostic items */
-	items: SimpleDiagnostic[];
-}
-
-/**
- * Rich diagnostics pattern for detailed reporting.
- * Use this when diagnostics need individual messages or when
- * combining different diagnostic types with specific guidance.
- */
-export interface RichDiagnostics {
-	/** Discriminant value for the diagnostic pattern */
-	type: "rich";
-	/** Array of rich diagnostic items */
-	items: RichDiagnostic[];
-}
-
-/**
- * Union type representing either simple or rich diagnostic patterns.
- * Inspectors choose between these two patterns based on their needs.
- */
-export type Diagnostics = SimpleDiagnostics | RichDiagnostics;

@@ -3,13 +3,9 @@
  */
 
 import { createDefaultInspectors } from "./builtin-inspectors/index.ts";
+import { type DiagnosticSeverity, getOverallWorstSeverity } from "./diagnostics/index.ts";
 import { type TsInspectError, wrapUnexpectedExceptionsAsync } from "./error.ts";
-import {
-	type DiagnosticSeverity,
-	getOverallWorstSeverity,
-	type Inspector,
-	runInspectors,
-} from "./inspector/index.ts";
+import { type Inspector, runInspectors } from "./inspector/index.ts";
 import { type Reporter, summaryReporter } from "./reporter/index.ts";
 import {
 	inferParseSourceFilesOptions,
@@ -103,12 +99,6 @@ export type {
 	Diagnostic,
 	DiagnosticSeverity,
 	Diagnostics,
-	FileInspectionResult,
-	Inspector,
-	InspectorResult,
-	InspectorResults,
-	NodeInspector,
-	ResultsBuilder,
 	RichDiagnostic,
 	RichDiagnostics,
 	RichLocationDiagnostic,
@@ -119,7 +109,15 @@ export type {
 	SimpleLocationDiagnostic,
 	SimpleModuleDiagnostic,
 	SimpleProjectDiagnostic,
+} from "./diagnostics/index.ts";
+export { translateSeverityToExitCode } from "./diagnostics/index.ts";
+export type {
+	FileInspectionResult,
+	Inspector,
+	InspectorResult,
+	InspectorResults,
+	NodeInspector,
+	ResultsBuilder,
 } from "./inspector/index.ts";
-export { translateSeverityToExitCode } from "./inspector/index.ts";
 export { jsonReporter, type Reporter, summaryReporter } from "./reporter/index.ts";
 export type { TsInspectError };

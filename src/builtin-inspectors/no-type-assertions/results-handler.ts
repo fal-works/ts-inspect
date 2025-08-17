@@ -2,12 +2,8 @@
  * Results builder for collecting and structuring type assertion findings.
  */
 
-import type {
-	InspectorResult,
-	ResultsBuilder,
-	SimpleDiagnostics,
-	SimpleLocationDiagnostic,
-} from "../../inspector/index.ts";
+import type { SimpleDiagnostics, SimpleLocationDiagnostic } from "../../diagnostics/index.ts";
+import type { InspectorResult, ResultsBuilder } from "../../inspector/index.ts";
 import { IGNORE_COMMENT } from "./constants.ts";
 import type { TypeAssertionInspectionResult } from "./types.ts";
 

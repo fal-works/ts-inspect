@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import type { SimpleDiagnostics } from "../../inspector/index.ts";
+import type { SimpleDiagnostics } from "../../diagnostics/index.ts";
 import { defaultResultsBuilder } from "./results-handler.ts";
 
 describe("builtin-inspectors/no-type-assertions/results-handler", () => {
