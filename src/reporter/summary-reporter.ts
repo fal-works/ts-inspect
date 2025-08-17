@@ -24,16 +24,16 @@ function formatDiagnostic(diagnostic: DiagnosticItem, printer: Printer): void {
 
 	if (diagnostic.type === "location-simple") {
 		const snippet = diagnostic.snippet ? ` - ${diagnostic.snippet}` : "";
-		printer.print(`${icon} ${diagnostic.file}:${diagnostic.line}${snippet}`);
+		printer.println(`${icon} ${diagnostic.file}:${diagnostic.line}${snippet}`);
 	} else if (diagnostic.type === "location-rich") {
 		const snippet = diagnostic.snippet ? ` - ${diagnostic.snippet}` : "";
-		printer.print(`${icon} ${diagnostic.file}:${diagnostic.line}${snippet}`);
+		printer.println(`${icon} ${diagnostic.file}:${diagnostic.line}${snippet}`);
 		printer.println(diagnostic.message);
 		if (diagnostic.advices) {
 			printer.println(diagnostic.advices);
 		}
 	} else if (diagnostic.type === "module") {
-		printer.print(`${icon} ${diagnostic.file}`);
+		printer.println(`${icon} ${diagnostic.file}`);
 		printer.println(diagnostic.message);
 	} else if (diagnostic.type === "project") {
 		printer.println(`${icon} ${diagnostic.message}`);
@@ -50,7 +50,7 @@ function formatInspectorResult(result: InspectorResult, printer: Printer): void 
 	printer.group(`[${result.inspectorName}]`);
 
 	if (result.message) {
-		printer.print(result.message);
+		printer.println(result.message);
 	}
 
 	const diagnostics = Array.isArray(result.diagnostics) ? result.diagnostics : [];
@@ -60,7 +60,7 @@ function formatInspectorResult(result: InspectorResult, printer: Printer): void 
 	}
 
 	if (result.advices) {
-		printer.print(`💡 ${result.advices}`);
+		printer.println(`💡 ${result.advices}`);
 	}
 
 	printer.groupEnd();

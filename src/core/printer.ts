@@ -22,48 +22,63 @@ export interface Printer {
  * Creates a new printer instance.
  */
 export function createPrinter(): Printer {
-	const lines: string[] = [];
+	let output = "";
 	let indentLevel = 0;
 	const indentUnit = "  "; // 2 spaces
+	let atLineStart = true;
 
-	function getIndent(): string {
-		return indentUnit.repeat(indentLevel);
+	function writeText(text: string): void {
+		if (atLineStart && text.length > 0) {
+			for (let i = 0; i < indentLevel; i++) {
+				output += indentUnit;
+			}
+			atLineStart = false;
+		}
+		output += text;
 	}
 
-	function addIndentedLines(text: string): void {
-		const textLines = text.split("\n");
-		const indent = getIndent();
-		for (const line of textLines) lines.push(indent + line);
+	function newLine(): void {
+		output += "\n";
+		atLineStart = true;
 	}
 
 	return {
 		print(text: string): void {
-			if (text.includes("\n")) {
-				addIndentedLines(text);
-			} else {
-				lines.push(getIndent() + text);
+			const lines = text.split("\n");
+			for (let i = 0; i < lines.length; i++) {
+				if (i > 0) {
+					newLine();
+				}
+				writeText(lines[i]);
 			}
 		},
 
 		println(text: string): void {
 			this.print(text);
-			lines.push("");
+			newLine();
 		},
 
 		group(heading?: string): void {
-			if (heading) this.print(heading);
+			if (heading) {
+				if (!atLineStart) {
+					newLine(); // Ensure we're at line start before heading
+				}
+				this.println(heading);
+			}
 			indentLevel++;
 		},
 
 		groupEnd(): void {
 			if (indentLevel > 0) {
 				indentLevel--;
-				lines.push(""); // Add empty line after group
+				if (!atLineStart) {
+					newLine(); // Ensure we end at line start
+				}
 			}
 		},
 
 		getOutput(): string {
-			return lines.join("\n");
+			return output;
 		},
 	};
 }
