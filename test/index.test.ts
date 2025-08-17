@@ -6,7 +6,7 @@ import assert from "node:assert";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import { TsInspectError } from "../src/error.ts";
-import { inspectFiles, inspectProject } from "../src/index.ts";
+import { inspectFiles, inspectProject, jsonReporter, summaryReporter } from "../src/index.ts";
 import { executeNodeScript } from "./test-utils.ts";
 
 describe("index", () => {
@@ -51,6 +51,37 @@ describe("index", () => {
 					return true;
 				},
 			);
+		});
+
+		it("accepts jsonReporter without error", async () => {
+			const filePaths = [join("test", "fixtures", "src", "sample.ts")];
+
+			const result = await inspectFiles(filePaths, {
+				reporter: jsonReporter,
+			});
+			assert.ok(result === null || ["error", "warning", "info"].includes(result));
+		});
+
+		it("accepts summaryReporter explicitly without error", async () => {
+			const filePaths = [join("test", "fixtures", "src", "sample.ts")];
+
+			const result = await inspectFiles(filePaths, {
+				reporter: summaryReporter,
+			});
+			assert.ok(result === null || ["error", "warning", "info"].includes(result));
+		});
+
+				it("accepts custom reporter without error", async () => {
+			const filePaths = [join("test", "fixtures", "src", "sample.ts")];
+			const customReporter = (results: any, output: any) => {
+				// Simple custom reporter for testing
+				output.write(`Custom: ${results.length} results\n`);
+			};
+
+			const result = await inspectFiles(filePaths, {
+				reporter: customReporter,
+			});
+			assert.ok(result === null || ["error", "warning", "info"].includes(result));
 		});
 	});
 

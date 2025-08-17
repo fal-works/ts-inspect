@@ -51,6 +51,7 @@ npx @fal-works/ts-inspect
 
 - `--project`, `-p` - Specify project directory or `tsconfig.json` path
 - `--exclude-test` - Exclude files (e.g. `*.test.ts`) from parsing source files
+- `--reporter` - Output format: `summary` (default, human-readable) or `json` (machine-readable)
 
 ### Exit Codes
 
@@ -189,4 +190,42 @@ function createConsoleLogInspector(): Inspector<ConsoleLogFinding[]> {
 
 const status = await inspectProject(undefined, { inspectors: [createConsoleLogInspector()] });
 process.exitCode = translateSeverityToExitCode(status);
+```
+
+## Reporters
+
+`@fal-works/ts-inspect` supports different output formats through reporters.
+You can select built-in reporters or create custom ones.
+
+### Built-in Reporters
+
+```ts
+import { inspectProject, summaryReporter, jsonReporter } from "@fal-works/ts-inspect";
+
+// Use the summary reporter (default - human-readable output)
+await inspectProject("./my-project", { reporter: summaryReporter });
+
+// Use the JSON reporter (machine-readable output)
+await inspectProject("./my-project", { reporter: jsonReporter });
+```
+
+### Custom Reporters
+
+Create your own reporter by implementing the `Reporter` interface:
+
+```ts
+import { inspectProject, type Reporter } from "@fal-works/ts-inspect";
+
+const customReporter: Reporter = (results, output) => {
+  // Write custom formatted output to the writable stream
+  output.write(`Found ${results.length} inspector results\n`);
+  
+  for (const result of results) {
+    if (result.diagnostics.length > 0) {
+      output.write(`${result.inspectorName}: ${result.diagnostics.length} issues\n`);
+    }
+  }
+};
+
+await inspectProject(undefined, { reporter: customReporter });
 ```

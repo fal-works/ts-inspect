@@ -10,7 +10,7 @@ import {
 	type Inspector,
 	runInspectors,
 } from "./inspector/index.ts";
-import { summaryReporter } from "./reporter/index.ts";
+import { type Reporter, summaryReporter } from "./reporter/index.ts";
 import {
 	inferParseSourceFilesOptions,
 	type ParseSourceFilesOptions,
@@ -25,6 +25,8 @@ export interface InspectOptions {
 	sourceFilesOptions?: ParseSourceFilesOptions;
 	// biome-ignore lint/suspicious/noExplicitAny: We can't use the unknown type here because this should accept inspectors with variadic types.
 	inspectors?: Inspector<any>[];
+	/** Reporter function for formatting output (defaults to summaryReporter) */
+	reporter?: Reporter;
 }
 
 /**
@@ -34,14 +36,16 @@ async function executeInspection(
 	filePaths: string[],
 	sourceFilesOptions: ParseSourceFilesOptions | undefined,
 	inspectors: Inspector[] | undefined,
+	reporter?: Reporter,
 ): Promise<DiagnosticSeverity | null> {
 	const resolvedInspectors = inspectors ?? createDefaultInspectors();
 	const srcFilePromises = parseSourceFiles(filePaths, sourceFilesOptions);
 
 	const results = await runInspectors(resolvedInspectors, srcFilePromises);
 
-	// Format and output results using the summary reporter
-	summaryReporter(results, process.stdout);
+	// Format and output results using the configured reporter
+	const resolvedReporter = reporter ?? summaryReporter;
+	resolvedReporter(results, process.stdout);
 
 	// Return the overall severity directly
 	return getOverallWorstSeverity(results);
@@ -52,7 +56,12 @@ async function inspectFilesInternal(
 	filePaths: string[],
 	options?: InspectOptions,
 ): Promise<DiagnosticSeverity | null> {
-	return executeInspection(filePaths, options?.sourceFilesOptions, options?.inspectors);
+	return executeInspection(
+		filePaths,
+		options?.sourceFilesOptions,
+		options?.inspectors,
+		options?.reporter,
+	);
 }
 
 /** @see inspectProject */
@@ -67,6 +76,7 @@ async function inspectProjectInternal(
 		tsconfig.fileNames,
 		inferParseSourceFilesOptions(tsconfig, options?.sourceFilesOptions),
 		options?.inspectors,
+		options?.reporter,
 	);
 }
 
@@ -96,6 +106,7 @@ export type {
 	FileInspectionResult,
 	Inspector,
 	InspectorResult,
+	InspectorResults,
 	ModuleDiagnostic,
 	NodeInspector,
 	ProjectDiagnostic,
@@ -104,4 +115,5 @@ export type {
 	SimpleLocationDiagnostic,
 } from "./inspector/index.ts";
 export { translateSeverityToExitCode } from "./inspector/index.ts";
+export { jsonReporter, type Reporter, summaryReporter } from "./reporter/index.ts";
 export type { TsInspectError };
