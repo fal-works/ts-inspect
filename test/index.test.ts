@@ -6,7 +6,13 @@ import assert from "node:assert";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import { TsInspectError } from "../src/error.ts";
-import { inspectFiles, inspectProject, rawJsonReporter, summaryReporter } from "../src/index.ts";
+import {
+	inspectFiles,
+	inspectProject,
+	type Reporter,
+	rawJsonReporter,
+	summaryReporter,
+} from "../src/index.ts";
 import { executeNodeScript } from "./test-utils.ts";
 
 describe("index", () => {
@@ -73,7 +79,7 @@ describe("index", () => {
 
 		it("accepts custom reporter without error", async () => {
 			const filePaths = [join("test", "fixtures", "src", "sample.ts")];
-			const customReporter = (results: any, output: any) => {
+			const customReporter: Reporter = (results, output) => {
 				// Simple custom reporter for testing
 				output.write(`Custom: ${results.length} results\n`);
 			};
