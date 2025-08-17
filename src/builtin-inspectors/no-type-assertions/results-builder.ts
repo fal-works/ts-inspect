@@ -38,8 +38,7 @@ export const resultsBuilder: ResultsBuilder<TypeAssertionFindings> = (resultPerF
 				type: "location",
 				severity: "error",
 				file,
-				line: found.line,
-				snippet: found.snippet,
+				location: found,
 			});
 		}
 	}

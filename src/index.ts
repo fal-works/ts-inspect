@@ -96,6 +96,7 @@ export const inspectProject = wrapUnexpectedExceptionsAsync(inspectProjectIntern
 export { createAsAssertionInspector } from "./builtin-inspectors/index.ts";
 export { createPrinter, type Printer } from "./core/printer.ts";
 export type {
+	CodeLocation,
 	Diagnostic,
 	DiagnosticSeverity,
 	Diagnostics,

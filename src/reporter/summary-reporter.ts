@@ -32,8 +32,8 @@ function formatLocationDiagnostic(
 	icon: string,
 	printer: Printer,
 ): void {
-	const snippet = diagnostic.snippet ? ` - ${diagnostic.snippet}` : "";
-	printer.println(`${icon} ${diagnostic.file}:${diagnostic.line}${snippet}`);
+	const snippet = diagnostic.location.snippet ? ` - ${diagnostic.location.snippet}` : "";
+	printer.println(`${icon} ${diagnostic.file}:${diagnostic.location.line}${snippet}`);
 }
 
 /**

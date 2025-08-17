@@ -11,6 +11,19 @@
 export type DiagnosticSeverity = "error" | "warning" | "info";
 
 /**
+ * Location information for diagnostics that reference specific code positions in a source file.
+ * Useful for building location-based diagnostics in custom results builders.
+ * 
+ * For simplicity, it only includes the start line number and not the precise character range.
+ */
+export interface CodeLocation {
+	/** 1-based line number where the issue occurs */
+	line: number;
+	/** Optional code snippet showing the problematic expression */
+	snippet?: string | undefined;
+}
+
+/**
  * Base properties shared by all diagnostic types.
  */
 interface DiagnosticBase {
@@ -39,10 +52,8 @@ export interface LocationDiagnostic extends DiagnosticBase {
 	type: "location";
 	/** Relative path from current working directory */
 	file: string;
-	/** 1-based line number where the issue occurs */
-	line: number;
-	/** Optional code snippet showing the problematic expression */
-	snippet?: string | undefined;
+	/** Location information for the diagnostic */
+	location: CodeLocation;
 }
 
 /**

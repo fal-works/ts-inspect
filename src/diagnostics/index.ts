@@ -4,6 +4,7 @@
 
 // Export all item types
 export type {
+	CodeLocation,
 	Diagnostic,
 	DiagnosticSeverity,
 	LocationDiagnostic,

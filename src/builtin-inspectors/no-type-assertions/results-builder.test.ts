@@ -32,16 +32,20 @@ describe("builtin-inspectors/no-type-assertions/results-builder", () => {
 				type: "location",
 				severity: "error",
 				file: "test.ts",
-				line: 1,
-				snippet: "value as any",
+				location: {
+					line: 1,
+					snippet: "value as any",
+				},
 			});
 
 			assert.deepStrictEqual(diagnostics.items[1], {
 				type: "location",
 				severity: "error",
 				file: "test.ts",
-				line: 2,
-				snippet: "data as string",
+				location: {
+					line: 2,
+					snippet: "data as string",
+				},
 			});
 		});
 
