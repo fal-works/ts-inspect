@@ -28,14 +28,14 @@ function createConsoleLogInspector(): Inspector<ConsoleLogFinding[]> {
 			return undefined; // unchanged
 		},
 		resultsBuilder: (perFile) => {
-			const diagnosticItems: LocationDiagnostic[] = [];
+			const items: LocationDiagnostic[] = [];
 			let total = 0;
 
 			for (const { srcFile, finalState } of perFile) {
 				if (finalState && finalState.length > 0) {
 					total += finalState.length;
 					for (const finding of finalState) {
-						diagnosticItems.push({
+						items.push({
 							type: "location",
 							severity: "error",
 							file: srcFile.file.fileName,
@@ -46,10 +46,7 @@ function createConsoleLogInspector(): Inspector<ConsoleLogFinding[]> {
 				}
 			}
 
-			const diagnostics: SimpleDiagnostics = {
-				type: "simple",
-				items: diagnosticItems,
-			};
+			const diagnostics: SimpleDiagnostics = { type: "simple", items };
 
 			return {
 				inspectorName: "console-log-inspector",

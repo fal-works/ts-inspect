@@ -131,14 +131,12 @@ import {
   type Inspector,
   inspectProject,
   type LocationDiagnostic,
+  type SimpleDiagnostics,
   translateSeverityToExitCode,
 } from "@fal-works/ts-inspect";
 import ts from "typescript";
 
-type ConsoleLogFinding = {
-  line: number;
-  snippet: string;
-};
+type ConsoleLogFinding = { line: number; snippet: string };
 
 function createConsoleLogInspector(): Inspector<ConsoleLogFinding[]> {
   return {
@@ -148,25 +146,25 @@ function createConsoleLogInspector(): Inspector<ConsoleLogFinding[]> {
         const expr = node.expression;
         if (expr.expression.getText(srcFile) === "console" && expr.name.text === "log") {
           const { line } = srcFile.getLineAndCharacterOfPosition(node.getStart(srcFile, false));
-          const state = recentState ?? [];
-          state.push({
+          const result = recentState ?? [];
+          result.push({
             line: line + 1, // 1-based
             snippet: node.getText(srcFile),
           });
-          return state;
+          return result;
         }
       }
       return undefined; // unchanged
     },
-    resultsBuilder: (resultPerFile) => {
-      const diagnostics: LocationDiagnostic[] = [];
+    resultsBuilder: (perFile) => {
+      const items: LocationDiagnostic[] = [];
       let total = 0;
 
-      for (const { srcFile, finalState } of resultPerFile) {
+      for (const { srcFile, finalState } of perFile) {
         if (finalState && finalState.length > 0) {
           total += finalState.length;
           for (const finding of finalState) {
-            diagnostics.push({
+            items.push({
               type: "location",
               severity: "error",
               file: srcFile.file.fileName,
@@ -176,6 +174,8 @@ function createConsoleLogInspector(): Inspector<ConsoleLogFinding[]> {
           }
         }
       }
+
+      const diagnostics: SimpleDiagnostics = { type: "simple", items };
 
       return {
         inspectorName: "console-log-inspector",
