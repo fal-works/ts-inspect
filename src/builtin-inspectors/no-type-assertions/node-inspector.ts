@@ -22,9 +22,9 @@ function isSuspiciousTypeAssertion(srcFile: ts.SourceFile, node: ts.Node): boole
 }
 
 /**
- * Creates a node inspector factory for detecting suspicious type assertions.
+ * Node inspector factory for detecting suspicious type assertions.
  */
-export const createNodeInspectorFactory: NodeInspectorFactory<TypeAssertionFindings> =
+export const nodeInspectorFactory: NodeInspectorFactory<TypeAssertionFindings> =
 	(srcFile) => (node, recentState) => {
 		if (isSuspiciousTypeAssertion(srcFile, node)) {
 			const { line } = srcFile.getLineAndCharacterOfPosition(node.getStart(srcFile, false));

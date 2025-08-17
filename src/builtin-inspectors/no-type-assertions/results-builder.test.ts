@@ -1,10 +1,10 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
 import type { SimpleDiagnostics } from "../../diagnostics/index.ts";
-import { defaultResultsBuilder } from "./results-builder.ts";
+import { resultsBuilder } from "./results-builder.ts";
 
 describe("builtin-inspectors/no-type-assertions/results-builder", () => {
-	describe("defaultResultsBuilder", () => {
+	describe("resultsBuilder", () => {
 		it("returns structured result when type assertions are found", () => {
 			const mockResults = [
 				{
@@ -18,7 +18,7 @@ describe("builtin-inspectors/no-type-assertions/results-builder", () => {
 				},
 			];
 
-			const result = defaultResultsBuilder(mockResults);
+			const result = resultsBuilder(mockResults);
 
 			assert.strictEqual(result.inspectorName, "no-type-assertions");
 			assert.strictEqual(result.message, "Found suspicious type assertions.");
@@ -46,7 +46,7 @@ describe("builtin-inspectors/no-type-assertions/results-builder", () => {
 		});
 
 		it("returns empty diagnostics when no assertions found", () => {
-			const result = defaultResultsBuilder([]);
+			const result = resultsBuilder([]);
 
 			assert.strictEqual(result.inspectorName, "no-type-assertions");
 			const diagnostics = result.diagnostics as SimpleDiagnostics;
@@ -67,7 +67,7 @@ describe("builtin-inspectors/no-type-assertions/results-builder", () => {
 					finalState: [{ line: 5, snippet: "data as string" }],
 				},
 			];
-			const result = defaultResultsBuilder(mockResults);
+			const result = resultsBuilder(mockResults);
 
 			const diagnostics = result.diagnostics as SimpleDiagnostics;
 			assert.strictEqual(diagnostics.type, "simple");

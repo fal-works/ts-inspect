@@ -26,9 +26,9 @@ But be aware that this is an exceptional case.
 `.trim();
 
 /**
- * Default results builder for `TypeAssertionFindings`.
+ * Results builder for `TypeAssertionFindings`.
  */
-export const defaultResultsBuilder: ResultsBuilder<TypeAssertionFindings> = (resultPerFile) => {
+export const resultsBuilder: ResultsBuilder<TypeAssertionFindings> = (resultPerFile) => {
 	const diagnosticItems: LocationDiagnostic[] = [];
 
 	for (const r of resultPerFile) {
