@@ -173,5 +173,39 @@ describe("core/printer", () => {
 			const expected = "Some content\nGroup heading\n  Group content\n";
 			assert.strictEqual(output.getOutput(), expected);
 		});
+
+		it("newLine() adds exactly one newline", () => {
+			const output = new MockWritable();
+			const printer = createPrinter(output);
+			printer.print("First line");
+			printer.newLine();
+			printer.print("Second line");
+
+			assert.strictEqual(output.getOutput(), "First line\nSecond line");
+		});
+
+		it("multiple newLine() calls add multiple newlines", () => {
+			const output = new MockWritable();
+			const printer = createPrinter(output);
+			printer.print("Text");
+			printer.newLine();
+			printer.newLine();
+			printer.print("After two newlines");
+
+			assert.strictEqual(output.getOutput(), "Text\n\nAfter two newlines");
+		});
+
+		it("newLine() with indentation", () => {
+			const output = new MockWritable();
+			const printer = createPrinter(output);
+			printer.group("Group:");
+			printer.print("Content");
+			printer.newLine();
+			printer.print("More content");
+			printer.groupEnd();
+
+			const expected = "Group:\n  Content\n  More content\n";
+			assert.strictEqual(output.getOutput(), expected);
+		});
 	});
 });

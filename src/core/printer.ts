@@ -13,6 +13,8 @@ export interface Printer {
 	print(text: string): void;
 	/** Print text with newline */
 	println(text: string): void;
+	/** Print a single newline */
+	newLine(): void;
 	/** Start a new group with optional heading and increase indentation */
 	group(heading?: string): void;
 	/** End current group and decrease indentation */
@@ -56,6 +58,10 @@ export function createPrinter(output: Writable): Printer {
 
 		println(text: string): void {
 			this.print(text);
+			newLine();
+		},
+
+		newLine(): void {
 			newLine();
 		},
 
