@@ -3,7 +3,12 @@
  */
 
 import { createPrinter, type Printer } from "../core/printer.ts";
-import type { DiagnosticItem, DiagnosticSeverity, InspectorResult } from "../inspector/index.ts";
+import type {
+	DiagnosticSeverity,
+	InspectorResult,
+	RichDiagnostic,
+	SimpleDiagnostic,
+} from "../inspector/index.ts";
 import { getWorstSeverity } from "../inspector/index.ts";
 import type { Reporter } from "./reporter.ts";
 
@@ -17,15 +22,28 @@ const icons: Record<DiagnosticSeverity, string> = {
 };
 
 /**
- * Formats a single diagnostic item using the printer.
+ * Formats a single simple diagnostic item using the printer.
  */
-function formatDiagnostic(diagnostic: DiagnosticItem, printer: Printer): void {
+function formatSimpleDiagnostic(diagnostic: SimpleDiagnostic, printer: Printer): void {
 	const icon = icons[diagnostic.severity];
 
-	if (diagnostic.type === "location-simple") {
+	if (diagnostic.type === "location") {
 		const snippet = diagnostic.snippet ? ` - ${diagnostic.snippet}` : "";
 		printer.println(`${icon} ${diagnostic.file}:${diagnostic.line}${snippet}`);
-	} else if (diagnostic.type === "location-rich") {
+	} else if (diagnostic.type === "module") {
+		printer.println(`${icon} ${diagnostic.file}`);
+	} else if (diagnostic.type === "project") {
+		printer.println(`${icon} (project-level issue)`);
+	}
+}
+
+/**
+ * Formats a single rich diagnostic item using the printer.
+ */
+function formatRichDiagnostic(diagnostic: RichDiagnostic, printer: Printer): void {
+	const icon = icons[diagnostic.severity];
+
+	if (diagnostic.type === "location") {
 		const snippet = diagnostic.snippet ? ` - ${diagnostic.snippet}` : "";
 		printer.println(`${icon} ${diagnostic.file}:${diagnostic.line}${snippet}`);
 		printer.println(diagnostic.message);
@@ -35,8 +53,14 @@ function formatDiagnostic(diagnostic: DiagnosticItem, printer: Printer): void {
 	} else if (diagnostic.type === "module") {
 		printer.println(`${icon} ${diagnostic.file}`);
 		printer.println(diagnostic.message);
+		if (diagnostic.advices) {
+			printer.println(diagnostic.advices);
+		}
 	} else if (diagnostic.type === "project") {
 		printer.println(`${icon} ${diagnostic.message}`);
+		if (diagnostic.advices) {
+			printer.println(diagnostic.advices);
+		}
 	}
 }
 
@@ -50,17 +74,25 @@ function formatInspectorResult(result: InspectorResult, printer: Printer): void 
 	printer.group(`[${result.inspectorName}]`);
 	if (result.message) printer.println(result.message);
 
-	const diagnostics: DiagnosticItem[] = result.diagnostics;
-	if (diagnostics.length > 0) {
+	const diagnostics = result.diagnostics;
+	if (diagnostics.items.length > 0) {
 		printer.newLine();
 
-		for (let i = 0; i < diagnostics.length; i++) {
-			const diagnostic = diagnostics[i];
-			formatDiagnostic(diagnostic, printer);
+		if (diagnostics.type === "simple") {
+			// Simple diagnostics: no spacing between items since they're all single-line
+			for (const diagnostic of diagnostics.items) {
+				formatSimpleDiagnostic(diagnostic, printer);
+			}
+		} else {
+			// Rich diagnostics: add spacing between multi-line items
+			for (let i = 0; i < diagnostics.items.length; i++) {
+				const diagnostic = diagnostics.items[i];
+				formatRichDiagnostic(diagnostic, printer);
 
-			// Add empty line between multi-line diagnostic items (but not after the last one)
-			if (i < diagnostics.length - 1 && diagnostic.type !== "location-simple") {
-				printer.newLine();
+				// Add empty line between rich diagnostic items (but not after the last one)
+				if (i < diagnostics.items.length - 1) {
+					printer.newLine();
+				}
 			}
 		}
 	}

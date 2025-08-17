@@ -4,8 +4,8 @@
 
 import ts from "typescript";
 import type { ParsedSourceFile } from "../source-file/index.ts";
-import type { InspectorResults } from "./diagnostics.ts";
 import type { FileInspectionResult, Inspector } from "./inspector.ts";
+import type { InspectorResults } from "./inspector-result.ts";
 
 /**
  * Inspects all the given source files using the provided inspectors,

@@ -5,6 +5,7 @@
 import type {
 	InspectorResult,
 	ResultsBuilder,
+	SimpleDiagnostics,
 	SimpleLocationDiagnostic,
 } from "../../inspector/index.ts";
 import { IGNORE_COMMENT } from "./constants.ts";
@@ -34,13 +35,13 @@ But be aware that this is an exceptional case.
 export const defaultResultsBuilder: ResultsBuilder<TypeAssertionInspectionResult> = (
 	resultPerFile,
 ) => {
-	const diagnostics: SimpleLocationDiagnostic[] = [];
+	const diagnosticItems: SimpleLocationDiagnostic[] = [];
 
 	for (const r of resultPerFile) {
 		const file = r.srcFile.file.fileName;
 		for (const found of r.result) {
-			diagnostics.push({
-				type: "location-simple",
+			diagnosticItems.push({
+				type: "location",
 				severity: "error",
 				file,
 				line: found.line,
@@ -49,12 +50,17 @@ export const defaultResultsBuilder: ResultsBuilder<TypeAssertionInspectionResult
 		}
 	}
 
+	const diagnostics: SimpleDiagnostics = {
+		type: "simple",
+		items: diagnosticItems,
+	};
+
 	const result: InspectorResult = {
 		inspectorName: "no-type-assertions",
 		diagnostics,
 	};
 
-	if (diagnostics.length > 0) {
+	if (diagnosticItems.length > 0) {
 		result.message = "Found suspicious type assertions.";
 		result.advices = noTypeAssertionsFriendlyMessage();
 	}

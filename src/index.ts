@@ -100,19 +100,25 @@ export const inspectProject = wrapUnexpectedExceptionsAsync(inspectProjectIntern
 export { createAsAssertionInspector } from "./builtin-inspectors/index.ts";
 export { createPrinter, type Printer } from "./core/printer.ts";
 export type {
-	DiagnosticItem,
+	Diagnostic,
 	DiagnosticSeverity,
 	Diagnostics,
 	FileInspectionResult,
 	Inspector,
 	InspectorResult,
 	InspectorResults,
-	ModuleDiagnostic,
 	NodeInspector,
-	ProjectDiagnostic,
 	ResultsBuilder,
+	RichDiagnostic,
+	RichDiagnostics,
 	RichLocationDiagnostic,
+	RichModuleDiagnostic,
+	RichProjectDiagnostic,
+	SimpleDiagnostic,
+	SimpleDiagnostics,
 	SimpleLocationDiagnostic,
+	SimpleModuleDiagnostic,
+	SimpleProjectDiagnostic,
 } from "./inspector/index.ts";
 export { translateSeverityToExitCode } from "./inspector/index.ts";
 export { jsonReporter, type Reporter, summaryReporter } from "./reporter/index.ts";

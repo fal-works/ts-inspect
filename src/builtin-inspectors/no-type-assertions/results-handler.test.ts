@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import type { SimpleLocationDiagnostic } from "../../inspector/index.ts";
+import type { SimpleDiagnostics } from "../../inspector/index.ts";
 import { defaultResultsBuilder } from "./results-handler.ts";
 
 describe("builtin-inspectors/no-type-assertions/results-handler", () => {
@@ -24,19 +24,20 @@ describe("builtin-inspectors/no-type-assertions/results-handler", () => {
 			assert.strictEqual(result.message, "Found suspicious type assertions.");
 			assert.ok(result.advices?.includes("Tip:"));
 
-			const diagnostics = result.diagnostics as SimpleLocationDiagnostic[];
-			assert.strictEqual(diagnostics.length, 2);
+			const diagnostics = result.diagnostics as SimpleDiagnostics;
+			assert.strictEqual(diagnostics.type, "simple");
+			assert.strictEqual(diagnostics.items.length, 2);
 
-			assert.deepStrictEqual(diagnostics[0], {
-				type: "location-simple",
+			assert.deepStrictEqual(diagnostics.items[0], {
+				type: "location",
 				severity: "error",
 				file: "test.ts",
 				line: 1,
 				snippet: "value as any",
 			});
 
-			assert.deepStrictEqual(diagnostics[1], {
-				type: "location-simple",
+			assert.deepStrictEqual(diagnostics.items[1], {
+				type: "location",
 				severity: "error",
 				file: "test.ts",
 				line: 2,
@@ -48,7 +49,9 @@ describe("builtin-inspectors/no-type-assertions/results-handler", () => {
 			const result = defaultResultsBuilder([]);
 
 			assert.strictEqual(result.inspectorName, "no-type-assertions");
-			assert.strictEqual(result.diagnostics.length, 0);
+			const diagnostics = result.diagnostics as SimpleDiagnostics;
+			assert.strictEqual(diagnostics.type, "simple");
+			assert.strictEqual(diagnostics.items.length, 0);
 			assert.strictEqual(result.message, undefined);
 			assert.strictEqual(result.advices, undefined);
 		});
@@ -66,10 +69,11 @@ describe("builtin-inspectors/no-type-assertions/results-handler", () => {
 			];
 			const result = defaultResultsBuilder(mockResults);
 
-			const diagnostics = result.diagnostics as SimpleLocationDiagnostic[];
-			assert.strictEqual(diagnostics.length, 2);
-			assert.strictEqual(diagnostics[0].file, "test1.ts");
-			assert.strictEqual(diagnostics[1].file, "test2.ts");
+			const diagnostics = result.diagnostics as SimpleDiagnostics;
+			assert.strictEqual(diagnostics.type, "simple");
+			assert.strictEqual(diagnostics.items.length, 2);
+			assert.strictEqual((diagnostics.items[0] as any).file, "test1.ts");
+			assert.strictEqual((diagnostics.items[1] as any).file, "test2.ts");
 		});
 	});
 });

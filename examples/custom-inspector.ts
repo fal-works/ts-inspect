@@ -1,6 +1,7 @@
 import {
 	type Inspector,
 	inspectProject,
+	type SimpleDiagnostics,
 	type SimpleLocationDiagnostic,
 	translateSeverityToExitCode,
 } from "@fal-works/ts-inspect";
@@ -30,15 +31,15 @@ function createConsoleLogInspector(): Inspector<ConsoleLogFinding[]> {
 			return undefined; // unchanged
 		},
 		resultsBuilder: (perFile) => {
-			const diagnostics: SimpleLocationDiagnostic[] = [];
+			const diagnosticItems: SimpleLocationDiagnostic[] = [];
 			let total = 0;
 
 			for (const { srcFile, result } of perFile) {
 				if (result && result.length > 0) {
 					total += result.length;
 					for (const finding of result) {
-						diagnostics.push({
-							type: "location-simple",
+						diagnosticItems.push({
+							type: "location",
 							severity: "error",
 							file: srcFile.file.fileName,
 							line: finding.line,
@@ -47,6 +48,11 @@ function createConsoleLogInspector(): Inspector<ConsoleLogFinding[]> {
 					}
 				}
 			}
+
+			const diagnostics: SimpleDiagnostics = {
+				type: "simple",
+				items: diagnosticItems,
+			};
 
 			return {
 				inspectorName: "console-log-inspector",
