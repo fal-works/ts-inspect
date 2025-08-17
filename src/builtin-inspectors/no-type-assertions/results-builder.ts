@@ -5,7 +5,7 @@
 import type { LocationDiagnostic, SimpleDiagnostics } from "../../diagnostics/index.ts";
 import type { InspectorResult, ResultsBuilder } from "../../inspector/index.ts";
 import { IGNORE_COMMENT } from "./constants.ts";
-import type { TypeAssertionInspectionResult } from "./types.ts";
+import type { TypeAssertionFindings } from "./types.ts";
 
 /**
  * Generates a friendly message about type assertions.
@@ -26,16 +26,16 @@ But be aware that this is an exceptional case.
 `.trim();
 
 /**
- * Default results builder for `TypeAssertionInspectionResult`.
+ * Default results builder for `TypeAssertionFindings`.
  */
-export const defaultResultsBuilder: ResultsBuilder<TypeAssertionInspectionResult> = (
+export const defaultResultsBuilder: ResultsBuilder<TypeAssertionFindings> = (
 	resultPerFile,
 ) => {
 	const diagnosticItems: LocationDiagnostic[] = [];
 
 	for (const r of resultPerFile) {
 		const file = r.srcFile.file.fileName;
-		for (const found of r.result) {
+		for (const found of r.finalState) {
 			diagnosticItems.push({
 				type: "location",
 				severity: "error",

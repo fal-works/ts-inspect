@@ -2,7 +2,7 @@ import assert from "node:assert";
 import { describe, it } from "node:test";
 import ts from "typescript";
 import { createNodeInspectorFactory } from "./node-inspector.ts";
-import type { TypeAssertionInspectionResult } from "./types.ts";
+import type { TypeAssertionFindings } from "./types.ts";
 
 describe("builtin-inspectors/no-type-assertions/node-inspector", () => {
 	describe("createNodeInspectorFactory", () => {
@@ -10,11 +10,11 @@ describe("builtin-inspectors/no-type-assertions/node-inspector", () => {
 			return ts.createSourceFile("test.ts", code, ts.ScriptTarget.Latest, true);
 		}
 
-		function runInspectorOnCode(code: string): TypeAssertionInspectionResult | null {
+		function runInspectorOnCode(code: string): TypeAssertionFindings | null {
 			const srcFile = createTestSourceFile(code);
 			const nodeInspector = createNodeInspectorFactory(srcFile);
 
-			let result: TypeAssertionInspectionResult | null = null;
+			let result: TypeAssertionFindings | null = null;
 			function visit(node: ts.Node) {
 				const newResult = nodeInspector(node, result);
 				if (newResult !== undefined) {

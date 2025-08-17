@@ -2,7 +2,7 @@ import {
 	type Inspector,
 	inspectProject,
 	type SimpleDiagnostics,
-	type SimpleLocationDiagnostic,
+	type LocationDiagnostic,
 	translateSeverityToExitCode,
 } from "@fal-works/ts-inspect";
 import ts from "typescript";
@@ -15,12 +15,12 @@ type ConsoleLogFinding = {
 function createConsoleLogInspector(): Inspector<ConsoleLogFinding[]> {
 	return {
 		name: "console-log-inspector",
-		nodeInspectorFactory: (srcFile) => (node, recentResult) => {
+		nodeInspectorFactory: (srcFile) => (node, recentState) => {
 			if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
 				const expr = node.expression;
 				if (expr.expression.getText(srcFile) === "console" && expr.name.text === "log") {
 					const { line } = srcFile.getLineAndCharacterOfPosition(node.getStart(srcFile, false));
-					const result = recentResult ?? [];
+					const result = recentState ?? [];
 					result.push({
 						line: line + 1, // 1-based
 						snippet: node.getText(srcFile),
@@ -31,13 +31,13 @@ function createConsoleLogInspector(): Inspector<ConsoleLogFinding[]> {
 			return undefined; // unchanged
 		},
 		resultsBuilder: (perFile) => {
-			const diagnosticItems: SimpleLocationDiagnostic[] = [];
+			const diagnosticItems: LocationDiagnostic[] = [];
 			let total = 0;
 
-			for (const { srcFile, result } of perFile) {
-				if (result && result.length > 0) {
-					total += result.length;
-					for (const finding of result) {
+			for (const { srcFile, finalState } of perFile) {
+				if (finalState && finalState.length > 0) {
+					total += finalState.length;
+					for (const finding of finalState) {
 						diagnosticItems.push({
 							type: "location",
 							severity: "error",

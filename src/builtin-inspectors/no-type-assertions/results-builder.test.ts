@@ -11,7 +11,7 @@ describe("builtin-inspectors/no-type-assertions/results-builder", () => {
 					srcFile: {
 						file: { fileName: "test.ts" },
 					} as any,
-					result: [
+					finalState: [
 						{ line: 1, snippet: "value as any" },
 						{ line: 2, snippet: "data as string" },
 					],
@@ -60,11 +60,11 @@ describe("builtin-inspectors/no-type-assertions/results-builder", () => {
 			const mockResults = [
 				{
 					srcFile: { file: { fileName: "test1.ts" } } as any,
-					result: [{ line: 1, snippet: "value as any" }],
+					finalState: [{ line: 1, snippet: "value as any" }],
 				},
 				{
 					srcFile: { file: { fileName: "test2.ts" } } as any,
-					result: [{ line: 5, snippet: "data as string" }],
+					finalState: [{ line: 5, snippet: "data as string" }],
 				},
 			];
 			const result = defaultResultsBuilder(mockResults);

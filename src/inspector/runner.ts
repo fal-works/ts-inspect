@@ -24,24 +24,24 @@ export async function runInspectors(
 			const nodeInspectors = inspectors.map((inspector) =>
 				inspector.nodeInspectorFactory(src.file),
 			);
-			const resultPerInspector: (unknown | null)[] = new Array(inspectorCount).fill(null);
+			const statePerInspector: (unknown | null)[] = new Array(inspectorCount).fill(null);
 
 			const inspectNode = (node: ts.Node) => {
 				for (let i = 0; i < inspectorCount; ++i) {
-					const lastResult = resultPerInspector[i];
-					const ret = nodeInspectors[i](node, lastResult);
-					if (ret !== undefined) resultPerInspector[i] = ret;
+					const lastState = statePerInspector[i];
+					const ret = nodeInspectors[i](node, lastState);
+					if (ret !== undefined) statePerInspector[i] = ret;
 				}
 				ts.forEachChild(node, inspectNode);
 			};
 
 			inspectNode(src.file);
 
-			return { srcFile: src, resultPerInspector };
+			return { srcFile: src, statePerInspector };
 		}),
 	);
 
-	const resultsPerInspector: FileInspectionResult<unknown>[][] = Array.from(
+	const statesPerInspector: FileInspectionResult<unknown>[][] = Array.from(
 		{ length: inspectorCount },
 		() => [],
 	);
@@ -49,9 +49,9 @@ export async function runInspectors(
 	for (const processedFile of settled) {
 		if (processedFile.status === "fulfilled") {
 			for (let i = 0; i < inspectorCount; ++i) {
-				const { srcFile, resultPerInspector } = processedFile.value;
-				const result = resultPerInspector[i];
-				if (result !== null) resultsPerInspector[i].push({ srcFile, result });
+				const { srcFile, statePerInspector } = processedFile.value;
+				const finalState = statePerInspector[i];
+				if (finalState !== null) statesPerInspector[i].push({ srcFile, finalState });
 			}
 		} else {
 			console.error("Error occurred during source file inspection:");
@@ -66,7 +66,7 @@ export async function runInspectors(
 	const results: InspectorResults = [];
 
 	for (let i = 0; i < inspectorCount; ++i) {
-		const resultPerFile = resultsPerInspector[i];
+		const resultPerFile = statesPerInspector[i];
 		const inspectorResult = inspectors[i].resultsBuilder(resultPerFile);
 		results.push(inspectorResult);
 	}

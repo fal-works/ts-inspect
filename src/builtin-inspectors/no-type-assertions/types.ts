@@ -18,6 +18,6 @@ export type TypeAssertionFinding = {
 };
 
 /**
- * Result type for type assertion inspection containing all findings.
+ * List of all type assertion inspection findings.
  */
-export type TypeAssertionInspectionResult = TypeAssertionFinding[];
+export type TypeAssertionFindings = TypeAssertionFinding[];
