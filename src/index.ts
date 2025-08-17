@@ -88,6 +88,7 @@ export const inspectFiles = wrapUnexpectedExceptionsAsync(inspectFilesInternal);
 export const inspectProject = wrapUnexpectedExceptionsAsync(inspectProjectInternal);
 
 export { createAsAssertionInspector } from "./builtin-inspectors/index.ts";
+export { createPrinter, type Printer } from "./core/printer.ts";
 export type {
 	DiagnosticItem,
 	DiagnosticSeverity,

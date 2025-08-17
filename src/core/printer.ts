@@ -1,11 +1,12 @@
 /**
- * Simple printer utility for formatted console output with automatic indentation.
+ * Utility for building formatted text output with automatic indentation and grouping.
  */
 
 import type { Writable } from "node:stream";
 
 /**
- * Printer interface for building formatted output with grouping and indentation.
+ * Printer interface for building formatted text output with grouping and indentation.
+ * Useful for creating human-readable reports, logs, or any hierarchical text output.
  */
 export interface Printer {
 	/** Print text without newline */
@@ -19,7 +20,8 @@ export interface Printer {
 }
 
 /**
- * Creates a new printer instance that writes to a writable stream.
+ * Creates a new printer instance that writes formatted text to a writable stream.
+ * Provides automatic indentation management for hierarchical output structures.
  */
 export function createPrinter(output: Writable): Printer {
 	let indentLevel = 0;
