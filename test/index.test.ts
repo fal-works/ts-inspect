@@ -71,7 +71,7 @@ describe("index", () => {
 			assert.ok(result === null || ["error", "warning", "info"].includes(result));
 		});
 
-				it("accepts custom reporter without error", async () => {
+		it("accepts custom reporter without error", async () => {
 			const filePaths = [join("test", "fixtures", "src", "sample.ts")];
 			const customReporter = (results: any, output: any) => {
 				// Simple custom reporter for testing

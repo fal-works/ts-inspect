@@ -48,18 +48,25 @@ function formatInspectorResult(result: InspectorResult, printer: Printer): void 
 	if (severity === null) return; // Skip inspectors with no issues
 
 	printer.group(`[${result.inspectorName}]`);
+	if (result.message) printer.println(result.message);
 
-	if (result.message) {
-		printer.println(result.message);
-	}
+	const diagnostics: DiagnosticItem[] = result.diagnostics;
+	if (diagnostics.length > 0) {
+		printer.newLine();
 
-	const diagnostics = Array.isArray(result.diagnostics) ? result.diagnostics : [];
+		for (let i = 0; i < diagnostics.length; i++) {
+			const diagnostic = diagnostics[i];
+			formatDiagnostic(diagnostic, printer);
 
-	for (const diagnostic of diagnostics) {
-		formatDiagnostic(diagnostic, printer);
+			// Add empty line between multi-line diagnostic items (but not after the last one)
+			if (i < diagnostics.length - 1 && diagnostic.type !== "location-simple") {
+				printer.newLine();
+			}
+		}
 	}
 
 	if (result.advices) {
+		printer.newLine();
 		printer.println(`💡 ${result.advices}`);
 	}
 
@@ -72,7 +79,17 @@ function formatInspectorResult(result: InspectorResult, printer: Printer): void 
 export const summaryReporter: Reporter = (results, output) => {
 	const printer = createPrinter(output);
 
-	for (const result of results) {
-		formatInspectorResult(result, printer);
+	// Filter out results with no issues to avoid unnecessary spacing
+	const resultsWithIssues = results.filter(
+		(result) => getWorstSeverity(result.diagnostics) !== null,
+	);
+
+	for (let i = 0; i < resultsWithIssues.length; i++) {
+		formatInspectorResult(resultsWithIssues[i], printer);
+
+		// Add empty line between inspector results (but not after the last one)
+		if (i < resultsWithIssues.length - 1) {
+			printer.newLine();
+		}
 	}
 };
