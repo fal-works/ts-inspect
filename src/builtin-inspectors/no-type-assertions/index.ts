@@ -4,7 +4,7 @@
 
 import type { Inspector, ResultsBuilder } from "../../inspector/index.ts";
 import { createNodeInspectorFactory } from "./node-inspector.ts";
-import { defaultResultsBuilder } from "./results-handler.ts";
+import { defaultResultsBuilder } from "./results-builder.ts";
 import type { TypeAssertionInspectionResult } from "./types.ts";
 
 export type { TypeAssertionFinding, TypeAssertionInspectionResult } from "./types.ts";

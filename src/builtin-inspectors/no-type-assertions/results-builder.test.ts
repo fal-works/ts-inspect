@@ -1,9 +1,9 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
 import type { SimpleDiagnostics } from "../../diagnostics/index.ts";
-import { defaultResultsBuilder } from "./results-handler.ts";
+import { defaultResultsBuilder } from "./results-builder.ts";
 
-describe("builtin-inspectors/no-type-assertions/results-handler", () => {
+describe("builtin-inspectors/no-type-assertions/results-builder", () => {
 	describe("defaultResultsBuilder", () => {
 		it("returns structured result when type assertions are found", () => {
 			const mockResults = [

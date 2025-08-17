@@ -26,7 +26,7 @@ It performs a single depth-first pass per source file and lets multiple inspecto
 - Single traversal shared by all inspectors (add many without N× AST walks).
 - Uses TypeScript Compiler API for accurate parsing of TS / JS / TSX / JSX / etc.
 - Ships with a default inspector: suspicious type assertions.
-- Customizable with a tiny API surface: define just a node visitor + a result handler.
+- Customizable with a tiny API surface: define just a node visitor + a result builder.
 - Minimal runtime dependencies (TypeScript >= 5.0, Node.js >= 22.6).
 
 ## Installation
