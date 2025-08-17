@@ -21,7 +21,7 @@ describe("builtin-inspectors/no-type-assertions/results-handler", () => {
 			const result = defaultResultsBuilder(mockResults);
 
 			assert.strictEqual(result.inspectorName, "no-type-assertions");
-			assert.strictEqual(result.message, "Found suspicious type assertions:");
+			assert.strictEqual(result.message, "Found suspicious type assertions.");
 			assert.ok(result.advices?.includes("Tip:"));
 
 			const diagnostics = result.diagnostics as SimpleLocationDiagnostic[];

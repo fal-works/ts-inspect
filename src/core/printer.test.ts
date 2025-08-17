@@ -73,5 +73,17 @@ describe("core/printer", () => {
 
 			assert.strictEqual(printer.getOutput(), "Normal text");
 		});
+
+		it("handles group without heading", () => {
+			const printer = createPrinter();
+			printer.print("Before group");
+			printer.group(); // No heading
+			printer.print("Indented item");
+			printer.groupEnd();
+			printer.print("After group");
+
+			const expected = "Before group\n  Indented item\n\nAfter group";
+			assert.strictEqual(printer.getOutput(), expected);
+		});
 	});
 });

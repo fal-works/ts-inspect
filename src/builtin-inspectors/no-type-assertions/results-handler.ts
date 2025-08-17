@@ -55,7 +55,7 @@ export const defaultResultsBuilder: ResultsBuilder<TypeAssertionInspectionResult
 	};
 
 	if (diagnostics.length > 0) {
-		result.message = "Found suspicious type assertions:";
+		result.message = "Found suspicious type assertions.";
 		result.advices = noTypeAssertionsFriendlyMessage();
 	}
 

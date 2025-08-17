@@ -47,7 +47,7 @@ function formatInspectorResult(result: InspectorResult, printer: Printer): void 
 	const severity = getWorstSeverity(result.diagnostics);
 	if (severity === null) return; // Skip inspectors with no issues
 
-	printer.group(`${result.inspectorName}:`);
+	printer.group(`[${result.inspectorName}]`);
 
 	if (result.message) {
 		printer.print(result.message);

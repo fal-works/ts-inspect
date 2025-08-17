@@ -10,8 +10,8 @@ export interface Printer {
 	print(text: string): void;
 	/** Print text with newline */
 	println(text: string): void;
-	/** Start a new group with heading and increase indentation */
-	group(heading: string): void;
+	/** Start a new group with optional heading and increase indentation */
+	group(heading?: string): void;
 	/** End current group and decrease indentation */
 	groupEnd(): void;
 	/** Get the accumulated output as string */
@@ -33,9 +33,7 @@ export function createPrinter(): Printer {
 	function addIndentedLines(text: string): void {
 		const textLines = text.split("\n");
 		const indent = getIndent();
-		for (const line of textLines) {
-			lines.push(indent + line);
-		}
+		for (const line of textLines) lines.push(indent + line);
 	}
 
 	return {
@@ -52,8 +50,8 @@ export function createPrinter(): Printer {
 			lines.push("");
 		},
 
-		group(heading: string): void {
-			this.print(heading);
+		group(heading?: string): void {
+			if (heading) this.print(heading);
 			indentLevel++;
 		},
 
