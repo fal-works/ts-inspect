@@ -7,8 +7,7 @@ export type {
 	Inspector,
 	NodeInspector,
 	NodeInspectorFactory,
-	ResultsHandler,
+	ResultsBuilder,
 } from "./inspector.ts";
+export type { InspectorResult, InspectorResults } from "./inspector-result.ts";
 export { runInspectors } from "./runner.ts";
-export type { InspectionStatus } from "./status.ts";
-export { translateStatusToExitCode } from "./status.ts";

@@ -1,32 +1,58 @@
-import { type Inspector, inspectProject, translateStatusToExitCode } from "@fal-works/ts-inspect";
+import {
+	type CodeLocation,
+	type Inspector,
+	inspectProject,
+	type LocationDiagnostic,
+	translateSeverityToExitCode,
+} from "@fal-works/ts-inspect";
 import ts from "typescript";
 
-function createConsoleLogInspector(): Inspector<number> {
+function createConsoleLogInspector(): Inspector<CodeLocation[]> {
 	return {
-		nodeInspectorFactory: (srcFile) => (node, count) => {
+		name: "console-log-inspector",
+		nodeInspectorFactory: (srcFile) => (node, recentState) => {
 			if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)) {
 				const expr = node.expression;
 				if (expr.expression.getText(srcFile) === "console" && expr.name.text === "log") {
-					return (count ?? 0) + 1;
+					const { line } = srcFile.getLineAndCharacterOfPosition(node.getStart(srcFile, false));
+					const state = recentState ?? [];
+					state.push({
+						line: line + 1, // 1-based
+						snippet: node.getText(srcFile),
+					});
+					return state;
 				}
 			}
 			return undefined; // unchanged
 		},
-		resultsHandler: (perFile) => {
-			if (!perFile.length) return "success";
+		resultsBuilder: (perFile) => {
+			const items: LocationDiagnostic[] = [];
 			let total = 0;
-			for (const { srcFile, result } of perFile) {
-				if (result > 0) {
-					total += result;
-					console.log(`${srcFile.file.fileName}: ${result} console.log calls`);
+
+			for (const { srcFile, finalState } of perFile) {
+				if (finalState && finalState.length > 0) {
+					total += finalState.length;
+					for (const finding of finalState) {
+						items.push({
+							type: "location",
+							severity: "error",
+							file: srcFile.file.fileName,
+							location: finding,
+						});
+					}
 				}
 			}
-			if (total === 0) return "success";
-			console.log(`Total console.log calls: ${total}`);
-			return "error";
+
+			return {
+				inspectorName: "console-log-inspector",
+				message: total > 0 ? `Found ${total} console.log calls` : undefined,
+				diagnostics: { type: "simple", items },
+				advices:
+					total > 0 ? "Consider using a proper logging library instead of console.log" : undefined,
+			};
 		},
 	};
 }
 
 const status = await inspectProject(undefined, { inspectors: [createConsoleLogInspector()] });
-process.exitCode = translateStatusToExitCode(status);
+process.exitCode = translateSeverityToExitCode(status);

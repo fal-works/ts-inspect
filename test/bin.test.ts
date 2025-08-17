@@ -19,11 +19,11 @@ describe("bin", () => {
 				const { stdout, stderr } = await execFileAsync("node", [binPath], {
 					cwd: process.cwd(),
 				});
-				// If no exception thrown, exit code was 0 (no issues found)
+				// execFileAsync resolves only if exit code is 0 (success - no issues found)
 				assert.strictEqual(typeof stdout, "string");
 				assert.strictEqual(typeof stderr, "string");
 			} catch (error) {
-				// If exception thrown, should be exit code 1 (issues found) not 2 (fatal error)
+				// If non-zero exit code, should be exit code 1 (issues found) not 2 (fatal error)
 				assert.ok(error instanceof Error);
 				assert.ok("code" in error);
 				assert.ok(error.code === 1, `Expected exit code 1 but got ${error.code}`);
@@ -37,6 +37,7 @@ describe("bin", () => {
 			const { stdout, stderr } = await execFileAsync("node", [binPath, "--project", projectPath], {
 				cwd: process.cwd(),
 			});
+			// execFileAsync resolves only if exit code is 0 (success)
 			assert.strictEqual(typeof stdout, "string");
 			assert.strictEqual(typeof stderr, "string");
 		});
@@ -46,6 +47,7 @@ describe("bin", () => {
 			const { stdout, stderr } = await execFileAsync("node", [binPath, "-p", projectPath], {
 				cwd: process.cwd(),
 			});
+			// execFileAsync resolves only if exit code is 0 (success)
 			assert.strictEqual(typeof stdout, "string");
 			assert.strictEqual(typeof stderr, "string");
 		});
@@ -55,16 +57,77 @@ describe("bin", () => {
 				const { stdout, stderr } = await execFileAsync("node", [binPath, "--exclude-test"], {
 					cwd: process.cwd(),
 				});
-				// If no exception thrown, exit code was 0 (no issues found)
+				// execFileAsync resolves only if exit code is 0 (success - no issues found)
 				assert.strictEqual(typeof stdout, "string");
 				assert.strictEqual(typeof stderr, "string");
 			} catch (error) {
-				// If exception thrown, should be exit code 1 (issues found) not 2 (fatal error)
+				// If non-zero exit code, should be exit code 1 (issues found) not 2 (fatal error)
 				assert.ok(error instanceof Error);
 				assert.ok("code" in error);
 				assert.ok(error.code === 1, `Expected exit code 1 but got ${error.code}`);
 				assert.ok("stdout" in error);
 				assert.strictEqual(typeof error.stdout, "string");
+			}
+		});
+
+		it("executes with --reporter=summary argument", async () => {
+			const projectPath = join("test", "fixtures", "project-with-tsconfig");
+			try {
+				const { stdout, stderr } = await execFileAsync(
+					"node",
+					[binPath, "--project", projectPath, "--reporter", "summary"],
+					{
+						cwd: process.cwd(),
+					},
+				);
+				assert.strictEqual(typeof stdout, "string");
+				assert.strictEqual(typeof stderr, "string");
+			} catch (error) {
+				// If non-zero exit code, should be exit code 1 (issues found) not 2 (fatal error)
+				assert.ok(error instanceof Error);
+				assert.ok("code" in error);
+				assert.ok(error.code === 1, `Expected exit code 1 but got ${error.code}`);
+			}
+		});
+
+		it("executes with --reporter=raw-json argument", async () => {
+			const projectPath = join("test", "fixtures", "project-with-tsconfig");
+			try {
+				const { stdout, stderr } = await execFileAsync(
+					"node",
+					[binPath, "--project", projectPath, "--reporter", "raw-json"],
+					{
+						cwd: process.cwd(),
+					},
+				);
+				assert.strictEqual(typeof stdout, "string");
+				assert.strictEqual(typeof stderr, "string");
+				// JSON output should be parseable
+				JSON.parse(stdout);
+			} catch (error) {
+				// If non-zero exit code, should be exit code 1 (issues found) not 2 (fatal error)
+				assert.ok(error instanceof Error);
+				assert.ok("code" in error);
+				assert.ok(error.code === 1, `Expected exit code 1 but got ${error.code}`);
+				// Should still be valid JSON even with errors
+				if ("stdout" in error) {
+					JSON.parse(error.stdout as string);
+				}
+			}
+		});
+
+		it("exits with code 2 for invalid reporter option", async () => {
+			try {
+				await execFileAsync("node", [binPath, "--reporter", "invalid"], {
+					cwd: process.cwd(),
+				});
+				assert.fail("Expected command to exit with code 2 for invalid reporter");
+			} catch (error) {
+				assert.ok(error instanceof Error);
+				assert.ok("code" in error);
+				assert.strictEqual(error.code, 2);
+				assert.ok("stderr" in error);
+				assert.ok((error.stderr as string).includes("Unknown reporter"));
 			}
 		});
 	});
@@ -75,7 +138,7 @@ describe("bin", () => {
 			const { stdout, stderr } = await execFileAsync("node", [binPath, "-p", projectPath], {
 				cwd: process.cwd(),
 			});
-			// If no exception thrown, exit code was 0
+			// execFileAsync resolves only if exit code is 0 - this test verifies exit code 0
 			assert.strictEqual(typeof stdout, "string");
 			assert.strictEqual(typeof stderr, "string");
 		});

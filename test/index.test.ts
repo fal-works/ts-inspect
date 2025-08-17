@@ -6,7 +6,13 @@ import assert from "node:assert";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import { TsInspectError } from "../src/error.ts";
-import { inspectFiles, inspectProject } from "../src/index.ts";
+import {
+	inspectFiles,
+	inspectProject,
+	type Reporter,
+	rawJsonReporter,
+	summaryReporter,
+} from "../src/index.ts";
 import { executeNodeScript } from "./test-utils.ts";
 
 describe("index", () => {
@@ -18,13 +24,12 @@ describe("index", () => {
 			];
 
 			const result = await inspectFiles(filePaths);
-			assert.strictEqual(typeof result, "string");
-			assert.ok(["success", "warn", "error"].includes(result));
+			assert.ok(result === null || ["error", "warning", "info"].includes(result));
 		});
 
-		it("returns success status for empty file list", async () => {
+		it("returns null status for empty file list", async () => {
 			const result = await inspectFiles([]);
-			assert.strictEqual(result, "success");
+			assert.strictEqual(result, null);
 		});
 
 		it("accepts custom inspector options without error", async () => {
@@ -32,7 +37,7 @@ describe("index", () => {
 			const result = await inspectFiles(filePaths, {
 				inspectors: [],
 			});
-			assert.strictEqual(result, "success");
+			assert.strictEqual(result, null);
 		});
 
 		it("wraps unexpected exceptions with TsInspectError", async () => {
@@ -53,27 +58,55 @@ describe("index", () => {
 				},
 			);
 		});
+
+		it("accepts rawJsonReporter without error", async () => {
+			const filePaths = [join("test", "fixtures", "src", "sample.ts")];
+
+			const result = await inspectFiles(filePaths, {
+				reporter: rawJsonReporter,
+			});
+			assert.ok(result === null || ["error", "warning", "info"].includes(result));
+		});
+
+		it("accepts summaryReporter explicitly without error", async () => {
+			const filePaths = [join("test", "fixtures", "src", "sample.ts")];
+
+			const result = await inspectFiles(filePaths, {
+				reporter: summaryReporter,
+			});
+			assert.ok(result === null || ["error", "warning", "info"].includes(result));
+		});
+
+		it("accepts custom reporter without error", async () => {
+			const filePaths = [join("test", "fixtures", "src", "sample.ts")];
+			const customReporter: Reporter = (results, output) => {
+				// Simple custom reporter for testing
+				output.write(`Custom: ${results.length} results\n`);
+			};
+
+			const result = await inspectFiles(filePaths, {
+				reporter: customReporter,
+			});
+			assert.ok(result === null || ["error", "warning", "info"].includes(result));
+		});
 	});
 
 	describe("inspectProject", () => {
 		it("does not throw error with tsconfig.json project", async () => {
 			const projectPath = join("test", "fixtures", "project-with-tsconfig");
 			const result = await inspectProject(projectPath);
-			assert.strictEqual(typeof result, "string");
-			assert.ok(["success", "warn", "error"].includes(result));
+			assert.ok(result === null || ["error", "warning", "info"].includes(result));
 		});
 
 		it("does not throw error with jsconfig.json project", async () => {
 			const projectPath = join("test", "fixtures", "project-with-jsconfig");
 			const result = await inspectProject(projectPath);
-			assert.strictEqual(typeof result, "string");
-			assert.ok(["success", "warn", "error"].includes(result));
+			assert.ok(result === null || ["error", "warning", "info"].includes(result));
 		});
 
 		it("does not throw error when using default tsconfig discovery", async () => {
 			const result = await inspectProject();
-			assert.strictEqual(typeof result, "string");
-			assert.ok(["success", "warn", "error"].includes(result));
+			assert.ok(result === null || ["error", "warning", "info"].includes(result));
 		});
 
 		it("accepts custom inspector options without error", async () => {
@@ -81,7 +114,7 @@ describe("index", () => {
 			const result = await inspectProject(projectPath, {
 				inspectors: [],
 			});
-			assert.strictEqual(result, "success");
+			assert.strictEqual(result, null);
 		});
 
 		it("throws TsInspectError for known configuration errors", async () => {
@@ -107,6 +140,20 @@ describe("index", () => {
 			// The script should run with error findings (exit code 1) and detect console.log calls
 			assert.strictEqual(result.code, 1);
 			assert.ok(result.stdout.includes("console.log calls")); // findings go to stdout
+			assert.strictEqual(result.stderr, ""); // tool/config/runtime errors go to stderr
+		});
+	});
+
+	describe("custom reporter integration", () => {
+		it("can run examples/custom-reporter.ts script", async () => {
+			const customReporterPath = join("examples", "custom-reporter.ts");
+
+			const result = await executeNodeScript(customReporterPath);
+
+			// The script should run with error findings (exit code 1) and use custom formatting
+			assert.strictEqual(result.code, 1);
+			assert.ok(result.stdout.includes("Found 1 inspector results")); // custom reporter output
+			assert.ok(result.stdout.includes("no-type-assertions:")); // custom inspector name format
 			assert.strictEqual(result.stderr, ""); // tool/config/runtime errors go to stderr
 		});
 	});

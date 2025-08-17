@@ -6,7 +6,7 @@ import ts from "typescript";
 import type { NodeInspectorFactory } from "../../inspector/index.ts";
 import { hasIgnoreComment, isAsConst, isUnknownAssertion } from "./ast-node.ts";
 import { IGNORE_COMMENT } from "./constants.ts";
-import type { TypeAssertionInspectionResult } from "./types.ts";
+import type { TypeAssertionFindings } from "./types.ts";
 
 /**
  * Determines if a TypeScript AST node is a suspicious type assertion.
@@ -22,18 +22,18 @@ function isSuspiciousTypeAssertion(srcFile: ts.SourceFile, node: ts.Node): boole
 }
 
 /**
- * Creates a node inspector factory for detecting suspicious type assertions.
+ * Node inspector factory for detecting suspicious type assertions.
  */
-export const createNodeInspectorFactory: NodeInspectorFactory<TypeAssertionInspectionResult> =
-	(srcFile) => (node, recentResult) => {
+export const nodeInspectorFactory: NodeInspectorFactory<TypeAssertionFindings> =
+	(srcFile) => (node, recentState) => {
 		if (isSuspiciousTypeAssertion(srcFile, node)) {
 			const { line } = srcFile.getLineAndCharacterOfPosition(node.getStart(srcFile, false));
-			const result = recentResult ?? [];
-			result.push({
+			const state = recentState ?? [];
+			state.push({
 				line: line + 1,
 				snippet: node.getText(srcFile),
 			});
-			return result;
+			return state;
 		} else {
 			return undefined;
 		}

@@ -1,7 +1,14 @@
 #!/usr/bin/env node
 
 import { parseArgs } from "node:util";
-import { inspectProject, translateStatusToExitCode } from "./index.ts";
+import {
+	type InspectOptions,
+	inspectProject,
+	type Reporter,
+	rawJsonReporter,
+	summaryReporter,
+	translateSeverityToExitCode,
+} from "./index.ts";
 
 /**
  * Main CLI function without catching fatal errors.
@@ -16,16 +23,39 @@ async function mainInternal(): Promise<0 | 1> {
 			"exclude-test": {
 				type: "boolean",
 			},
+			reporter: {
+				type: "string",
+			},
 		},
 	});
 
-	const status = await inspectProject(values.project, {
+	// Resolve reporter from CLI argument
+	let reporter: Reporter | undefined;
+	if (values.reporter) {
+		switch (values.reporter) {
+			case "summary":
+				reporter = summaryReporter;
+				break;
+			case "raw-json":
+				reporter = rawJsonReporter;
+				break;
+			default:
+				throw new Error(
+					`Unknown reporter: ${values.reporter}. Available options: summary, raw-json`,
+				);
+		}
+	}
+
+	const options: InspectOptions = {
 		sourceFilesOptions: {
 			excludeTest: values["exclude-test"],
 		},
-	});
+		...(reporter && { reporter }),
+	};
 
-	return translateStatusToExitCode(status);
+	const status = await inspectProject(values.project, options);
+
+	return translateSeverityToExitCode(status);
 }
 
 /**

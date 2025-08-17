@@ -3,8 +3,10 @@
  */
 
 import { createDefaultInspectors } from "./builtin-inspectors/index.ts";
+import { type DiagnosticSeverity, getOverallWorstSeverity } from "./diagnostics/index.ts";
 import { type TsInspectError, wrapUnexpectedExceptionsAsync } from "./error.ts";
-import { type InspectionStatus, type Inspector, runInspectors } from "./inspector/index.ts";
+import { type Inspector, runInspectors } from "./inspector/index.ts";
+import { type Reporter, summaryReporter } from "./reporter/index.ts";
 import {
 	inferParseSourceFilesOptions,
 	type ParseSourceFilesOptions,
@@ -19,35 +21,50 @@ export interface InspectOptions {
 	sourceFilesOptions?: ParseSourceFilesOptions;
 	// biome-ignore lint/suspicious/noExplicitAny: We can't use the unknown type here because this should accept inspectors with variadic types.
 	inspectors?: Inspector<any>[];
+	/** Reporter function for formatting output (defaults to summaryReporter) */
+	reporter?: Reporter;
 }
 
 /**
  * Executes inspection on the provided file paths with the given options and/or inspectors.
  */
-function executeInspection(
+async function executeInspection(
 	filePaths: string[],
 	sourceFilesOptions: ParseSourceFilesOptions | undefined,
 	inspectors: Inspector[] | undefined,
-): Promise<InspectionStatus> {
+	reporter?: Reporter,
+): Promise<DiagnosticSeverity | null> {
 	const resolvedInspectors = inspectors ?? createDefaultInspectors();
 	const srcFilePromises = parseSourceFiles(filePaths, sourceFilesOptions);
 
-	return runInspectors(resolvedInspectors, srcFilePromises);
+	const results = await runInspectors(resolvedInspectors, srcFilePromises);
+
+	// Format and output results using the configured reporter
+	const resolvedReporter = reporter ?? summaryReporter;
+	resolvedReporter(results, process.stdout);
+
+	// Return the overall severity directly
+	return getOverallWorstSeverity(results);
 }
 
 /** @see inspectFiles */
 async function inspectFilesInternal(
 	filePaths: string[],
 	options?: InspectOptions,
-): Promise<InspectionStatus> {
-	return executeInspection(filePaths, options?.sourceFilesOptions, options?.inspectors);
+): Promise<DiagnosticSeverity | null> {
+	return executeInspection(
+		filePaths,
+		options?.sourceFilesOptions,
+		options?.inspectors,
+		options?.reporter,
+	);
 }
 
 /** @see inspectProject */
 async function inspectProjectInternal(
 	projectPath?: string,
 	options?: InspectOptions,
-): Promise<InspectionStatus> {
+): Promise<DiagnosticSeverity | null> {
 	const tsconfigPath = await resolveProjectPath(projectPath);
 	const tsconfig = parseConfig(tsconfigPath, tsconfigPath.endsWith("jsconfig.json"));
 
@@ -55,6 +72,7 @@ async function inspectProjectInternal(
 		tsconfig.fileNames,
 		inferParseSourceFilesOptions(tsconfig, options?.sourceFilesOptions),
 		options?.inspectors,
+		options?.reporter,
 	);
 }
 
@@ -76,12 +94,30 @@ export const inspectFiles = wrapUnexpectedExceptionsAsync(inspectFilesInternal);
 export const inspectProject = wrapUnexpectedExceptionsAsync(inspectProjectInternal);
 
 export { createAsAssertionInspector } from "./builtin-inspectors/index.ts";
+export { createPrinter, type Printer } from "./core/printer.ts";
+export type {
+	CodeLocation,
+	Diagnostic,
+	DiagnosticSeverity,
+	Diagnostics,
+	LocationDiagnostic,
+	ModuleDiagnostic,
+	ProjectDiagnostic,
+	RichDiagnostic,
+	RichDiagnostics,
+	RichLocationDiagnostic,
+	RichModuleDiagnostic,
+	SimpleDiagnostic,
+	SimpleDiagnostics,
+} from "./diagnostics/index.ts";
+export { translateSeverityToExitCode } from "./diagnostics/index.ts";
 export type {
 	FileInspectionResult,
-	InspectionStatus,
 	Inspector,
+	InspectorResult,
+	InspectorResults,
 	NodeInspector,
-	ResultsHandler,
+	ResultsBuilder,
 } from "./inspector/index.ts";
-export { translateStatusToExitCode } from "./inspector/index.ts";
+export { type Reporter, rawJsonReporter, summaryReporter } from "./reporter/index.ts";
 export type { TsInspectError };

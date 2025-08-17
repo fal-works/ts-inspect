@@ -5,17 +5,17 @@
 import ts from "typescript";
 import type { ParsedSourceFile } from "../source-file/index.ts";
 import type { FileInspectionResult, Inspector } from "./inspector.ts";
-import type { InspectionStatus } from "./status.ts";
+import type { InspectorResults } from "./inspector-result.ts";
 
 /**
  * Inspects all the given source files using the provided inspectors,
- * then runs the results handler for each inspector.
+ * then runs the results builder for each inspector.
  */
 export async function runInspectors(
 	// biome-ignore lint/suspicious/noExplicitAny: We can't use the unknown type here because this should accept inspectors with variadic types.
 	inspectors: Inspector<any>[],
 	srcFiles: Promise<ParsedSourceFile>[],
-): Promise<InspectionStatus> {
+): Promise<InspectorResults> {
 	const inspectorCount = inspectors.length;
 
 	const settled = await Promise.allSettled(
@@ -24,35 +24,34 @@ export async function runInspectors(
 			const nodeInspectors = inspectors.map((inspector) =>
 				inspector.nodeInspectorFactory(src.file),
 			);
-			const resultPerInspector: (unknown | null)[] = new Array(inspectorCount).fill(null);
+			const statePerInspector: (unknown | null)[] = new Array(inspectorCount).fill(null);
 
 			const inspectNode = (node: ts.Node) => {
 				for (let i = 0; i < inspectorCount; ++i) {
-					const lastResult = resultPerInspector[i];
-					const ret = nodeInspectors[i](node, lastResult);
-					if (ret !== undefined) resultPerInspector[i] = ret;
+					const lastState = statePerInspector[i];
+					const ret = nodeInspectors[i](node, lastState);
+					if (ret !== undefined) statePerInspector[i] = ret;
 				}
 				ts.forEachChild(node, inspectNode);
 			};
 
 			inspectNode(src.file);
 
-			return { srcFile: src, resultPerInspector };
+			return { srcFile: src, statePerInspector };
 		}),
 	);
 
-	const resultsPerInspector: FileInspectionResult<unknown>[][] = Array.from(
+	const statesPerInspector: FileInspectionResult<unknown>[][] = Array.from(
 		{ length: inspectorCount },
 		() => [],
 	);
-	let status: InspectionStatus = "success";
 
 	for (const processedFile of settled) {
 		if (processedFile.status === "fulfilled") {
 			for (let i = 0; i < inspectorCount; ++i) {
-				const { srcFile, resultPerInspector } = processedFile.value;
-				const result = resultPerInspector[i];
-				if (result !== null) resultsPerInspector[i].push({ srcFile, result });
+				const { srcFile, statePerInspector } = processedFile.value;
+				const finalState = statePerInspector[i];
+				if (finalState !== null) statesPerInspector[i].push({ srcFile, finalState });
 			}
 		} else {
 			console.error("Error occurred during source file inspection:");
@@ -60,19 +59,17 @@ export async function runInspectors(
 			console.error(processedFile.reason);
 			console.groupEnd();
 			console.error(); // empty line
-			status = "error";
+			// Continue processing other files even if one fails
 		}
 	}
+
+	const results: InspectorResults = [];
 
 	for (let i = 0; i < inspectorCount; ++i) {
-		const resultPerFile = resultsPerInspector[i];
-		const inspectorStatus = inspectors[i].resultsHandler(resultPerFile);
-		if (inspectorStatus === "error") {
-			status = "error";
-		} else if (status !== "error" && inspectorStatus === "warn") {
-			status = "warn";
-		}
+		const resultPerFile = statesPerInspector[i];
+		const inspectorResult = inspectors[i].resultsBuilder(resultPerFile);
+		results.push(inspectorResult);
 	}
 
-	return status;
+	return results;
 }

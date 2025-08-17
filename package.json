@@ -19,8 +19,8 @@
 	"scripts": {
 		"build": "tsdown",
 		"test": "npm run test:unit && npm run test:integration",
-		"test:unit": "node --test src/**/*.test.ts",
-		"test:integration": "npm run build && node --test test/**/*.test.ts",
+		"test:unit": "node --test \"src/**/*.test.ts\"",
+		"test:integration": "npm run build && node --test \"test/**/*.test.ts\"",
 		"lint": "biome check",
 		"lint:fix": "biome check --fix",
 		"check:types": "tsc --noEmit -p tsconfig.json",
