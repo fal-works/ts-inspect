@@ -56,7 +56,6 @@ export interface ModuleDiagnostic extends DiagnosticBase {
 	file: string;
 }
 
-
 // Rich diagnostic types (extensions of base types)
 
 /**

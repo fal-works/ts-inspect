@@ -1,16 +1,13 @@
 import {
 	type Inspector,
 	inspectProject,
-	type SimpleDiagnostics,
 	type LocationDiagnostic,
+	type SimpleDiagnostics,
 	translateSeverityToExitCode,
 } from "@fal-works/ts-inspect";
 import ts from "typescript";
 
-type ConsoleLogFinding = {
-	line: number;
-	snippet: string;
-};
+type ConsoleLogFinding = { line: number; snippet: string };
 
 function createConsoleLogInspector(): Inspector<ConsoleLogFinding[]> {
 	return {
