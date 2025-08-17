@@ -13,7 +13,7 @@ export type DiagnosticSeverity = "error" | "warning" | "info";
 /**
  * Location information for diagnostics that reference specific code positions in a source file.
  * Useful for building location-based diagnostics in custom results builders.
- * 
+ *
  * For simplicity, it only includes the start line number and not the precise character range.
  */
 export interface CodeLocation {
