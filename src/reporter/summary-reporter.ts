@@ -67,14 +67,12 @@ function formatInspectorResult(result: InspectorResult, printer: Printer): void 
 }
 
 /**
- * Built-in summary reporter with improved format for consistency with common linters.
+ * Built-in summary reporter.
  */
-export const summaryReporter: Reporter = (results) => {
-	const printer = createPrinter();
+export const summaryReporter: Reporter = (results, output) => {
+	const printer = createPrinter(output);
 
 	for (const result of results) {
 		formatInspectorResult(result, printer);
 	}
-
-	return printer.getOutput();
 };

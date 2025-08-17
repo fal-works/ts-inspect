@@ -2,6 +2,8 @@
  * Simple printer utility for formatted console output with automatic indentation.
  */
 
+import type { Writable } from "node:stream";
+
 /**
  * Printer interface for building formatted output with grouping and indentation.
  */
@@ -14,15 +16,12 @@ export interface Printer {
 	group(heading?: string): void;
 	/** End current group and decrease indentation */
 	groupEnd(): void;
-	/** Get the accumulated output as string */
-	getOutput(): string;
 }
 
 /**
- * Creates a new printer instance.
+ * Creates a new printer instance that writes to a writable stream.
  */
-export function createPrinter(): Printer {
-	let output = "";
+export function createPrinter(output: Writable): Printer {
 	let indentLevel = 0;
 	const indentUnit = "  "; // 2 spaces
 	let atLineStart = true;
@@ -30,15 +29,15 @@ export function createPrinter(): Printer {
 	function writeText(text: string): void {
 		if (atLineStart && text.length > 0) {
 			for (let i = 0; i < indentLevel; i++) {
-				output += indentUnit;
+				output.write(indentUnit);
 			}
 			atLineStart = false;
 		}
-		output += text;
+		output.write(text);
 	}
 
 	function newLine(): void {
-		output += "\n";
+		output.write("\n");
 		atLineStart = true;
 	}
 
@@ -75,10 +74,6 @@ export function createPrinter(): Printer {
 					newLine(); // Ensure we end at line start
 				}
 			}
-		},
-
-		getOutput(): string {
-			return output;
 		},
 	};
 }

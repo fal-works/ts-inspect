@@ -41,10 +41,7 @@ async function executeInspection(
 	const results = await runInspectors(resolvedInspectors, srcFilePromises);
 
 	// Format and output results using the summary reporter
-	const output = summaryReporter(results);
-	if (output) {
-		console.log(output);
-	}
+	summaryReporter(results, process.stdout);
 
 	// Return the overall severity directly
 	return getOverallWorstSeverity(results);
