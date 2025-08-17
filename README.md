@@ -128,17 +128,15 @@ Each diagnostic has a severity that affects exit codes:
 
 ```ts
 import {
+  type CodeLocation,
   type Inspector,
   inspectProject,
   type LocationDiagnostic,
-  type SimpleDiagnostics,
   translateSeverityToExitCode,
 } from "@fal-works/ts-inspect";
 import ts from "typescript";
 
-type ConsoleLogFinding = { line: number; snippet: string };
-
-function createConsoleLogInspector(): Inspector<ConsoleLogFinding[]> {
+function createConsoleLogInspector(): Inspector<CodeLocation[]> {
   return {
     name: "console-log-inspector",
     nodeInspectorFactory: (srcFile) => (node, recentState) => {
@@ -146,12 +144,12 @@ function createConsoleLogInspector(): Inspector<ConsoleLogFinding[]> {
         const expr = node.expression;
         if (expr.expression.getText(srcFile) === "console" && expr.name.text === "log") {
           const { line } = srcFile.getLineAndCharacterOfPosition(node.getStart(srcFile, false));
-          const result = recentState ?? [];
-          result.push({
+          const state = recentState ?? [];
+          state.push({
             line: line + 1, // 1-based
             snippet: node.getText(srcFile),
           });
-          return result;
+          return state;
         }
       }
       return undefined; // unchanged
@@ -168,19 +166,16 @@ function createConsoleLogInspector(): Inspector<ConsoleLogFinding[]> {
               type: "location",
               severity: "error",
               file: srcFile.file.fileName,
-              line: finding.line,
-              snippet: finding.snippet,
+              location: finding,
             });
           }
         }
       }
 
-      const diagnostics: SimpleDiagnostics = { type: "simple", items };
-
       return {
         inspectorName: "console-log-inspector",
         message: total > 0 ? `Found ${total} console.log calls` : undefined,
-        diagnostics,
+        diagnostics: { type: "simple", items },
         advices:
           total > 0 ? "Consider using a proper logging library instead of console.log" : undefined,
       };
