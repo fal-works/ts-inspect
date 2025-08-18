@@ -217,13 +217,9 @@ describe("bin", () => {
 					// Ignore if directories don't exist
 				}
 
-				await execFileAsync(
-					"node",
-					[binPath, "--project", projectPath, "--output", outputPath],
-					{
-						cwd: process.cwd(),
-					},
-				);
+				await execFileAsync("node", [binPath, "--project", projectPath, "--output", outputPath], {
+					cwd: process.cwd(),
+				});
 
 				// This should fail due to type assertions, but directories and output file should still be created
 				assert.fail("Should have thrown due to type assertions");

@@ -51,10 +51,10 @@ describe("examples", () => {
 			// Verify the output file was created and contains expected content
 			const outputFilePath = "inspection-results.txt";
 			assert.ok(await fileExists(outputFilePath));
-			
+
 			const fileContent = await readFile(outputFilePath, "utf-8");
 			assert.ok(fileContent.includes("no-type-assertions")); // inspector name should be in output
-			
+
 			// Clean up the output file
 			await unlink(outputFilePath);
 		});
