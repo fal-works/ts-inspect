@@ -13,7 +13,23 @@ export type TsInspectErrorType =
 	| { errorCode: "config-file-not-found"; directoryPath: string }
 	| { errorCode: "config-file-read-failure"; diagnostics: ts.Diagnostic[] }
 	| { errorCode: "config-parse-failure"; diagnostics: ts.Diagnostic[] }
+	| { errorCode: "output-file-stream-error"; filePath: string; originalError: Error }
+	| { errorCode: "output-file-stream-unexpected-finish"; filePath: string }
 	| { errorCode: "unexpected-exception"; caught: unknown };
+
+/**
+ * Extracts the original error for the cause property.
+ */
+function getOriginalError(type: TsInspectErrorType): unknown {
+	switch (type.errorCode) {
+		case "output-file-stream-error":
+			return type.originalError;
+		case "unexpected-exception":
+			return type.caught;
+		default:
+			return undefined;
+	}
+}
 
 /**
  * Converts error type to human-readable message.
@@ -28,6 +44,10 @@ export function errorTypeToMessage(errorType: TsInspectErrorType): string {
 			return formatDiagnostics(errorType.diagnostics);
 		case "config-parse-failure":
 			return formatDiagnostics(errorType.diagnostics);
+		case "output-file-stream-error":
+			return `Failed to write to output file '${errorType.filePath}': ${String(errorType.originalError)}`;
+		case "output-file-stream-unexpected-finish":
+			return `Output stream for '${errorType.filePath}' finished unexpectedly during inspection`;
 		case "unexpected-exception":
 			return `Unexpected exception: ${String(errorType.caught)}`;
 	}
@@ -44,8 +64,8 @@ export class TsInspectError extends Error {
 	type: TsInspectErrorType;
 
 	constructor(type: TsInspectErrorType) {
-		const options: ErrorOptions | undefined =
-			type.errorCode === "unexpected-exception" ? { cause: type.caught } : undefined;
+		const originalError = getOriginalError(type);
+		const options: ErrorOptions | undefined = originalError ? { cause: originalError } : undefined;
 		super(errorTypeToMessage(type), options);
 		this.type = type;
 	}
