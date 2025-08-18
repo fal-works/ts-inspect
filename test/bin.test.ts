@@ -4,7 +4,7 @@
 
 import assert from "node:assert";
 import { execFile } from "node:child_process";
-import { readFile, unlink } from "node:fs/promises";
+import { readFile, rmdir, unlink } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import { promisify } from "node:util";
@@ -12,6 +12,7 @@ import { promisify } from "node:util";
 const execFileAsync = promisify(execFile);
 const readFileAsync = readFile;
 const unlinkAsync = unlink;
+const rmdirAsync = rmdir;
 
 const binPath = join("dist", "bin.js");
 
@@ -199,6 +200,48 @@ describe("bin", () => {
 
 				// Clean up
 				await unlinkAsync(outputPath);
+			}
+		});
+
+		it("creates nested output directories automatically", async () => {
+			const projectPath = join("test", "fixtures", "project-with-type-assertions");
+			const outputPath = join("nested-test-dir", "subdir", "output.txt");
+
+			try {
+				// Clean up any existing output directory
+				try {
+					await unlinkAsync(outputPath);
+					await rmdirAsync(join("nested-test-dir", "subdir"));
+					await rmdirAsync("nested-test-dir");
+				} catch {
+					// Ignore if directories don't exist
+				}
+
+				await execFileAsync(
+					"node",
+					[binPath, "--project", projectPath, "--output", outputPath],
+					{
+						cwd: process.cwd(),
+					},
+				);
+
+				// This should fail due to type assertions, but directories and output file should still be created
+				assert.fail("Should have thrown due to type assertions");
+			} catch (error) {
+				// Should be exit code 1 (issues found)
+				assert.ok(error instanceof Error);
+				assert.ok("code" in error);
+				assert.ok(error.code === 1, `Expected exit code 1 but got ${error.code}`);
+
+				// Check that nested directories were created and output file exists
+				const outputContent = await readFileAsync(outputPath, "utf-8");
+				assert.ok(outputContent.length > 0);
+				assert.ok(outputContent.includes("Found suspicious type assertions"));
+
+				// Clean up
+				await unlinkAsync(outputPath);
+				await rmdirAsync(join("nested-test-dir", "subdir"));
+				await rmdirAsync("nested-test-dir");
 			}
 		});
 

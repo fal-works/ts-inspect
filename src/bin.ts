@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
 import { createWriteStream } from "node:fs";
+import { mkdir } from "node:fs/promises";
+import { dirname } from "node:path";
 import { parseArgs } from "node:util";
 import {
 	type InspectOptions,
@@ -42,7 +44,13 @@ async function mainInternal(): Promise<0 | 1> {
 	}
 
 	// Create output stream if --output is specified
-	const output = values.output ? createWriteStream(values.output, { encoding: "utf8" }) : undefined;
+	let output: ReturnType<typeof createWriteStream> | undefined;
+	if (values.output) {
+		// Ensure output directory exists
+		const outputDir = dirname(values.output);
+		await mkdir(outputDir, { recursive: true });
+		output = createWriteStream(values.output, { encoding: "utf8" });
+	}
 
 	const options: InspectOptions = {
 		sourceFilesOptions: {
