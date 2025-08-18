@@ -17,20 +17,10 @@ import {
 async function mainInternal(): Promise<0 | 1> {
 	const { values } = parseArgs({
 		options: {
-			project: {
-				type: "string",
-				short: "p",
-			},
-			"exclude-test": {
-				type: "boolean",
-			},
-			reporter: {
-				type: "string",
-			},
-			output: {
-				type: "string",
-				short: "o",
-			},
+			project: { type: "string", short: "p" },
+			"exclude-test": { type: "boolean" },
+			reporter: { type: "string" },
+			output: { type: "string", short: "o" },
 		},
 	});
 
