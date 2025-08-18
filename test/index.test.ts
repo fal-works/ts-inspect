@@ -3,8 +3,10 @@
  */
 
 import assert from "node:assert";
+import { readFile, unlink } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, it } from "node:test";
+import { fileExists } from "../src/core/files.ts";
 import { TsInspectError } from "../src/error.ts";
 import {
 	inspectFiles,
@@ -89,6 +91,56 @@ describe("index", () => {
 			});
 			assert.ok(result === null || ["error", "warning", "info"].includes(result));
 		});
+
+		it("accepts custom output stream", async () => {
+			const filePaths = [join("test", "fixtures", "src", "sample.ts")];
+
+			// Create a mock writable stream to capture output
+			let capturedOutput = "";
+			const mockOutput = {
+				write: (chunk: string) => {
+					capturedOutput += chunk;
+					return true;
+				},
+				end: () => {},
+			} as any;
+
+			const result = await inspectFiles(filePaths, {
+				output: mockOutput,
+			});
+
+			assert.ok(result === null || ["error", "warning", "info"].includes(result));
+			// Output should be captured in our mock stream instead of going to stdout
+			assert.ok(typeof capturedOutput === "string");
+		});
+
+		it("uses custom output stream with custom reporter", async () => {
+			const filePaths = [
+				join("test", "fixtures", "project-with-type-assertions", "src", "sample.ts"),
+			];
+
+			// Create a mock writable stream to capture output
+			let capturedOutput = "";
+			const mockOutput = {
+				write: (chunk: string) => {
+					capturedOutput += chunk;
+					return true;
+				},
+				end: () => {},
+			} as any;
+
+			const customReporter: Reporter = (results, output) => {
+				output.write(`TEST: Found ${results.length} results\n`);
+			};
+
+			const result = await inspectFiles(filePaths, {
+				reporter: customReporter,
+				output: mockOutput,
+			});
+
+			assert.strictEqual(result, "error"); // Should find type assertions
+			assert.strictEqual(capturedOutput, "TEST: Found 1 results\n");
+		});
 	});
 
 	describe("inspectProject", () => {
@@ -155,6 +207,29 @@ describe("index", () => {
 			assert.ok(result.stdout.includes("Found 1 inspector results")); // custom reporter output
 			assert.ok(result.stdout.includes("no-type-assertions:")); // custom inspector name format
 			assert.strictEqual(result.stderr, ""); // tool/config/runtime errors go to stderr
+		});
+	});
+
+	describe("output to file integration", () => {
+		it("can run examples/output-to-file.ts script", async () => {
+			const outputToFilePath = join("examples", "output-to-file.ts");
+
+			const result = await executeNodeScript(outputToFilePath);
+
+			// The script should run with error findings (exit code 1) and write to file
+			assert.strictEqual(result.code, 1);
+			assert.ok(result.stdout.includes("Results written to inspection-results.txt")); // console output
+			assert.strictEqual(result.stderr, ""); // tool/config/runtime errors go to stderr
+
+			// Verify the output file was created and contains expected content
+			const outputFilePath = "inspection-results.txt";
+			assert.ok(await fileExists(outputFilePath));
+
+			const fileContent = await readFile(outputFilePath, "utf-8");
+			assert.ok(fileContent.includes("no-type-assertions")); // inspector name should be in output
+
+			// Clean up the output file
+			await unlink(outputFilePath);
 		});
 	});
 });

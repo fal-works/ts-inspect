@@ -52,6 +52,7 @@ npx @fal-works/ts-inspect
 - `--project`, `-p` - Specify project directory or `tsconfig.json` path
 - `--exclude-test` - Exclude files (e.g. `*.test.ts`) from parsing source files
 - `--reporter` - Output format: `summary` (default, human-readable) or `raw-json` (machine-readable)
+- `--output`, `-o` - Write output to file instead of stdout
 
 ### Exit Codes
 
@@ -82,6 +83,17 @@ Or specify your own file list:
 import { inspectFiles } from "@fal-works/ts-inspect";
 
 await inspectFiles(["src/foo.ts", "src/bar.tsx"]);
+```
+
+Write output to a custom stream:
+
+```ts
+import { createWriteStream } from "node:fs";
+import { inspectProject } from "@fal-works/ts-inspect";
+
+const outputStream = createWriteStream("results.txt", { encoding: "utf8" });
+await inspectProject("./my-project", { output: outputStream });
+outputStream.end();
 ```
 
 ## Built‑in Inspector: Suspicious Type Assertions

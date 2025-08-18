@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { createWriteStream } from "node:fs";
 import { parseArgs } from "node:util";
 import {
 	type InspectOptions,
@@ -26,6 +27,10 @@ async function mainInternal(): Promise<0 | 1> {
 			reporter: {
 				type: "string",
 			},
+			output: {
+				type: "string",
+				short: "o",
+			},
 		},
 	});
 
@@ -46,14 +51,21 @@ async function mainInternal(): Promise<0 | 1> {
 		}
 	}
 
+	// Create output stream if --output is specified
+	const output = values.output ? createWriteStream(values.output, { encoding: "utf8" }) : undefined;
+
 	const options: InspectOptions = {
 		sourceFilesOptions: {
 			excludeTest: values["exclude-test"],
 		},
 		...(reporter && { reporter }),
+		...(output && { output }),
 	};
 
 	const status = await inspectProject(values.project, options);
+
+	// Close the output stream if we created one
+	if (output) output.end();
 
 	return translateSeverityToExitCode(status);
 }

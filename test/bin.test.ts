@@ -4,11 +4,14 @@
 
 import assert from "node:assert";
 import { execFile } from "node:child_process";
+import { readFile, unlink } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
+const readFileAsync = readFile;
+const unlinkAsync = unlink;
 
 const binPath = join("dist", "bin.js");
 
@@ -113,6 +116,89 @@ describe("bin", () => {
 				if ("stdout" in error) {
 					JSON.parse(error.stdout as string);
 				}
+			}
+		});
+
+		it("executes with --output argument and writes to file", async () => {
+			const projectPath = join("test", "fixtures", "project-with-type-assertions");
+			const outputPath = join("test-output-cli.txt");
+
+			try {
+				// Clean up any existing output file
+				try {
+					await unlinkAsync(outputPath);
+				} catch {
+					// Ignore if file doesn't exist
+				}
+
+				const { stdout, stderr } = await execFileAsync(
+					"node",
+					[binPath, "--project", projectPath, "--output", outputPath],
+					{
+						cwd: process.cwd(),
+					},
+				);
+
+				// stdout should be empty when using --output
+				assert.strictEqual(stdout, "");
+				assert.strictEqual(typeof stderr, "string");
+
+				// Check that output file was created
+				const outputContent = await readFileAsync(outputPath, "utf-8");
+				assert.ok(outputContent.length > 0);
+
+				// Clean up
+				await unlinkAsync(outputPath);
+			} catch (error) {
+				// If non-zero exit code, should be exit code 1 (issues found) not 2 (fatal error)
+				assert.ok(error instanceof Error);
+				assert.ok("code" in error);
+				assert.ok(error.code === 1, `Expected exit code 1 but got ${error.code}`);
+
+				// Check that output file was still created
+				const outputContent = await readFileAsync(outputPath, "utf-8");
+				assert.ok(outputContent.length > 0);
+
+				// Clean up
+				await unlinkAsync(outputPath);
+			}
+		});
+
+		it("executes with --output and --reporter=raw-json arguments", async () => {
+			const projectPath = join("test", "fixtures", "project-with-type-assertions");
+			const outputPath = join("test-output-json-cli.txt");
+
+			try {
+				// Clean up any existing output file
+				try {
+					await unlinkAsync(outputPath);
+				} catch {
+					// Ignore if file doesn't exist
+				}
+
+				await execFileAsync(
+					"node",
+					[binPath, "--project", projectPath, "--output", outputPath, "--reporter", "raw-json"],
+					{
+						cwd: process.cwd(),
+					},
+				);
+
+				// This should fail due to type assertions, but output file should still be created
+				assert.fail("Should have thrown due to type assertions");
+			} catch (error) {
+				// Should be exit code 1 (issues found)
+				assert.ok(error instanceof Error);
+				assert.ok("code" in error);
+				assert.ok(error.code === 1, `Expected exit code 1 but got ${error.code}`);
+
+				// Check that output file was created with valid JSON
+				const outputContent = await readFileAsync(outputPath, "utf-8");
+				assert.ok(outputContent.length > 0);
+				JSON.parse(outputContent); // Should not throw
+
+				// Clean up
+				await unlinkAsync(outputPath);
 			}
 		});
 

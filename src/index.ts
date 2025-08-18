@@ -2,6 +2,7 @@
  * Main entry point for the ts-inspect library providing TypeScript AST inspection utilities.
  */
 
+import type { Writable } from "node:stream";
 import { createDefaultInspectors } from "./builtin-inspectors/index.ts";
 import { type DiagnosticSeverity, getOverallWorstSeverity } from "./diagnostics/index.ts";
 import { type TsInspectError, wrapUnexpectedExceptionsAsync } from "./error.ts";
@@ -23,6 +24,8 @@ export interface InspectOptions {
 	inspectors?: Inspector<any>[];
 	/** Reporter function for formatting output (defaults to summaryReporter) */
 	reporter?: Reporter;
+	/** Output stream for writing results (defaults to process.stdout) */
+	output?: Writable;
 }
 
 /**
@@ -33,6 +36,7 @@ async function executeInspection(
 	sourceFilesOptions: ParseSourceFilesOptions | undefined,
 	inspectors: Inspector[] | undefined,
 	reporter?: Reporter,
+	output?: Writable,
 ): Promise<DiagnosticSeverity | null> {
 	const resolvedInspectors = inspectors ?? createDefaultInspectors();
 	const srcFilePromises = parseSourceFiles(filePaths, sourceFilesOptions);
@@ -41,7 +45,8 @@ async function executeInspection(
 
 	// Format and output results using the configured reporter
 	const resolvedReporter = reporter ?? summaryReporter;
-	resolvedReporter(results, process.stdout);
+	const resolvedOutput = output ?? process.stdout;
+	resolvedReporter(results, resolvedOutput);
 
 	// Return the overall severity directly
 	return getOverallWorstSeverity(results);
@@ -57,6 +62,7 @@ async function inspectFilesInternal(
 		options?.sourceFilesOptions,
 		options?.inspectors,
 		options?.reporter,
+		options?.output,
 	);
 }
 
@@ -73,6 +79,7 @@ async function inspectProjectInternal(
 		inferParseSourceFilesOptions(tsconfig, options?.sourceFilesOptions),
 		options?.inspectors,
 		options?.reporter,
+		options?.output,
 	);
 }
 
