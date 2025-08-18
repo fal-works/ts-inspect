@@ -29,23 +29,20 @@ export interface InspectOptions {
 }
 
 /**
- * Executes inspection on the provided file paths with the given options and/or inspectors.
+ * Executes inspection on the provided file paths with the given options.
  */
 async function executeInspection(
 	filePaths: string[],
-	sourceFilesOptions: ParseSourceFilesOptions | undefined,
-	inspectors: Inspector[] | undefined,
-	reporter?: Reporter,
-	output?: Writable,
+	options?: InspectOptions,
 ): Promise<DiagnosticSeverity | null> {
-	const resolvedInspectors = inspectors ?? createDefaultInspectors();
-	const srcFilePromises = parseSourceFiles(filePaths, sourceFilesOptions);
+	const resolvedInspectors = options?.inspectors ?? createDefaultInspectors();
+	const srcFilePromises = parseSourceFiles(filePaths, options?.sourceFilesOptions);
 
 	const results = await runInspectors(resolvedInspectors, srcFilePromises);
 
 	// Format and output results using the configured reporter
-	const resolvedReporter = reporter ?? summaryReporter;
-	const resolvedOutput = output ?? process.stdout;
+	const resolvedReporter = options?.reporter ?? summaryReporter;
+	const resolvedOutput = options?.output ?? process.stdout;
 	resolvedReporter(results, resolvedOutput);
 
 	// Return the overall severity directly
@@ -57,13 +54,7 @@ async function inspectFilesInternal(
 	filePaths: string[],
 	options?: InspectOptions,
 ): Promise<DiagnosticSeverity | null> {
-	return executeInspection(
-		filePaths,
-		options?.sourceFilesOptions,
-		options?.inspectors,
-		options?.reporter,
-		options?.output,
-	);
+	return executeInspection(filePaths, options);
 }
 
 /** @see inspectProject */
@@ -74,13 +65,13 @@ async function inspectProjectInternal(
 	const tsconfigPath = await resolveProjectPath(projectPath);
 	const tsconfig = parseConfig(tsconfigPath, tsconfigPath.endsWith("jsconfig.json"));
 
-	return executeInspection(
-		tsconfig.fileNames,
-		inferParseSourceFilesOptions(tsconfig, options?.sourceFilesOptions),
-		options?.inspectors,
-		options?.reporter,
-		options?.output,
-	);
+	// Create new options with computed sourceFilesOptions based on tsconfig
+	const projectOptions: InspectOptions = {
+		...options,
+		sourceFilesOptions: inferParseSourceFilesOptions(tsconfig, options?.sourceFilesOptions),
+	};
+
+	return executeInspection(tsconfig.fileNames, projectOptions);
 }
 
 /**
