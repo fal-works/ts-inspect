@@ -8,18 +8,22 @@ Focus on niche or experimental code-quality heuristics you can't (or don't want 
 
 Early alpha. Public API is small and may change.
 
+## You Might Want to Consider Other Tools
+
+- [Biome](https://biomejs.dev/) now supports [Linter Plugins](https://biomejs.dev/linter/plugins/).
+- [Oxlint](https://oxc.rs/docs/guide/usage/linter.html) now offers [type-aware linting](https://oxc.rs/blog/2025-08-17-oxlint-type-aware).
+- [ESLint](https://eslint.org/) ecosystem has one of the largest collections of plugins and rules.
+- [ast-grep](https://ast-grep.github.io/) provides AST-based code search and linting for multiple languages, including TS.
+
 ## Why ts-inspect?
 
-`@fal-works/ts-inspect` is a lightweight framework for running custom AST inspections using the TypeScript compiler API.
+`@fal-works/ts-inspect` is a lightweight framework for custom AST inspections using the TypeScript compiler API.
 
 It complements full linters (Biome, ESLint, ...) when you need:
 
-- A one-off rule that's too project-specific to justify a linter plugin.
-- Fast prototyping of static analysis ideas.
-- Guidance signals for AI coding agents (you control result formatting).
-- Additional heuristics that run in CI without modifying existing linter configs.
-
-It performs a single depth-first pass per source file and lets multiple inspectors share that traversal for efficiency.
+- Fast prototyping of type-aware inspections, leveraging TypeScript’s AST parsing.
+- Guidance signals for AI coding agents, with customizable result formatting.
+- Project-specific or experimental code-quality heuristics that don’t fit into mainstream linters.
 
 ## Key Features
 
@@ -27,6 +31,7 @@ It performs a single depth-first pass per source file and lets multiple inspecto
 - Uses TypeScript Compiler API for accurate parsing of TS / JS / TSX / JSX / etc.
 - Ships with a default inspector: suspicious type assertions.
 - Customizable with a tiny API surface: define just a node visitor + a result builder.
+- Accepts custom reporters for flexible output formatting, fully decoupled from individual inspectors.
 - Minimal runtime dependencies (TypeScript >= 5.0, Node.js >= 22.6).
 
 ## Installation
