@@ -4,16 +4,21 @@
 
 import assert from "node:assert";
 import { execFile as execFileSync } from "node:child_process";
-import { readFile, rmdir, unlink } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { describe, it } from "node:test";
+import { before, describe, it } from "node:test";
 import { promisify } from "node:util";
+import { prepareTestOutputDirectory } from "./test-utils.ts";
 
 const execFile = promisify(execFileSync);
 
 const binPath = join("dist", "bin.js");
 
 describe("bin", () => {
+	before(async () => {
+		await prepareTestOutputDirectory("test-out/bin");
+	});
+
 	describe("CLI execution", () => {
 		it("executes when no project argument provided (may find issues)", async () => {
 			try {
@@ -119,16 +124,9 @@ describe("bin", () => {
 
 		it("executes with --output argument and writes to file", async () => {
 			const projectPath = join("test", "fixtures", "project-with-type-assertions");
-			const outputPath = join("test-output-cli.txt");
+			const outputPath = join("test-out", "bin", "output-cli.txt");
 
 			try {
-				// Clean up any existing output file
-				try {
-					await unlink(outputPath);
-				} catch {
-					// Ignore if file doesn't exist
-				}
-
 				const { stdout, stderr } = await execFile(
 					"node",
 					[binPath, "--project", projectPath, "--output", outputPath],
@@ -144,9 +142,6 @@ describe("bin", () => {
 				// Check that output file was created
 				const outputContent = await readFile(outputPath, "utf-8");
 				assert.ok(outputContent.length > 0);
-
-				// Clean up
-				await unlink(outputPath);
 			} catch (error) {
 				// If non-zero exit code, should be exit code 1 (issues found) not 2 (fatal error)
 				assert.ok(error instanceof Error);
@@ -156,24 +151,14 @@ describe("bin", () => {
 				// Check that output file was still created
 				const outputContent = await readFile(outputPath, "utf-8");
 				assert.ok(outputContent.length > 0);
-
-				// Clean up
-				await unlink(outputPath);
 			}
 		});
 
 		it("executes with --output and --reporter=raw-json arguments", async () => {
 			const projectPath = join("test", "fixtures", "project-with-type-assertions");
-			const outputPath = join("test-output-json-cli.txt");
+			const outputPath = join("test-out", "bin", "output-json-cli.txt");
 
 			try {
-				// Clean up any existing output file
-				try {
-					await unlink(outputPath);
-				} catch {
-					// Ignore if file doesn't exist
-				}
-
 				await execFile(
 					"node",
 					[binPath, "--project", projectPath, "--output", outputPath, "--reporter", "raw-json"],
@@ -194,26 +179,14 @@ describe("bin", () => {
 				const outputContent = await readFile(outputPath, "utf-8");
 				assert.ok(outputContent.length > 0);
 				JSON.parse(outputContent); // Should not throw
-
-				// Clean up
-				await unlink(outputPath);
 			}
 		});
 
 		it("creates nested output directories automatically", async () => {
 			const projectPath = join("test", "fixtures", "project-with-type-assertions");
-			const outputPath = join("nested-test-dir", "subdir", "output.txt");
+			const outputPath = join("test-out", "bin", "nested", "subdir", "output.txt");
 
 			try {
-				// Clean up any existing output directory
-				try {
-					await unlink(outputPath);
-					await rmdir(join("nested-test-dir", "subdir"));
-					await rmdir("nested-test-dir");
-				} catch {
-					// Ignore if directories don't exist
-				}
-
 				await execFile("node", [binPath, "--project", projectPath, "--output", outputPath], {
 					cwd: process.cwd(),
 				});
@@ -230,11 +203,6 @@ describe("bin", () => {
 				const outputContent = await readFile(outputPath, "utf-8");
 				assert.ok(outputContent.length > 0);
 				assert.ok(outputContent.includes("Found suspicious type assertions"));
-
-				// Clean up
-				await unlink(outputPath);
-				await rmdir(join("nested-test-dir", "subdir"));
-				await rmdir("nested-test-dir");
 			}
 		});
 
