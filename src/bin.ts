@@ -1,11 +1,7 @@
 #!/usr/bin/env node
 
-import { createWriteStream } from "node:fs";
-import { mkdir } from "node:fs/promises";
-import { dirname } from "node:path";
-import { finished } from "node:stream/promises";
 import { parseArgs } from "node:util";
-import { TsInspectError } from "./error.ts";
+import { executeWithFileOutput } from "./core/file-stream.ts";
 import {
 	type InspectOptions,
 	inspectProject,
@@ -45,57 +41,20 @@ async function mainInternal(): Promise<0 | 1> {
 		}
 	}
 
-	// Create output stream if --output is specified
-	let output: { stream: ReturnType<typeof createWriteStream>; finished: Promise<void>; filePath: string } | undefined;
-	if (values.output) {
-		const outputPath = values.output;
-		// Ensure output directory exists
-		const outputDir = dirname(outputPath);
-		await mkdir(outputDir, { recursive: true });
-		const stream = createWriteStream(outputPath, { encoding: "utf8" });
-
-		// Capture the completion/error promise up front using finished()
-		const finishedPromise = finished(stream).catch((error) => {
-			throw new TsInspectError({
-				errorCode: "output-file-stream-error",
-				filePath: outputPath,
-				originalError: error,
-			});
-		});
-
-		output = { stream, finished: finishedPromise, filePath: outputPath };
-	}
-
 	const options: InspectOptions = {
 		sourceFilesOptions: {
 			excludeTest: values["exclude-test"],
 		},
 		...(reporter && { reporter }),
-		...(output && { output: output.stream }),
 	};
 
-	// Run the inspection with optional fail-fast on stream errors
-	const inspectionPromise = inspectProject(values.project, options);
-
-	let status: Awaited<ReturnType<typeof inspectProject>>;
-	if (output) {
-		// Race between inspection and stream errors for fail-fast behavior
-		status = await Promise.race([
-			inspectionPromise,
-			output.finished.then(() => {
-				throw new TsInspectError({ 
-					errorCode: "output-file-stream-unexpected-finish",
-					filePath: output.filePath
-				});
-			}),
-		]);
-
-		// Close the output stream and wait for it to finish
-		output.stream.end();
-		await output.finished; // This will throw TsInspectError if stream had errors
-	} else {
-		status = await inspectionPromise;
-	}
+	// Run the inspection with optional file output
+	const status = values.output
+		? await executeWithFileOutput(
+				(output) => inspectProject(values.project, { ...options, output }),
+				values.output,
+			)
+		: await inspectProject(values.project, options);
 
 	return translateSeverityToExitCode(status);
 }
