@@ -42,7 +42,7 @@ async function createStreamCompletionPromise(stream: WriteStream, filePath: stri
 async function createOutputFileStream(filePath: string): Promise<OutputFileStream> {
 	await ensureDirectoryExists(filePath);
 	const stream = createFileWriteStream(filePath);
-	
+
 	try {
 		const finished = createStreamCompletionPromise(stream, filePath);
 		return { stream, finished, filePath };
