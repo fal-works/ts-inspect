@@ -3,6 +3,7 @@
  */
 
 import { spawn } from "node:child_process";
+import { mkdir, rm } from "node:fs/promises";
 
 export interface ExecuteNodeScriptResult {
 	code: number;
@@ -59,4 +60,15 @@ export function executeNodeScript(scriptPath: string): Promise<ExecuteNodeScript
 			resolve({ code: code ?? 0, stdout, stderr });
 		});
 	});
+}
+
+/**
+ * Prepares a test output directory by removing and recreating it.
+ */
+export async function prepareTestOutputDirectory(dirPath: string): Promise<void> {
+	if (!dirPath.startsWith("test-out/"))
+		throw new Error("Test output directory must start with 'test-out/'");
+
+	await rm(dirPath, { recursive: true, force: true });
+	await mkdir(dirPath, { recursive: true });
 }

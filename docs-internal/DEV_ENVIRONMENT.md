@@ -22,4 +22,5 @@ Some directories are gitignored but remain visible to Claude Code through `.igno
 
 - `/dist/` – Build output (needed to verify compilation results)
 - `/local/` – Local workspace files
+- `/test-out/` – Test output directory (used for storing test results)
 - `/node_modules/typescript/` – TypeScript compiler API (imported in source code)
