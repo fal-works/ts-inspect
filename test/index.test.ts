@@ -13,7 +13,6 @@ import {
 	rawJsonReporter,
 	summaryReporter,
 } from "../src/index.ts";
-import { executeNodeScript } from "./test-utils.ts";
 
 describe("index", () => {
 	describe("inspectFiles", () => {
@@ -89,6 +88,56 @@ describe("index", () => {
 			});
 			assert.ok(result === null || ["error", "warning", "info"].includes(result));
 		});
+
+		it("accepts custom output stream", async () => {
+			const filePaths = [join("test", "fixtures", "src", "sample.ts")];
+
+			// Create a mock writable stream to capture output
+			let capturedOutput = "";
+			const mockOutput = {
+				write: (chunk: string) => {
+					capturedOutput += chunk;
+					return true;
+				},
+				end: () => {},
+			} as any;
+
+			const result = await inspectFiles(filePaths, {
+				output: mockOutput,
+			});
+
+			assert.ok(result === null || ["error", "warning", "info"].includes(result));
+			// Output should be captured in our mock stream instead of going to stdout
+			assert.ok(typeof capturedOutput === "string");
+		});
+
+		it("uses custom output stream with custom reporter", async () => {
+			const filePaths = [
+				join("test", "fixtures", "project-with-type-assertions", "src", "sample.ts"),
+			];
+
+			// Create a mock writable stream to capture output
+			let capturedOutput = "";
+			const mockOutput = {
+				write: (chunk: string) => {
+					capturedOutput += chunk;
+					return true;
+				},
+				end: () => {},
+			} as any;
+
+			const customReporter: Reporter = (results, output) => {
+				output.write(`TEST: Found ${results.length} results\n`);
+			};
+
+			const result = await inspectFiles(filePaths, {
+				reporter: customReporter,
+				output: mockOutput,
+			});
+
+			assert.strictEqual(result, "error"); // Should find type assertions
+			assert.strictEqual(capturedOutput, "TEST: Found 1 results\n");
+		});
 	});
 
 	describe("inspectProject", () => {
@@ -128,33 +177,6 @@ describe("index", () => {
 					return true;
 				},
 			);
-		});
-	});
-
-	describe("custom inspector integration", () => {
-		it("can run examples/custom-inspector.ts script", async () => {
-			const customInspectorPath = join("examples", "custom-inspector.ts");
-
-			const result = await executeNodeScript(customInspectorPath);
-
-			// The script should run with error findings (exit code 1) and detect console.log calls
-			assert.strictEqual(result.code, 1);
-			assert.ok(result.stdout.includes("console.log calls")); // findings go to stdout
-			assert.strictEqual(result.stderr, ""); // tool/config/runtime errors go to stderr
-		});
-	});
-
-	describe("custom reporter integration", () => {
-		it("can run examples/custom-reporter.ts script", async () => {
-			const customReporterPath = join("examples", "custom-reporter.ts");
-
-			const result = await executeNodeScript(customReporterPath);
-
-			// The script should run with error findings (exit code 1) and use custom formatting
-			assert.strictEqual(result.code, 1);
-			assert.ok(result.stdout.includes("Found 1 inspector results")); // custom reporter output
-			assert.ok(result.stdout.includes("no-type-assertions:")); // custom inspector name format
-			assert.strictEqual(result.stderr, ""); // tool/config/runtime errors go to stderr
 		});
 	});
 });

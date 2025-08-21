@@ -1,4 +1,5 @@
-import { access, stat } from "node:fs/promises";
+import { access, mkdir, stat } from "node:fs/promises";
+import { dirname } from "node:path";
 
 /**
  * @returns Resolves `true` if the file exists, `false` otherwise.
@@ -16,4 +17,12 @@ export async function isDirectory(path: string): Promise<boolean> {
 	return stat(path)
 		.then((stats) => stats.isDirectory())
 		.catch(() => false);
+}
+
+/**
+ * Ensures the parent directory of a file path exists.
+ */
+export async function ensureDirectoryExists(filePath: string): Promise<void> {
+	const outputDir = dirname(filePath);
+	await mkdir(outputDir, { recursive: true });
 }

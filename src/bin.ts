@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { parseArgs } from "node:util";
+import { executeWithFileOutput } from "./core/file-stream.ts";
 import {
 	type InspectOptions,
 	inspectProject,
@@ -16,16 +17,10 @@ import {
 async function mainInternal(): Promise<0 | 1> {
 	const { values } = parseArgs({
 		options: {
-			project: {
-				type: "string",
-				short: "p",
-			},
-			"exclude-test": {
-				type: "boolean",
-			},
-			reporter: {
-				type: "string",
-			},
+			project: { type: "string", short: "p" },
+			"exclude-test": { type: "boolean" },
+			reporter: { type: "string" },
+			output: { type: "string", short: "o" },
 		},
 	});
 
@@ -53,7 +48,13 @@ async function mainInternal(): Promise<0 | 1> {
 		...(reporter && { reporter }),
 	};
 
-	const status = await inspectProject(values.project, options);
+	// Run the inspection with optional file output
+	const status = values.output
+		? await executeWithFileOutput(
+				(output) => inspectProject(values.project, { ...options, output }),
+				values.output,
+			)
+		: await inspectProject(values.project, options);
 
 	return translateSeverityToExitCode(status);
 }

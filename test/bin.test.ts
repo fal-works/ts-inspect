@@ -3,23 +3,29 @@
  */
 
 import assert from "node:assert";
-import { execFile } from "node:child_process";
+import { execFile as execFileSync } from "node:child_process";
+import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { describe, it } from "node:test";
+import { before, describe, it } from "node:test";
 import { promisify } from "node:util";
+import { prepareTestOutputDirectory } from "./test-utils.ts";
 
-const execFileAsync = promisify(execFile);
+const execFile = promisify(execFileSync);
 
 const binPath = join("dist", "bin.js");
 
 describe("bin", () => {
+	before(async () => {
+		await prepareTestOutputDirectory("test-out/bin");
+	});
+
 	describe("CLI execution", () => {
 		it("executes when no project argument provided (may find issues)", async () => {
 			try {
-				const { stdout, stderr } = await execFileAsync("node", [binPath], {
+				const { stdout, stderr } = await execFile("node", [binPath], {
 					cwd: process.cwd(),
 				});
-				// execFileAsync resolves only if exit code is 0 (success - no issues found)
+				// execFile resolves only if exit code is 0 (success - no issues found)
 				assert.strictEqual(typeof stdout, "string");
 				assert.strictEqual(typeof stderr, "string");
 			} catch (error) {
@@ -34,30 +40,30 @@ describe("bin", () => {
 
 		it("executes without error with --project argument", async () => {
 			const projectPath = join("test", "fixtures", "project-with-tsconfig");
-			const { stdout, stderr } = await execFileAsync("node", [binPath, "--project", projectPath], {
+			const { stdout, stderr } = await execFile("node", [binPath, "--project", projectPath], {
 				cwd: process.cwd(),
 			});
-			// execFileAsync resolves only if exit code is 0 (success)
+			// execFile resolves only if exit code is 0 (success)
 			assert.strictEqual(typeof stdout, "string");
 			assert.strictEqual(typeof stderr, "string");
 		});
 
 		it("executes without error with -p shorthand argument", async () => {
 			const projectPath = join("test", "fixtures", "project-with-jsconfig");
-			const { stdout, stderr } = await execFileAsync("node", [binPath, "-p", projectPath], {
+			const { stdout, stderr } = await execFile("node", [binPath, "-p", projectPath], {
 				cwd: process.cwd(),
 			});
-			// execFileAsync resolves only if exit code is 0 (success)
+			// execFile resolves only if exit code is 0 (success)
 			assert.strictEqual(typeof stdout, "string");
 			assert.strictEqual(typeof stderr, "string");
 		});
 
 		it("executes with --exclude-test argument (may find issues)", async () => {
 			try {
-				const { stdout, stderr } = await execFileAsync("node", [binPath, "--exclude-test"], {
+				const { stdout, stderr } = await execFile("node", [binPath, "--exclude-test"], {
 					cwd: process.cwd(),
 				});
-				// execFileAsync resolves only if exit code is 0 (success - no issues found)
+				// execFile resolves only if exit code is 0 (success - no issues found)
 				assert.strictEqual(typeof stdout, "string");
 				assert.strictEqual(typeof stderr, "string");
 			} catch (error) {
@@ -73,7 +79,7 @@ describe("bin", () => {
 		it("executes with --reporter=summary argument", async () => {
 			const projectPath = join("test", "fixtures", "project-with-tsconfig");
 			try {
-				const { stdout, stderr } = await execFileAsync(
+				const { stdout, stderr } = await execFile(
 					"node",
 					[binPath, "--project", projectPath, "--reporter", "summary"],
 					{
@@ -93,7 +99,7 @@ describe("bin", () => {
 		it("executes with --reporter=raw-json argument", async () => {
 			const projectPath = join("test", "fixtures", "project-with-tsconfig");
 			try {
-				const { stdout, stderr } = await execFileAsync(
+				const { stdout, stderr } = await execFile(
 					"node",
 					[binPath, "--project", projectPath, "--reporter", "raw-json"],
 					{
@@ -116,9 +122,93 @@ describe("bin", () => {
 			}
 		});
 
+		it("executes with --output argument and writes to file", async () => {
+			const projectPath = join("test", "fixtures", "project-with-type-assertions");
+			const outputPath = join("test-out", "bin", "output-cli.txt");
+
+			try {
+				const { stdout, stderr } = await execFile(
+					"node",
+					[binPath, "--project", projectPath, "--output", outputPath],
+					{
+						cwd: process.cwd(),
+					},
+				);
+
+				// stdout should be empty when using --output
+				assert.strictEqual(stdout, "");
+				assert.strictEqual(typeof stderr, "string");
+
+				// Check that output file was created
+				const outputContent = await readFile(outputPath, "utf-8");
+				assert.ok(outputContent.length > 0);
+			} catch (error) {
+				// If non-zero exit code, should be exit code 1 (issues found) not 2 (fatal error)
+				assert.ok(error instanceof Error);
+				assert.ok("code" in error);
+				assert.ok(error.code === 1, `Expected exit code 1 but got ${error.code}`);
+
+				// Check that output file was still created
+				const outputContent = await readFile(outputPath, "utf-8");
+				assert.ok(outputContent.length > 0);
+			}
+		});
+
+		it("executes with --output and --reporter=raw-json arguments", async () => {
+			const projectPath = join("test", "fixtures", "project-with-type-assertions");
+			const outputPath = join("test-out", "bin", "output-json-cli.txt");
+
+			try {
+				await execFile(
+					"node",
+					[binPath, "--project", projectPath, "--output", outputPath, "--reporter", "raw-json"],
+					{
+						cwd: process.cwd(),
+					},
+				);
+
+				// This should fail due to type assertions, but output file should still be created
+				assert.fail("Should have thrown due to type assertions");
+			} catch (error) {
+				// Should be exit code 1 (issues found)
+				assert.ok(error instanceof Error);
+				assert.ok("code" in error);
+				assert.ok(error.code === 1, `Expected exit code 1 but got ${error.code}`);
+
+				// Check that output file was created with valid JSON
+				const outputContent = await readFile(outputPath, "utf-8");
+				assert.ok(outputContent.length > 0);
+				JSON.parse(outputContent); // Should not throw
+			}
+		});
+
+		it("creates nested output directories automatically", async () => {
+			const projectPath = join("test", "fixtures", "project-with-type-assertions");
+			const outputPath = join("test-out", "bin", "nested", "subdir", "output.txt");
+
+			try {
+				await execFile("node", [binPath, "--project", projectPath, "--output", outputPath], {
+					cwd: process.cwd(),
+				});
+
+				// This should fail due to type assertions, but directories and output file should still be created
+				assert.fail("Should have thrown due to type assertions");
+			} catch (error) {
+				// Should be exit code 1 (issues found)
+				assert.ok(error instanceof Error);
+				assert.ok("code" in error);
+				assert.ok(error.code === 1, `Expected exit code 1 but got ${error.code}`);
+
+				// Check that nested directories were created and output file exists
+				const outputContent = await readFile(outputPath, "utf-8");
+				assert.ok(outputContent.length > 0);
+				assert.ok(outputContent.includes("Found suspicious type assertions"));
+			}
+		});
+
 		it("exits with code 2 for invalid reporter option", async () => {
 			try {
-				await execFileAsync("node", [binPath, "--reporter", "invalid"], {
+				await execFile("node", [binPath, "--reporter", "invalid"], {
 					cwd: process.cwd(),
 				});
 				assert.fail("Expected command to exit with code 2 for invalid reporter");
@@ -135,10 +225,10 @@ describe("bin", () => {
 	describe("Exit codes", () => {
 		it("exits with code 0 for successful inspection", async () => {
 			const projectPath = join("test", "fixtures", "project-with-tsconfig");
-			const { stdout, stderr } = await execFileAsync("node", [binPath, "-p", projectPath], {
+			const { stdout, stderr } = await execFile("node", [binPath, "-p", projectPath], {
 				cwd: process.cwd(),
 			});
-			// execFileAsync resolves only if exit code is 0 - this test verifies exit code 0
+			// execFile resolves only if exit code is 0 - this test verifies exit code 0
 			assert.strictEqual(typeof stdout, "string");
 			assert.strictEqual(typeof stderr, "string");
 		});
@@ -146,7 +236,7 @@ describe("bin", () => {
 		it("exits with code 1 for inspection errors (code quality issues)", async () => {
 			const projectPath = join("test", "fixtures", "project-with-type-assertions");
 			try {
-				await execFileAsync("node", [binPath, "--project", projectPath], {
+				await execFile("node", [binPath, "--project", projectPath], {
 					cwd: process.cwd(),
 				});
 				assert.fail("Expected command to exit with code 1 for type assertion findings");
@@ -165,7 +255,7 @@ describe("bin", () => {
 		it("exits with code 2 for non-existent project (fatal error)", async () => {
 			const nonExistentPath = join("test", "fixtures", "non-existent-project");
 			try {
-				await execFileAsync("node", [binPath, "--project", nonExistentPath], {
+				await execFile("node", [binPath, "--project", nonExistentPath], {
 					cwd: process.cwd(),
 				});
 				assert.fail("Expected command to throw an error for non-existent project");
@@ -183,7 +273,7 @@ describe("bin", () => {
 
 		it("exits with code 2 for unknown option (fatal error)", async () => {
 			try {
-				await execFileAsync("node", [binPath, "--unknown-option"], {
+				await execFile("node", [binPath, "--unknown-option"], {
 					cwd: process.cwd(),
 				});
 				assert.fail("Expected command to throw an error for unknown option");
@@ -197,7 +287,7 @@ describe("bin", () => {
 
 		it("exits with code 2 for invalid project path format", async () => {
 			try {
-				await execFileAsync("node", [binPath, "--project", "src/index.ts"], {
+				await execFile("node", [binPath, "--project", "src/index.ts"], {
 					cwd: process.cwd(),
 				});
 				assert.fail("Expected command to throw an error for invalid project path");
