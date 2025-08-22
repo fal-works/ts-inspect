@@ -12,7 +12,7 @@ export interface PrinterOptions {
 	 * String used for each level of indentation.
 	 * @default "  " (two spaces)
 	 */
-	indentUnit: string;
+	indentUnit?: string;
 
 	/**
 	 * Initial indentation level to start printing at.
