@@ -1,33 +1,13 @@
 import assert from "node:assert";
-import { Writable } from "node:stream";
 import { describe, it } from "node:test";
+import { mockWritable } from "../../../test/test-utils.ts";
 import type { InspectorResult } from "../../inspector/index.ts";
 import { summaryReporter } from "./index.ts";
-
-/**
- * Mock writable stream that collects written data as a string.
- */
-class MockWritable extends Writable {
-	private chunks: string[] = [];
-
-	_write(
-		chunk: Buffer | string,
-		_encoding: BufferEncoding,
-		callback: (error?: Error | null) => void,
-	): void {
-		this.chunks.push(chunk.toString());
-		callback();
-	}
-
-	getOutput(): string {
-		return this.chunks.join("");
-	}
-}
 
 describe("reporter/summary-reporter/index", () => {
 	describe("summaryReporter", () => {
 		it("handles empty results array", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const results: InspectorResult[] = [];
 
 			summaryReporter(results, output);
@@ -36,7 +16,7 @@ describe("reporter/summary-reporter/index", () => {
 		});
 
 		it("skips inspector results with no diagnostics", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "clean-inspector",
@@ -54,7 +34,7 @@ describe("reporter/summary-reporter/index", () => {
 		});
 
 		it("formats single inspector result", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "no-type-assertions",
@@ -87,7 +67,7 @@ describe("reporter/summary-reporter/index", () => {
 		});
 
 		it("formats multiple inspector results with proper spacing", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "first-inspector",
@@ -136,7 +116,7 @@ describe("reporter/summary-reporter/index", () => {
 		});
 
 		it("filters out clean inspectors from mixed results", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "dirty-inspector",
@@ -187,7 +167,7 @@ describe("reporter/summary-reporter/index", () => {
 		});
 
 		it("handles rich diagnostics with multiple items", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "complex-inspector",
@@ -232,7 +212,7 @@ describe("reporter/summary-reporter/index", () => {
 		});
 
 		it("handles multiline snippets across multiple inspectors", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "multiline-inspector",
@@ -286,7 +266,7 @@ describe("reporter/summary-reporter/index", () => {
 		});
 
 		it("ensures no trailing newline after last inspector result", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "only-inspector",
@@ -315,7 +295,7 @@ describe("reporter/summary-reporter/index", () => {
 
 	describe("integration with real-world scenarios", () => {
 		it("handles typical no-type-assertions inspector output", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "no-type-assertions",

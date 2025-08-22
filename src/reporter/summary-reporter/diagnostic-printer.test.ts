@@ -1,6 +1,6 @@
 import assert from "node:assert";
-import { Writable } from "node:stream";
 import { describe, it } from "node:test";
+import { mockWritable } from "../../../test/test-utils.ts";
 import { createPrinter } from "../../core/printer.ts";
 import type {
 	ProjectDiagnostic,
@@ -10,30 +10,10 @@ import type {
 } from "../../diagnostics/index.ts";
 import { printRichDiagnostic, printSimpleDiagnostic } from "./diagnostic-printer.ts";
 
-/**
- * Mock writable stream that collects written data as a string.
- */
-class MockWritable extends Writable {
-	private chunks: string[] = [];
-
-	_write(
-		chunk: Buffer | string,
-		_encoding: BufferEncoding,
-		callback: (error?: Error | null) => void,
-	): void {
-		this.chunks.push(chunk.toString());
-		callback();
-	}
-
-	getOutput(): string {
-		return this.chunks.join("");
-	}
-}
-
 describe("reporter/summary-reporter/diagnostic-printer", () => {
 	describe("printSimpleDiagnostic", () => {
 		it("prints simple location diagnostic with error severity", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const diagnostic: SimpleDiagnostic = {
 				type: "location",
@@ -48,7 +28,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 		});
 
 		it("prints simple location diagnostic with warning severity", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const diagnostic: SimpleDiagnostic = {
 				type: "location",
@@ -63,7 +43,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 		});
 
 		it("prints simple location diagnostic with info severity", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const diagnostic: SimpleDiagnostic = {
 				type: "location",
@@ -78,7 +58,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 		});
 
 		it("prints simple module diagnostic", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const diagnostic: SimpleDiagnostic = {
 				type: "module",
@@ -92,7 +72,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 		});
 
 		it("handles multiline snippets in simple location diagnostics", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const diagnostic: SimpleDiagnostic = {
 				type: "location",
@@ -113,7 +93,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 
 	describe("printRichDiagnostic", () => {
 		it("prints rich location diagnostic with message and advice", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const diagnostic: RichLocationDiagnostic = {
 				type: "location",
@@ -134,7 +114,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 		});
 
 		it("prints rich location diagnostic with message but no advice", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const diagnostic: RichLocationDiagnostic = {
 				type: "location",
@@ -151,7 +131,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 		});
 
 		it("prints rich module diagnostic", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const diagnostic: RichModuleDiagnostic = {
 				type: "module",
@@ -171,7 +151,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 		});
 
 		it("prints rich project diagnostic", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const diagnostic: ProjectDiagnostic = {
 				type: "project",
@@ -190,7 +170,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 		});
 
 		it("handles rich diagnostic with multiline location snippet", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const diagnostic: RichLocationDiagnostic = {
 				type: "location",
@@ -221,7 +201,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 
 	describe("icon mapping", () => {
 		it("uses correct icons for all severity levels", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 
 			const errorDiag: SimpleDiagnostic = {
@@ -253,7 +233,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 
 	describe("newline behavior verification", () => {
 		it("ensures proper separation between consecutive simple diagnostics", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 
 			const diag1: SimpleDiagnostic = {
@@ -278,7 +258,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 		});
 
 		it("ensures proper separation between consecutive rich diagnostics", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 
 			const diag1: RichLocationDiagnostic = {
@@ -309,7 +289,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 		});
 
 		it("ensures proper separation between mixed simple and rich diagnostics", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 
 			const simpleDiag: SimpleDiagnostic = {

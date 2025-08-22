@@ -4,6 +4,7 @@
 
 import { spawn } from "node:child_process";
 import { mkdir, rm } from "node:fs/promises";
+import { Writable } from "node:stream";
 
 export interface ExecuteNodeScriptResult {
 	code: number;
@@ -71,4 +72,38 @@ export async function prepareTestOutputDirectory(dirPath: string): Promise<void>
 
 	await rm(dirPath, { recursive: true, force: true });
 	await mkdir(dirPath, { recursive: true });
+}
+
+/**
+ * Mock writable stream that collects written data.
+ */
+export interface MockWritableStream extends Writable {
+	/**
+	 * Get all collected output as a string.
+	 */
+	getOutput(): string;
+}
+
+/**
+ * Creates a mock writable stream that collects written data as a string.
+ */
+export function mockWritable(): MockWritableStream {
+	const chunks: string[] = [];
+
+	const stream = new Writable({
+		write(
+			chunk: Buffer | string,
+			_encoding: BufferEncoding,
+			callback: (error?: Error | null) => void,
+		): void {
+			chunks.push(chunk.toString());
+			callback();
+		},
+	}) as MockWritableStream;
+
+	stream.getOutput = (): string => {
+		return chunks.join("");
+	};
+
+	return stream;
 }

@@ -1,34 +1,14 @@
 import assert from "node:assert";
-import { Writable } from "node:stream";
 import { describe, it } from "node:test";
+import { mockWritable } from "../../../test/test-utils.ts";
 import { createPrinter } from "../../core/printer.ts";
 import type { InspectorResult } from "../../inspector/index.ts";
 import { printInspectorResult } from "./inspector-result-printer.ts";
 
-/**
- * Mock writable stream that collects written data as a string.
- */
-class MockWritable extends Writable {
-	private chunks: string[] = [];
-
-	_write(
-		chunk: Buffer | string,
-		_encoding: BufferEncoding,
-		callback: (error?: Error | null) => void,
-	): void {
-		this.chunks.push(chunk.toString());
-		callback();
-	}
-
-	getOutput(): string {
-		return this.chunks.join("");
-	}
-}
-
 describe("reporter/summary-reporter/inspector-result-printer", () => {
 	describe("printInspectorResult", () => {
 		it("skips inspector results with no issues", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "clean-inspector",
@@ -41,7 +21,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 		});
 
 		it("prints simple inspector result with message and diagnostics", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "no-type-assertions",
@@ -77,7 +57,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 		});
 
 		it("prints inspector result with message, diagnostics, and advice", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "no-type-assertions",
@@ -109,7 +89,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 		});
 
 		it("prints rich diagnostics with proper spacing", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "complex-inspector",
@@ -153,7 +133,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 		});
 
 		it("prints inspector result without message but with diagnostics", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "minimal-inspector",
@@ -176,7 +156,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 		});
 
 		it("prints inspector result with only advice (no message or diagnostics)", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "advice-only-inspector",
@@ -206,7 +186,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 		});
 
 		it("handles multiline snippets in simple diagnostics within inspector result", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "multiline-inspector",
@@ -250,7 +230,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 		});
 
 		it("uses newLine(1) for advice to prevent excessive empty lines", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 
 			// Print some content first to test newLine(1) behavior
@@ -285,7 +265,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 		});
 
 		it("handles project-level diagnostics in rich mode", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "architecture-inspector",
@@ -319,7 +299,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 
 	describe("newline behavior verification", () => {
 		it("ensures proper grouping and spacing between inspector results", () => {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 
 			const result1: InspectorResult = {

@@ -92,7 +92,8 @@ export const inspectFiles = wrapUnexpectedExceptionsAsync(inspectFilesInternal);
 export const inspectProject = wrapUnexpectedExceptionsAsync(inspectProjectInternal);
 
 export { createAsAssertionInspector } from "./builtin-inspectors/index.ts";
-export { createPrinter, type Printer } from "./core/printer.ts";
+export { createPrinter, type Printer, type PrinterOptions } from "./core/printer.ts";
+export { createXmlPrinter, type XmlPrinter } from "./core/xml-printer.ts";
 export type {
 	CodeLocation,
 	Diagnostic,
