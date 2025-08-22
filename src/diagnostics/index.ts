@@ -8,12 +8,12 @@ export type { CodeLocation, DiagnosticDetails, DiagnosticSeverity } from "./comm
 // Export all item types
 export type {
 	Diagnostic,
+	FileDiagnostic,
 	LocationDiagnostic,
-	ModuleDiagnostic,
 	ProjectDiagnostic,
 	RichDiagnostic,
+	RichFileDiagnostic,
 	RichLocationDiagnostic,
-	RichModuleDiagnostic,
 	SimpleDiagnostic,
 } from "./item-types.ts";
 

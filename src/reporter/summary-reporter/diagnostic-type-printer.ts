@@ -4,8 +4,8 @@
 
 import type { Printer } from "../../core/printer.ts";
 import type {
+	FileDiagnostic,
 	LocationDiagnostic,
-	ModuleDiagnostic,
 	ProjectDiagnostic,
 } from "../../diagnostics/index.ts";
 import { formatCodeSnippet } from "./formatter.ts";
@@ -38,10 +38,10 @@ export function printLocationDiagnostic(
 }
 
 /**
- * Prints a module diagnostic.
+ * Prints a file diagnostic.
  */
-export function printModuleDiagnostic(
-	diagnostic: ModuleDiagnostic,
+export function printFileDiagnostic(
+	diagnostic: FileDiagnostic,
 	icon: string,
 	printer: Printer,
 ): void {

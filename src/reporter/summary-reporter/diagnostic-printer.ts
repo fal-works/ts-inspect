@@ -9,8 +9,8 @@ import type {
 	SimpleDiagnostic,
 } from "../../diagnostics/index.ts";
 import {
+	printFileDiagnostic,
 	printLocationDiagnostic,
-	printModuleDiagnostic,
 	printProjectDiagnostic,
 } from "./diagnostic-type-printer.ts";
 
@@ -31,8 +31,8 @@ export function printSimpleDiagnostic(diagnostic: SimpleDiagnostic, printer: Pri
 
 	if (diagnostic.type === "location") {
 		printLocationDiagnostic(diagnostic, icon, printer);
-	} else if (diagnostic.type === "module") {
-		printModuleDiagnostic(diagnostic, icon, printer);
+	} else if (diagnostic.type === "file") {
+		printFileDiagnostic(diagnostic, icon, printer);
 	}
 }
 
@@ -45,8 +45,8 @@ export function printRichDiagnostic(diagnostic: RichDiagnostic, printer: Printer
 	// First print the base diagnostic
 	if (diagnostic.type === "location") {
 		printLocationDiagnostic(diagnostic, icon, printer);
-	} else if (diagnostic.type === "module") {
-		printModuleDiagnostic(diagnostic, icon, printer);
+	} else if (diagnostic.type === "file") {
+		printFileDiagnostic(diagnostic, icon, printer);
 	} else if (diagnostic.type === "project") {
 		printProjectDiagnostic(diagnostic, icon, printer);
 	}

@@ -132,7 +132,7 @@ An `Inspector<TState>` has three main components:
 The framework supports several diagnostic types for different reporting scenarios:
 
 - Location Diagnostic: File + line number + etc. (used with SimpleDiagnostics that provides a global message)
-- Module Diagnostic: File-level issues without specific line numbers
+- File Diagnostic: File-level issues without specific line numbers
 - Project Diagnostic: Project-wide issues (architecture, dependencies, etc.)
 
 Each diagnostic has a severity that affects exit codes:

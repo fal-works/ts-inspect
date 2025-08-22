@@ -4,8 +4,8 @@ import { mockWritable } from "../../../test/test-utils.ts";
 import { createPrinter } from "../../core/printer.ts";
 import type {
 	ProjectDiagnostic,
+	RichFileDiagnostic,
 	RichLocationDiagnostic,
-	RichModuleDiagnostic,
 	SimpleDiagnostic,
 } from "../../diagnostics/index.ts";
 import { printRichDiagnostic, printSimpleDiagnostic } from "./diagnostic-printer.ts";
@@ -57,11 +57,11 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 			assert.strictEqual(output.getOutput(), "ℹ️  src/test.ts:5 - console.log()\n");
 		});
 
-		it("prints simple module diagnostic", () => {
+		it("prints simple file diagnostic", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
 			const diagnostic: SimpleDiagnostic = {
-				type: "module",
+				type: "file",
 				severity: "error",
 				file: "src/module.ts",
 			};
@@ -132,16 +132,16 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 			assert.strictEqual(output.getOutput(), expected);
 		});
 
-		it("prints rich module diagnostic", () => {
+		it("prints rich file diagnostic", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
-			const diagnostic: RichModuleDiagnostic = {
-				type: "module",
+			const diagnostic: RichFileDiagnostic = {
+				type: "file",
 				severity: "error",
 				file: "src/module.ts",
 				details: {
-					message: "Module has structural issues",
-					advices: "Consider refactoring the module structure",
+					message: "File has structural issues",
+					advices: "Consider refactoring the structure in the file",
 				},
 			};
 
@@ -149,8 +149,8 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 
 			const expected =
 				"❌ src/module.ts\n" +
-				"Module has structural issues\n" +
-				"Consider refactoring the module structure\n";
+				"File has structural issues\n" +
+				"Consider refactoring the structure in the file\n";
 			assert.strictEqual(output.getOutput(), expected);
 		});
 
@@ -213,19 +213,19 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 			const printer = createPrinter(output);
 
 			const errorDiag: SimpleDiagnostic = {
-				type: "module",
+				type: "file",
 				severity: "error",
 				file: "error.ts",
 			};
 
 			const warningDiag: SimpleDiagnostic = {
-				type: "module",
+				type: "file",
 				severity: "warning",
 				file: "warning.ts",
 			};
 
 			const infoDiag: SimpleDiagnostic = {
-				type: "module",
+				type: "file",
 				severity: "info",
 				file: "info.ts",
 			};
@@ -301,7 +301,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 			const printer = createPrinter(output);
 
 			const simpleDiag: SimpleDiagnostic = {
-				type: "module",
+				type: "file",
 				severity: "warning",
 				file: "src/simple.ts",
 			};

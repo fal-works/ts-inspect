@@ -92,7 +92,7 @@ describe("reporter/summary-reporter/index", () => {
 						type: "simple",
 						items: [
 							{
-								type: "module",
+								type: "file",
 								severity: "warning",
 								file: "src/module.ts",
 							},
@@ -145,7 +145,7 @@ describe("reporter/summary-reporter/index", () => {
 						type: "simple",
 						items: [
 							{
-								type: "module",
+								type: "file",
 								severity: "info",
 								file: "src/info.ts",
 							},
@@ -284,7 +284,7 @@ describe("reporter/summary-reporter/index", () => {
 						type: "simple",
 						items: [
 							{
-								type: "module",
+								type: "file",
 								severity: "error",
 								file: "src/test.ts",
 							},

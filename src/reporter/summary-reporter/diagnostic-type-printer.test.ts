@@ -3,13 +3,13 @@ import { describe, it } from "node:test";
 import { mockWritable } from "../../../test/test-utils.ts";
 import { createPrinter } from "../../core/printer.ts";
 import type {
+	FileDiagnostic,
 	LocationDiagnostic,
-	ModuleDiagnostic,
 	ProjectDiagnostic,
 } from "../../diagnostics/index.ts";
 import {
+	printFileDiagnostic,
 	printLocationDiagnostic,
-	printModuleDiagnostic,
 	printProjectDiagnostic,
 } from "./diagnostic-type-printer.ts";
 
@@ -122,17 +122,17 @@ describe("reporter/summary-reporter/diagnostic-type-printer", () => {
 		});
 	});
 
-	describe("printModuleDiagnostic", () => {
-		it("prints module diagnostic with icon and file path", () => {
+	describe("printFileDiagnostic", () => {
+		it("prints file diagnostic with icon and file path", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
-			const diagnostic: ModuleDiagnostic = {
-				type: "module",
+			const diagnostic: FileDiagnostic = {
+				type: "file",
 				severity: "warning",
 				file: "src/module.ts",
 			};
 
-			printModuleDiagnostic(diagnostic, "⚠️", printer);
+			printFileDiagnostic(diagnostic, "⚠️", printer);
 
 			assert.strictEqual(output.getOutput(), "⚠️ src/module.ts\n");
 		});
@@ -140,13 +140,13 @@ describe("reporter/summary-reporter/diagnostic-type-printer", () => {
 		it("handles different icons correctly", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
-			const diagnostic: ModuleDiagnostic = {
-				type: "module",
+			const diagnostic: FileDiagnostic = {
+				type: "file",
 				severity: "error",
 				file: "src/error.ts",
 			};
 
-			printModuleDiagnostic(diagnostic, "❌", printer);
+			printFileDiagnostic(diagnostic, "❌", printer);
 
 			assert.strictEqual(output.getOutput(), "❌ src/error.ts\n");
 		});
@@ -154,13 +154,13 @@ describe("reporter/summary-reporter/diagnostic-type-printer", () => {
 		it("handles long file paths", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
-			const diagnostic: ModuleDiagnostic = {
-				type: "module",
+			const diagnostic: FileDiagnostic = {
+				type: "file",
 				severity: "info",
 				file: "src/very/deep/nested/directory/structure/file.ts",
 			};
 
-			printModuleDiagnostic(diagnostic, "ℹ️", printer);
+			printFileDiagnostic(diagnostic, "ℹ️", printer);
 
 			assert.strictEqual(
 				output.getOutput(),
@@ -228,8 +228,8 @@ describe("reporter/summary-reporter/diagnostic-type-printer", () => {
 				location: { line: 1, snippet: "simple" },
 			};
 
-			const moduleDiag: ModuleDiagnostic = {
-				type: "module",
+			const fileDiag: FileDiagnostic = {
+				type: "file",
 				severity: "warning",
 				file: "src/module.ts",
 			};
@@ -241,7 +241,7 @@ describe("reporter/summary-reporter/diagnostic-type-printer", () => {
 			};
 
 			printLocationDiagnostic(locationDiag, "❌", printer);
-			printModuleDiagnostic(moduleDiag, "⚠️", printer);
+			printFileDiagnostic(fileDiag, "⚠️", printer);
 			printProjectDiagnostic(projectDiag, "ℹ️", printer);
 
 			const expected =

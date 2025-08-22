@@ -30,7 +30,7 @@ making it efficient to run many specialized checks without N× performance costs
 The framework uses a structured diagnostic system with several main types, such as:
 
 - **`LocationDiagnostic`**: File + line + snippet (inspector provides global message/advice)
-- **`ModuleDiagnostic`**: File-level issues without specific line numbers
+- **`FileDiagnostic`**: File-level issues without specific line numbers
 - **`ProjectDiagnostic`**: Project-wide issues (architecture, dependencies, etc.)
 
 Each diagnostic has a severity (`error`, `warning`, `info`) that determines the final exit code:

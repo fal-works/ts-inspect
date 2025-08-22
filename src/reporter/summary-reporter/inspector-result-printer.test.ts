@@ -144,7 +144,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 					details: { message: "Found issues." },
 					items: [
 						{
-							type: "module",
+							type: "file",
 							severity: "warning",
 							file: "src/module.ts",
 						},

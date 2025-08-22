@@ -36,12 +36,12 @@ export interface LocationDiagnostic extends DiagnosticBase {
 }
 
 /**
- * Module-level diagnostic.
+ * File-level diagnostic.
  * Use this when the issue affects the entire file but isn't tied to a specific line.
  */
-export interface ModuleDiagnostic extends DiagnosticBase {
+export interface FileDiagnostic extends DiagnosticBase {
 	/** Discriminant value for classifying the diagnostic type */
-	type: "module";
+	type: "file";
 	/** Relative path from current working directory */
 	file: string;
 }
@@ -56,10 +56,10 @@ export interface ModuleDiagnostic extends DiagnosticBase {
 export interface RichLocationDiagnostic extends LocationDiagnostic, RichDiagnosticExtension {}
 
 /**
- * Rich module-level diagnostic with individual message.
+ * Rich file-level diagnostic with individual message.
  * Use this when the issue affects the entire file but isn't tied to a specific line.
  */
-export interface RichModuleDiagnostic extends ModuleDiagnostic, RichDiagnosticExtension {}
+export interface RichFileDiagnostic extends FileDiagnostic, RichDiagnosticExtension {}
 
 /**
  * Project-level diagnostic with individual message.
@@ -76,13 +76,13 @@ export interface ProjectDiagnostic extends DiagnosticBase, RichDiagnosticExtensi
  * Simple diagnostic items without individual messages.
  * The inspector provides the overall message/advice for all items.
  */
-export type SimpleDiagnostic = LocationDiagnostic | ModuleDiagnostic;
+export type SimpleDiagnostic = LocationDiagnostic | FileDiagnostic;
 
 /**
  * Rich diagnostic items with individual messages and optional advice.
  * Each item has its own specific message and guidance.
  */
-export type RichDiagnostic = RichLocationDiagnostic | RichModuleDiagnostic | ProjectDiagnostic;
+export type RichDiagnostic = RichLocationDiagnostic | RichFileDiagnostic | ProjectDiagnostic;
 
 /**
  * Helper type to extract individual diagnostic items from the Diagnostics union.
