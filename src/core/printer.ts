@@ -10,10 +10,15 @@ import type { Writable } from "node:stream";
 export interface PrinterOptions {
 	/**
 	 * String used for each level of indentation.
-	 *
 	 * @default "  " (two spaces)
 	 */
 	indentUnit: string;
+
+	/**
+	 * Initial indentation level to start printing at.
+	 * @default 0
+	 */
+	initialIndentLevel?: number;
 }
 
 /**
@@ -59,6 +64,7 @@ export interface Printer {
 interface PrinterState {
 	readonly indentUnit: string;
 	readonly output: Writable;
+	readonly initialIndentLevel: number;
 	indentLevel: number;
 	atLineStart: boolean;
 	consecutiveLineFeeds: number;
@@ -130,7 +136,7 @@ function group(state: PrinterState, heading?: string): void {
  * @see Printer.groupEnd
  */
 function groupEnd(state: PrinterState): void {
-	if (state.indentLevel > 0) {
+	if (state.indentLevel > state.initialIndentLevel) {
 		state.indentLevel--;
 		if (!state.atLineStart) {
 			newLine(state); // Ensure we end at line start
@@ -143,10 +149,12 @@ function groupEnd(state: PrinterState): void {
  * Provides automatic indentation management for hierarchical output structures.
  */
 export function createPrinter(output: Writable, options?: PrinterOptions): Printer {
+	const initialIndentLevel = options?.initialIndentLevel ?? 0;
 	const state: PrinterState = {
 		indentUnit: options?.indentUnit ?? "  ", // Default: 2 spaces
 		output,
-		indentLevel: 0,
+		initialIndentLevel,
+		indentLevel: initialIndentLevel,
 		atLineStart: true,
 		consecutiveLineFeeds: 0,
 	};

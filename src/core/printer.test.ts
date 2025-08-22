@@ -300,5 +300,52 @@ describe("core/printer", () => {
 			});
 			assert.strictEqual(output, "Group:\n\tIndented\n");
 		});
+
+		it("uses initialIndentLevel", () => {
+			const output = captureOutputWithOptions(
+				{ indentUnit: "  ", initialIndentLevel: 1 },
+				(printer) => {
+					printer.println("Already indented");
+					printer.group("Group:");
+					printer.println("Nested");
+					printer.groupEnd();
+				},
+			);
+			assert.strictEqual(output, "  Already indented\n  Group:\n    Nested\n");
+		});
+
+		it("uses initialIndentLevel with nested groups", () => {
+			const output = captureOutputWithOptions(
+				{ indentUnit: "  ", initialIndentLevel: 2 },
+				(printer) => {
+					printer.println("Start");
+					printer.group("Outer:");
+					printer.println("Outer item");
+					printer.group("Inner:");
+					printer.println("Inner item");
+					printer.groupEnd();
+					printer.println("Back to outer");
+					printer.groupEnd();
+					printer.println("End");
+				},
+			);
+			assert.strictEqual(
+				output,
+				"    Start\n    Outer:\n      Outer item\n      Inner:\n        Inner item\n      Back to outer\n    End\n",
+			);
+		});
+
+		it("respects initialIndentLevel as minimum in groupEnd", () => {
+			const output = captureOutputWithOptions(
+				{ indentUnit: "  ", initialIndentLevel: 1 },
+				(printer) => {
+					printer.println("Level 1");
+					printer.groupEnd(); // Should not go below initial level
+					printer.groupEnd(); // Should not go below initial level
+					printer.println("Still Level 1");
+				},
+			);
+			assert.strictEqual(output, "  Level 1\n  Still Level 1\n");
+		});
 	});
 });

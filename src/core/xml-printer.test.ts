@@ -145,5 +145,46 @@ describe("core/xml-printer", () => {
 			});
 			assert.equal(output, "XML:\n\t<root>\n\t<child>content</child>\n\t</root>\n");
 		});
+
+		it("uses initialIndentLevel for XML output", () => {
+			const output = captureOutputWithOptions(
+				{ indentUnit: "  ", initialIndentLevel: 1 },
+				(printer) => {
+					printer.printXmlDeclaration();
+					printer.printXmlElementStart("root");
+					printer.newLine();
+					printer.group("Items:");
+					printer.printXmlSelfClosingElement("item", { id: "1" });
+					printer.groupEnd();
+					printer.newLine();
+					printer.printXmlElementEnd("root");
+				},
+			);
+			assert.equal(
+				output,
+				'  <?xml version="1.0" encoding="UTF-8"?>\n  <root>\n  Items:\n    <item id="1"/>\n\n  </root>',
+			);
+		});
+
+		it("combines initialIndentLevel with custom indentUnit", () => {
+			const output = captureOutputWithOptions(
+				{ indentUnit: "\t", initialIndentLevel: 2 },
+				(printer) => {
+					printer.group("Deeply nested:");
+					printer.printXmlElementStart("parent");
+					printer.newLine();
+					printer.printXmlElementStart("child");
+					printer.print("content");
+					printer.printXmlElementEnd("child");
+					printer.newLine();
+					printer.printXmlElementEnd("parent");
+					printer.groupEnd();
+				},
+			);
+			assert.equal(
+				output,
+				"\t\tDeeply nested:\n\t\t\t<parent>\n\t\t\t<child>content</child>\n\t\t\t</parent>\n",
+			);
+		});
 	});
 });
