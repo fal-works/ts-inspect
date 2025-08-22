@@ -84,6 +84,9 @@ function printXmlSelfClosingElement(
 
 /**
  * Creates an XML printer instance that extends the base printer with XML-specific methods.
+ *
+ * @param output - The stream to write formatted text to, e.g. `process.stdout`.
+ * @param options - Optional configuration for the printer.
  */
 export function createXmlPrinter(output: Writable, options?: PrinterOptions): XmlPrinter {
 	const basePrinter = createBasePrinter(output, options);

@@ -147,6 +147,9 @@ function groupEnd(state: PrinterState): void {
 /**
  * Creates a new printer instance that writes formatted text to a writable stream.
  * Provides automatic indentation management for hierarchical output structures.
+ *
+ * @param output - The stream to write formatted text to, e.g. `process.stdout`.
+ * @param options - Optional configuration for the printer.
  */
 export function createPrinter(output: Writable, options?: PrinterOptions): Printer {
 	const initialIndentLevel = options?.initialIndentLevel ?? 0;
