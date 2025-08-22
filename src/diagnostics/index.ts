@@ -6,6 +6,7 @@
 export type {
 	CodeLocation,
 	Diagnostic,
+	DiagnosticDetails,
 	DiagnosticSeverity,
 	LocationDiagnostic,
 	ModuleDiagnostic,

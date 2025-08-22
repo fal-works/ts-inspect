@@ -176,7 +176,7 @@ describe("reporter/summary-reporter/diagnostic-type-printer", () => {
 			const diagnostic: ProjectDiagnostic = {
 				type: "project",
 				severity: "error",
-				message: "Architecture violation detected",
+				details: { message: "Architecture violation detected" },
 			};
 
 			printProjectDiagnostic(diagnostic, "❌", printer);
@@ -190,8 +190,10 @@ describe("reporter/summary-reporter/diagnostic-type-printer", () => {
 			const diagnostic: ProjectDiagnostic = {
 				type: "project",
 				severity: "warning",
-				message: "Some complex project issue with lots of details",
-				advices: "Here's how to fix it...",
+				details: {
+					message: "Some complex project issue with lots of details",
+					advices: "Here's how to fix it...",
+				},
 			};
 
 			printProjectDiagnostic(diagnostic, "⚠️", printer);
@@ -205,7 +207,7 @@ describe("reporter/summary-reporter/diagnostic-type-printer", () => {
 			const diagnostic: ProjectDiagnostic = {
 				type: "project",
 				severity: "info",
-				message: "Info message",
+				details: { message: "Info message" },
 			};
 
 			printProjectDiagnostic(diagnostic, "ℹ️", printer);
@@ -235,7 +237,7 @@ describe("reporter/summary-reporter/diagnostic-type-printer", () => {
 			const projectDiag: ProjectDiagnostic = {
 				type: "project",
 				severity: "info",
-				message: "Project issue",
+				details: { message: "Project issue" },
 			};
 
 			printLocationDiagnostic(locationDiag, "❌", printer);

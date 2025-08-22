@@ -12,7 +12,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "clean-inspector",
-				diagnostics: { type: "simple", items: [] },
+				diagnostics: { type: "simple", details: { message: "No issues found." }, items: [] },
 			};
 
 			printInspectorResult(result, printer);
@@ -25,9 +25,9 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "no-type-assertions",
-				message: "Found suspicious type assertions.",
 				diagnostics: {
 					type: "simple",
+					details: { message: "Found suspicious type assertions." },
 					items: [
 						{
 							type: "location",
@@ -61,9 +61,12 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "no-type-assertions",
-				message: "Found suspicious type assertions.",
 				diagnostics: {
 					type: "simple",
+					details: {
+						message: "Found suspicious type assertions.",
+						advices: "Consider using proper typing instead of type assertions.",
+					},
 					items: [
 						{
 							type: "location",
@@ -73,7 +76,6 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 						},
 					],
 				},
-				advices: "Consider using proper typing instead of type assertions.",
 			};
 
 			printInspectorResult(result, printer);
@@ -93,7 +95,6 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "complex-inspector",
-				message: "Found complex issues.",
 				diagnostics: {
 					type: "rich",
 					items: [
@@ -102,15 +103,17 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 							severity: "error",
 							file: "src/test1.ts",
 							location: { line: 10, snippet: "first issue" },
-							message: "First diagnostic message",
-							advices: "How to fix the first issue",
+							details: {
+								message: "First diagnostic message",
+								advices: "How to fix the first issue",
+							},
 						},
 						{
 							type: "location",
 							severity: "warning",
 							file: "src/test2.ts",
 							location: { line: 20, snippet: "second issue" },
-							message: "Second diagnostic message",
+							details: { message: "Second diagnostic message" },
 						},
 					],
 				},
@@ -120,7 +123,6 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 
 			const expected =
 				"[complex-inspector]\n" +
-				"  Found complex issues.\n" +
 				"\n" +
 				"  ❌ src/test1.ts:10 - first issue\n" +
 				"  First diagnostic message\n" +
@@ -139,6 +141,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 				inspectorName: "minimal-inspector",
 				diagnostics: {
 					type: "simple",
+					details: { message: "Found issues." },
 					items: [
 						{
 							type: "module",
@@ -151,7 +154,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 
 			printInspectorResult(result, printer);
 
-			const expected = "[minimal-inspector]\n\n  ⚠️  src/module.ts\n";
+			const expected = "[minimal-inspector]\n  Found issues.\n\n  ⚠️  src/module.ts\n";
 			assert.strictEqual(output.getOutput(), expected);
 		});
 
@@ -162,6 +165,10 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 				inspectorName: "advice-only-inspector",
 				diagnostics: {
 					type: "simple",
+					details: {
+						message: "Found info items.",
+						advices: "General advice for the codebase",
+					},
 					items: [
 						{
 							type: "location",
@@ -171,13 +178,13 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 						},
 					],
 				},
-				advices: "General advice for the codebase",
 			};
 
 			printInspectorResult(result, printer);
 
 			const expected =
 				"[advice-only-inspector]\n" +
+				"  Found info items.\n" +
 				"\n" +
 				"  ℹ️  src/info.ts:1 - info item\n" +
 				"\n" +
@@ -190,9 +197,9 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "multiline-inspector",
-				message: "Found multiline issues.",
 				diagnostics: {
 					type: "simple",
+					details: { message: "Found multiline issues." },
 					items: [
 						{
 							type: "location",
@@ -240,6 +247,10 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 				inspectorName: "test-inspector",
 				diagnostics: {
 					type: "simple",
+					details: {
+						message: "Found test issues.",
+						advices: "Some advice",
+					},
 					items: [
 						{
 							type: "location",
@@ -249,7 +260,6 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 						},
 					],
 				},
-				advices: "Some advice",
 			};
 
 			printInspectorResult(result, printer);
@@ -257,6 +267,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			const expected =
 				"Previous content\n" +
 				"[test-inspector]\n" +
+				"  Found test issues.\n" +
 				"\n" +
 				"  ❌ src/test.ts:1 - test\n" +
 				"\n" +
@@ -269,15 +280,16 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "architecture-inspector",
-				message: "Architecture violations detected.",
 				diagnostics: {
 					type: "rich",
 					items: [
 						{
 							type: "project",
 							severity: "warning",
-							message: "Circular dependency detected",
-							advices: "Refactor to remove circular imports",
+							details: {
+								message: "Circular dependency detected",
+								advices: "Refactor to remove circular imports",
+							},
 						},
 					],
 				},
@@ -287,7 +299,6 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 
 			const expected =
 				"[architecture-inspector]\n" +
-				"  Architecture violations detected.\n" +
 				"\n" +
 				"  ⚠️  (project-level issue)\n" +
 				"  Circular dependency detected\n" +
@@ -304,9 +315,9 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 
 			const result1: InspectorResult = {
 				inspectorName: "first-inspector",
-				message: "First inspector found issues.",
 				diagnostics: {
 					type: "simple",
+					details: { message: "First inspector found issues." },
 					items: [
 						{
 							type: "location",
@@ -320,9 +331,9 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 
 			const result2: InspectorResult = {
 				inspectorName: "second-inspector",
-				message: "Second inspector found issues.",
 				diagnostics: {
 					type: "simple",
+					details: { message: "Second inspector found issues." },
 					items: [
 						{
 							type: "location",

@@ -97,6 +97,7 @@ export { createXmlPrinter, type XmlPrinter } from "./core/xml-printer.ts";
 export type {
 	CodeLocation,
 	Diagnostic,
+	DiagnosticDetails,
 	DiagnosticSeverity,
 	Diagnostics,
 	LocationDiagnostic,

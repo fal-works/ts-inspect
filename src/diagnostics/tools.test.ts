@@ -88,6 +88,7 @@ describe("diagnostics/tools", () => {
 		it("returns null for empty diagnostics", () => {
 			const diagnostics: Diagnostics = {
 				type: "simple",
+				details: { message: "No issues found." },
 				items: [],
 			};
 			assert.strictEqual(getWorstSeverity(diagnostics), null);
@@ -96,6 +97,7 @@ describe("diagnostics/tools", () => {
 		it("returns worst severity from simple diagnostics", () => {
 			const diagnostics: Diagnostics = {
 				type: "simple",
+				details: { message: "Found mixed severity issues." },
 				items: [
 					{ type: "location", severity: "warning", file: "test.ts", location: { line: 1 } },
 					{ type: "location", severity: "error", file: "test.ts", location: { line: 2 } },
@@ -114,14 +116,14 @@ describe("diagnostics/tools", () => {
 						severity: "info",
 						file: "test.ts",
 						location: { line: 1 },
-						message: "Info message",
+						details: { message: "Info message" },
 					},
 					{
 						type: "location",
 						severity: "warning",
 						file: "test.ts",
 						location: { line: 2 },
-						message: "Warning message",
+						details: { message: "Warning message" },
 					},
 				],
 			};
@@ -139,6 +141,7 @@ describe("diagnostics/tools", () => {
 				{
 					diagnostics: {
 						type: "simple" as const,
+						details: { message: "Found warning." },
 						items: [
 							{
 								type: "location" as const,
@@ -152,6 +155,7 @@ describe("diagnostics/tools", () => {
 				{
 					diagnostics: {
 						type: "simple" as const,
+						details: { message: "Found error." },
 						items: [
 							{
 								type: "location" as const,
@@ -165,6 +169,7 @@ describe("diagnostics/tools", () => {
 				{
 					diagnostics: {
 						type: "simple" as const,
+						details: { message: "Found info." },
 						items: [
 							{
 								type: "location" as const,
@@ -181,8 +186,8 @@ describe("diagnostics/tools", () => {
 
 		it("returns null when all results have empty diagnostics", () => {
 			const results = [
-				{ diagnostics: { type: "simple" as const, items: [] } },
-				{ diagnostics: { type: "simple" as const, items: [] } },
+				{ diagnostics: { type: "simple" as const, details: { message: "No issues." }, items: [] } },
+				{ diagnostics: { type: "simple" as const, details: { message: "No issues." }, items: [] } },
 			];
 			assert.strictEqual(getOverallWorstSeverity(results), null);
 		});

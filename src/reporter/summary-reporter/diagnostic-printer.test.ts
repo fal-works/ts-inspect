@@ -100,8 +100,10 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 				severity: "error",
 				file: "src/test.ts",
 				location: { line: 42, snippet: "value as any" },
-				message: "Avoid type assertions",
-				advices: "Use proper typing instead",
+				details: {
+					message: "Avoid type assertions",
+					advices: "Use proper typing instead",
+				},
 			};
 
 			printRichDiagnostic(diagnostic, printer);
@@ -121,7 +123,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 				severity: "warning",
 				file: "src/test.ts",
 				location: { line: 10 },
-				message: "This might be problematic",
+				details: { message: "This might be problematic" },
 			};
 
 			printRichDiagnostic(diagnostic, printer);
@@ -137,8 +139,10 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 				type: "module",
 				severity: "error",
 				file: "src/module.ts",
-				message: "Module has structural issues",
-				advices: "Consider refactoring the module structure",
+				details: {
+					message: "Module has structural issues",
+					advices: "Consider refactoring the module structure",
+				},
 			};
 
 			printRichDiagnostic(diagnostic, printer);
@@ -156,8 +160,10 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 			const diagnostic: ProjectDiagnostic = {
 				type: "project",
 				severity: "warning",
-				message: "Architecture violation detected",
-				advices: "Review the dependency graph",
+				details: {
+					message: "Architecture violation detected",
+					advices: "Review the dependency graph",
+				},
 			};
 
 			printRichDiagnostic(diagnostic, printer);
@@ -180,8 +186,10 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 					line: 25,
 					snippet: "const result = {\n    data: response as ApiResponse,\n    success: true\n}",
 				},
-				message: "Unsafe type assertion in object literal",
-				advices: "Define proper interfaces for API responses",
+				details: {
+					message: "Unsafe type assertion in object literal",
+					advices: "Define proper interfaces for API responses",
+				},
 			};
 
 			printRichDiagnostic(diagnostic, printer);
@@ -266,7 +274,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 				severity: "error",
 				file: "src/test1.ts",
 				location: { line: 1, snippet: "first" },
-				message: "First issue",
+				details: { message: "First issue" },
 			};
 
 			const diag2: RichLocationDiagnostic = {
@@ -274,7 +282,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 				severity: "error",
 				file: "src/test2.ts",
 				location: { line: 2, snippet: "second" },
-				message: "Second issue",
+				details: { message: "Second issue" },
 			};
 
 			printRichDiagnostic(diag1, printer);
@@ -303,7 +311,7 @@ describe("reporter/summary-reporter/diagnostic-printer", () => {
 				severity: "error",
 				file: "src/rich.ts",
 				location: { line: 5, snippet: "rich snippet" },
-				message: "Rich diagnostic message",
+				details: { message: "Rich diagnostic message" },
 			};
 
 			printSimpleDiagnostic(simpleDiag, printer);

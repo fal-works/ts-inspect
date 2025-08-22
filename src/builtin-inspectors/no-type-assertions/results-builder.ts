@@ -2,7 +2,11 @@
  * Results builder for collecting and structuring type assertion findings.
  */
 
-import type { LocationDiagnostic, SimpleDiagnostics } from "../../diagnostics/index.ts";
+import type {
+	DiagnosticDetails,
+	LocationDiagnostic,
+	SimpleDiagnostics,
+} from "../../diagnostics/index.ts";
 import type { InspectorResult, ResultsBuilder } from "../../inspector/index.ts";
 import { IGNORE_COMMENT } from "./constants.ts";
 import type { TypeAssertionFindings } from "./types.ts";
@@ -43,8 +47,20 @@ export const resultsBuilder: ResultsBuilder<TypeAssertionFindings> = (resultPerF
 		}
 	}
 
+	const details: DiagnosticDetails =
+		diagnosticItems.length > 0
+			? {
+					message: "Found suspicious type assertions.",
+					advices: noTypeAssertionsFriendlyMessage(),
+				}
+			: {
+					message: "No suspicious type assertions found.",
+					advices: undefined,
+				};
+
 	const diagnostics: SimpleDiagnostics = {
 		type: "simple",
+		details,
 		items: diagnosticItems,
 	};
 
@@ -52,11 +68,6 @@ export const resultsBuilder: ResultsBuilder<TypeAssertionFindings> = (resultPerF
 		inspectorName: "no-type-assertions",
 		diagnostics,
 	};
-
-	if (diagnosticItems.length > 0) {
-		result.message = "Found suspicious type assertions.";
-		result.advices = noTypeAssertionsFriendlyMessage();
-	}
 
 	return result;
 };

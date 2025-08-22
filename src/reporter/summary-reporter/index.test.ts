@@ -20,7 +20,7 @@ describe("reporter/summary-reporter/index", () => {
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "clean-inspector",
-					diagnostics: { type: "simple", items: [] },
+					diagnostics: { type: "simple", details: { message: "No issues found." }, items: [] },
 				},
 				{
 					inspectorName: "another-clean-inspector",
@@ -38,7 +38,6 @@ describe("reporter/summary-reporter/index", () => {
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "no-type-assertions",
-					message: "Found suspicious type assertions.",
 					diagnostics: {
 						type: "simple",
 						items: [
@@ -49,8 +48,11 @@ describe("reporter/summary-reporter/index", () => {
 								location: { line: 42, snippet: "value as any" },
 							},
 						],
+						details: {
+							message: "Found suspicious type assertions.",
+							advices: "Use proper typing instead.",
+						},
 					},
-					advices: "Use proper typing instead.",
 				},
 			];
 
@@ -71,7 +73,6 @@ describe("reporter/summary-reporter/index", () => {
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "first-inspector",
-					message: "First inspector issues.",
 					diagnostics: {
 						type: "simple",
 						items: [
@@ -82,11 +83,11 @@ describe("reporter/summary-reporter/index", () => {
 								location: { line: 10, snippet: "first issue" },
 							},
 						],
+						details: { message: "First inspector issues." },
 					},
 				},
 				{
 					inspectorName: "second-inspector",
-					message: "Second inspector issues.",
 					diagnostics: {
 						type: "simple",
 						items: [
@@ -96,6 +97,7 @@ describe("reporter/summary-reporter/index", () => {
 								file: "src/module.ts",
 							},
 						],
+						details: { message: "Second inspector issues." },
 					},
 				},
 			];
@@ -120,7 +122,6 @@ describe("reporter/summary-reporter/index", () => {
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "dirty-inspector",
-					message: "Found issues.",
 					diagnostics: {
 						type: "simple",
 						items: [
@@ -131,11 +132,12 @@ describe("reporter/summary-reporter/index", () => {
 								location: { line: 5, snippet: "problem" },
 							},
 						],
+						details: { message: "Found issues." },
 					},
 				},
 				{
 					inspectorName: "clean-inspector",
-					diagnostics: { type: "simple", items: [] },
+					diagnostics: { type: "simple", details: { message: "No issues found." }, items: [] },
 				},
 				{
 					inspectorName: "another-dirty-inspector",
@@ -148,6 +150,7 @@ describe("reporter/summary-reporter/index", () => {
 								file: "src/info.ts",
 							},
 						],
+						details: { message: "Found issues." },
 					},
 				},
 			];
@@ -161,6 +164,7 @@ describe("reporter/summary-reporter/index", () => {
 				"  ❌ src/issue.ts:5 - problem\n" +
 				"\n" +
 				"[another-dirty-inspector]\n" +
+				"  Found issues.\n" +
 				"\n" +
 				"  ℹ️  src/info.ts\n";
 			assert.strictEqual(output.getOutput(), expected);
@@ -171,7 +175,6 @@ describe("reporter/summary-reporter/index", () => {
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "complex-inspector",
-					message: "Complex issues detected.",
 					diagnostics: {
 						type: "rich",
 						items: [
@@ -180,14 +183,18 @@ describe("reporter/summary-reporter/index", () => {
 								severity: "error",
 								file: "src/complex1.ts",
 								location: { line: 15, snippet: "complex issue 1" },
-								message: "First complex issue",
-								advices: "Fix the first issue",
+								details: {
+									message: "First complex issue",
+									advices: "Fix the first issue",
+								},
 							},
 							{
 								type: "project",
 								severity: "warning",
-								message: "Architecture problem",
-								advices: "Refactor the architecture",
+								details: {
+									message: "Architecture problem",
+									advices: "Refactor the architecture",
+								},
 							},
 						],
 					},
@@ -198,7 +205,6 @@ describe("reporter/summary-reporter/index", () => {
 
 			const expected =
 				"[complex-inspector]\n" +
-				"  Complex issues detected.\n" +
 				"\n" +
 				"  ❌ src/complex1.ts:15 - complex issue 1\n" +
 				"  First complex issue\n" +
@@ -229,6 +235,7 @@ describe("reporter/summary-reporter/index", () => {
 								},
 							},
 						],
+						details: { message: "Found issues." },
 					},
 				},
 				{
@@ -243,6 +250,7 @@ describe("reporter/summary-reporter/index", () => {
 								location: { line: 5, snippet: "simple issue" },
 							},
 						],
+						details: { message: "Found issues." },
 					},
 				},
 			];
@@ -251,6 +259,7 @@ describe("reporter/summary-reporter/index", () => {
 
 			const expected =
 				"[multiline-inspector]\n" +
+				"  Found issues.\n" +
 				"\n" +
 				"  ❌ src/multiline.ts:20\n" +
 				"  {\n" +
@@ -260,6 +269,7 @@ describe("reporter/summary-reporter/index", () => {
 				"\n" +
 				"\n" +
 				"[simple-inspector]\n" +
+				"  Found issues.\n" +
 				"\n" +
 				"  ⚠️  src/simple.ts:5 - simple issue\n";
 			assert.strictEqual(output.getOutput(), expected);
@@ -279,13 +289,14 @@ describe("reporter/summary-reporter/index", () => {
 								file: "src/test.ts",
 							},
 						],
+						details: { message: "Found issues." },
 					},
 				},
 			];
 
 			summaryReporter(results, output);
 
-			const expected = "[only-inspector]\n\n  ❌ src/test.ts\n";
+			const expected = "[only-inspector]\n  Found issues.\n\n  ❌ src/test.ts\n";
 			assert.strictEqual(output.getOutput(), expected);
 
 			// Verify no trailing newline beyond what the inspector result itself produces
@@ -299,7 +310,6 @@ describe("reporter/summary-reporter/index", () => {
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "no-type-assertions",
-					message: "Found suspicious type assertions.",
 					diagnostics: {
 						type: "simple",
 						items: [
@@ -322,9 +332,12 @@ describe("reporter/summary-reporter/index", () => {
 								location: { line: 8, snippet: "value as unknown as MyType" },
 							},
 						],
+						details: {
+							message: "Found suspicious type assertions.",
+							advices:
+								"Review these type assertions carefully. In most cases, type assertions should be your last resort.",
+						},
 					},
-					advices:
-						"Review these type assertions carefully. In most cases, type assertions should be your last resort.",
 				},
 			];
 

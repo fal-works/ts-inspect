@@ -32,13 +32,22 @@ interface DiagnosticBase {
 }
 
 /**
+ * Common structure for diagnostic messages and advice.
+ * Shared by both simple diagnostics and rich diagnostic extensions.
+ */
+export interface DiagnosticDetails {
+	/** Message describing the diagnostic */
+	message: string;
+	/** Optional advice or guidance for addressing the issue */
+	advices?: string | undefined;
+}
+
+/**
  * Extension properties for rich diagnostics with individual messages and advice.
  */
 interface RichDiagnosticExtension {
-	/** Specific message for this diagnostic */
-	message: string;
-	/** Optional advice specific to this diagnostic */
-	advices?: string | undefined;
+	/** Diagnostic message and advice details */
+	details: DiagnosticDetails;
 }
 
 // Base diagnostic types (these are the "simple" diagnostics)

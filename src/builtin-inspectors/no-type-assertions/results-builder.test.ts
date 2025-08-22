@@ -21,11 +21,11 @@ describe("builtin-inspectors/no-type-assertions/results-builder", () => {
 			const result = resultsBuilder(mockResults);
 
 			assert.strictEqual(result.inspectorName, "no-type-assertions");
-			assert.strictEqual(result.message, "Found suspicious type assertions.");
-			assert.ok(result.advices?.includes("Tip:"));
 
 			const diagnostics = result.diagnostics as SimpleDiagnostics;
 			assert.strictEqual(diagnostics.type, "simple");
+			assert.strictEqual(diagnostics.details.message, "Found suspicious type assertions.");
+			assert.ok(diagnostics.details.advices?.includes("Tip:"));
 			assert.strictEqual(diagnostics.items.length, 2);
 
 			assert.deepStrictEqual(diagnostics.items[0], {
@@ -55,9 +55,9 @@ describe("builtin-inspectors/no-type-assertions/results-builder", () => {
 			assert.strictEqual(result.inspectorName, "no-type-assertions");
 			const diagnostics = result.diagnostics as SimpleDiagnostics;
 			assert.strictEqual(diagnostics.type, "simple");
+			assert.strictEqual(diagnostics.details.message, "No suspicious type assertions found.");
+			assert.strictEqual(diagnostics.details.advices, undefined);
 			assert.strictEqual(diagnostics.items.length, 0);
-			assert.strictEqual(result.message, undefined);
-			assert.strictEqual(result.advices, undefined);
 		});
 
 		it("handles multiple files with assertions", () => {

@@ -52,6 +52,6 @@ export function printRichDiagnostic(diagnostic: RichDiagnostic, printer: Printer
 	}
 
 	// Then add the rich-specific content
-	printer.println(diagnostic.message);
-	if (diagnostic.advices) printer.println(diagnostic.advices);
+	printer.println(diagnostic.details.message);
+	if (diagnostic.details.advices) printer.println(diagnostic.details.advices);
 }

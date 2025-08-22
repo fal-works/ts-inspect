@@ -15,9 +15,14 @@ export function printInspectorResult(result: InspectorResult, printer: Printer):
 	if (severity === null) return; // Skip inspectors with no issues
 
 	printer.group(`[${result.inspectorName}]`);
-	if (result.message) printer.println(result.message);
 
 	const diagnostics = result.diagnostics;
+
+	// Print message from diagnostics (both simple and rich diagnostics may have messages)
+	if (diagnostics.type === "simple" && diagnostics.details.message) {
+		printer.println(diagnostics.details.message);
+	}
+
 	if (diagnostics.items.length > 0) {
 		printer.newLine();
 
@@ -38,9 +43,10 @@ export function printInspectorResult(result: InspectorResult, printer: Printer):
 		}
 	}
 
-	if (result.advices) {
+	// Print advices from diagnostics (simple diagnostics have general advice)
+	if (diagnostics.type === "simple" && diagnostics.details.advices) {
 		printer.newLine(1);
-		printer.println(`💡 ${result.advices}`);
+		printer.println(`💡 ${diagnostics.details.advices}`);
 	}
 
 	printer.groupEnd();

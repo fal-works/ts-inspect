@@ -2,7 +2,7 @@
  * Diagnostic collection and pattern type definitions.
  */
 
-import type { RichDiagnostic, SimpleDiagnostic } from "./item-types.ts";
+import type { DiagnosticDetails, RichDiagnostic, SimpleDiagnostic } from "./item-types.ts";
 
 /**
  * Simple diagnostics pattern for condensed reporting.
@@ -12,6 +12,8 @@ import type { RichDiagnostic, SimpleDiagnostic } from "./item-types.ts";
 export interface SimpleDiagnostics {
 	/** Discriminant value for the diagnostic pattern */
 	type: "simple";
+	/** Diagnostic message and advice details that apply to all items */
+	details: DiagnosticDetails;
 	/** Array of simple diagnostic items */
 	items: SimpleDiagnostic[];
 }

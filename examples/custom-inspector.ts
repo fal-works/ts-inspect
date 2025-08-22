@@ -1,5 +1,6 @@
 import {
 	type CodeLocation,
+	type DiagnosticDetails,
 	type Inspector,
 	inspectProject,
 	type LocationDiagnostic,
@@ -43,12 +44,19 @@ function createConsoleLogInspector(): Inspector<CodeLocation[]> {
 				}
 			}
 
+			const details: DiagnosticDetails =
+				total > 0
+					? {
+							message: "Found console.log calls.",
+							advices: "Consider using a proper logging library instead of console.log",
+						}
+					: {
+							message: "No console.log calls found.",
+						};
+
 			return {
 				inspectorName: "console-log-inspector",
-				message: total > 0 ? `Found ${total} console.log calls` : undefined,
-				diagnostics: { type: "simple", items },
-				advices:
-					total > 0 ? "Consider using a proper logging library instead of console.log" : undefined,
+				diagnostics: { type: "simple", details, items },
 			};
 		},
 	};

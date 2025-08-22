@@ -131,7 +131,7 @@ An `Inspector<TState>` has three main components:
 
 The framework supports several diagnostic types for different reporting scenarios:
 
-- Location Diagnostic: File + line number + etc. (inspector provides global message)
+- Location Diagnostic: File + line number + etc. (used with SimpleDiagnostics that provides a global message)
 - Module Diagnostic: File-level issues without specific line numbers
 - Project Diagnostic: Project-wide issues (architecture, dependencies, etc.)
 
@@ -146,6 +146,7 @@ Each diagnostic has a severity that affects exit codes:
 ```ts
 import {
   type CodeLocation,
+  type DiagnosticDetails,
   type Inspector,
   inspectProject,
   type LocationDiagnostic,
@@ -189,12 +190,19 @@ function createConsoleLogInspector(): Inspector<CodeLocation[]> {
         }
       }
 
+      const details: DiagnosticDetails =
+        total > 0
+          ? {
+              message: "Found console.log calls.",
+              advices: "Consider using a proper logging library instead of console.log",
+            }
+          : {
+              message: "No console.log calls found.",
+            };
+
       return {
         inspectorName: "console-log-inspector",
-        message: total > 0 ? `Found ${total} console.log calls` : undefined,
-        diagnostics: { type: "simple", items },
-        advices:
-          total > 0 ? "Consider using a proper logging library instead of console.log" : undefined,
+        diagnostics: { type: "simple", details, items },
       };
     },
   };
