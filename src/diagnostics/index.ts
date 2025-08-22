@@ -2,12 +2,12 @@
  * Diagnostic types and utilities for ts-inspect.
  */
 
+// Export common types
+export type { CodeLocation, DiagnosticDetails, DiagnosticSeverity } from "./common-types.ts";
+
 // Export all item types
 export type {
-	CodeLocation,
 	Diagnostic,
-	DiagnosticDetails,
-	DiagnosticSeverity,
 	LocationDiagnostic,
 	ModuleDiagnostic,
 	ProjectDiagnostic,

@@ -2,7 +2,7 @@
  * Utility functions for working with diagnostics and severity.
  */
 
-import type { DiagnosticSeverity } from "./item-types.ts";
+import type { DiagnosticSeverity } from "./common-types.ts";
 import type { Diagnostics } from "./list-types.ts";
 
 /**
