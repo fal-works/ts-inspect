@@ -3,20 +3,15 @@
  */
 
 import assert from "node:assert/strict";
-import { Writable } from "node:stream";
 import { describe, it, test } from "node:test";
+import { mockWritable } from "../../test/test-utils.ts";
 import type { PrinterOptions } from "./printer.ts";
 import { createXmlPrinter } from "./xml-printer.ts";
 
 describe("core/xml-printer", () => {
 	describe("createXmlPrinter", () => {
 		test("returns XmlPrinter with all required methods", () => {
-			const stream = new Writable({
-				write(_chunk, _encoding, callback) {
-					callback();
-				},
-			});
-
+			const stream = mockWritable();
 			const printer = createXmlPrinter(stream);
 
 			// Check that it has base Printer methods
@@ -36,17 +31,10 @@ describe("core/xml-printer", () => {
 
 	describe("type XmlPrinter", () => {
 		function captureOutput(fn: (printer: ReturnType<typeof createXmlPrinter>) => void): string {
-			let output = "";
-			const stream = new Writable({
-				write(chunk, _encoding, callback) {
-					output += chunk.toString();
-					callback();
-				},
-			});
-
+			const stream = mockWritable();
 			const printer = createXmlPrinter(stream);
 			fn(printer);
-			return output;
+			return stream.getOutput();
 		}
 
 		describe("printXmlDeclaration", () => {
@@ -118,17 +106,10 @@ describe("core/xml-printer", () => {
 			options: PrinterOptions,
 			fn: (printer: ReturnType<typeof createXmlPrinter>) => void,
 		): string {
-			let output = "";
-			const stream = new Writable({
-				write(chunk, _encoding, callback) {
-					output += chunk.toString();
-					callback();
-				},
-			});
-
+			const stream = mockWritable();
 			const printer = createXmlPrinter(stream, options);
 			fn(printer);
-			return output;
+			return stream.getOutput();
 		}
 
 		it("uses custom indentUnit for XML elements", () => {

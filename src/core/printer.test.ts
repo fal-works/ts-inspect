@@ -1,33 +1,12 @@
 import assert from "node:assert";
-import { Writable } from "node:stream";
 import { describe, it } from "node:test";
+import { mockWritable } from "../../test/test-utils.ts";
 import { createPrinter, type PrinterOptions } from "./printer.ts";
-
-/**
- * Mock writable stream that collects written data as a string.
- */
-class MockWritable extends Writable {
-	private chunks: string[] = [];
-
-	_write(
-		chunk: Buffer | string,
-		_encoding: BufferEncoding,
-		callback: (error?: Error | null) => void,
-	): void {
-		this.chunks.push(chunk.toString());
-		callback();
-	}
-
-	getOutput(): string {
-		return this.chunks.join("");
-	}
-}
 
 describe("core/printer", () => {
 	describe("createPrinter", () => {
 		it("returns Printer with all required methods", () => {
-			const output = new MockWritable();
-			const printer = createPrinter(output);
+			const printer = createPrinter(process.stdout);
 
 			// Check that it has all Printer methods
 			assert.strictEqual(typeof printer.print, "function");
@@ -40,7 +19,7 @@ describe("core/printer", () => {
 
 	describe("type Printer", () => {
 		function captureOutput(fn: (printer: ReturnType<typeof createPrinter>) => void): string {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output);
 			fn(printer);
 			return output.getOutput();
@@ -286,7 +265,7 @@ describe("core/printer", () => {
 			options: PrinterOptions,
 			fn: (printer: ReturnType<typeof createPrinter>) => void,
 		): string {
-			const output = new MockWritable();
+			const output = mockWritable();
 			const printer = createPrinter(output, options);
 			fn(printer);
 			return output.getOutput();
