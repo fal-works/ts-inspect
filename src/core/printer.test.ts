@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { Writable } from "node:stream";
 import { describe, it } from "node:test";
-import { createPrinter } from "./printer.ts";
+import { createPrinter, type PrinterOptions } from "./printer.ts";
 
 /**
  * Mock writable stream that collects written data as a string.
@@ -278,6 +278,27 @@ describe("core/printer", () => {
 				});
 				assert.strictEqual(output, "Content\nAfter\nFinal");
 			});
+		});
+	});
+
+	describe("createPrinter with options", () => {
+		function captureOutputWithOptions(
+			options: PrinterOptions,
+			fn: (printer: ReturnType<typeof createPrinter>) => void,
+		): string {
+			const output = new MockWritable();
+			const printer = createPrinter(output, options);
+			fn(printer);
+			return output.getOutput();
+		}
+
+		it("uses custom indentUnit", () => {
+			const output = captureOutputWithOptions({ indentUnit: "\t" }, (printer) => {
+				printer.group("Group:");
+				printer.println("Indented");
+				printer.groupEnd();
+			});
+			assert.strictEqual(output, "Group:\n\tIndented\n");
 		});
 	});
 });

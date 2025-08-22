@@ -5,6 +5,18 @@
 import type { Writable } from "node:stream";
 
 /**
+ * Options for configuring printer behavior.
+ */
+export interface PrinterOptions {
+	/**
+	 * String used for each level of indentation.
+	 *
+	 * @default "  " (two spaces)
+	 */
+	indentUnit: string;
+}
+
+/**
  * Printer interface for building formatted text output with grouping and indentation.
  * Useful for creating human-readable reports, logs, or any hierarchical text output.
  */
@@ -130,9 +142,9 @@ function groupEnd(state: PrinterState): void {
  * Creates a new printer instance that writes formatted text to a writable stream.
  * Provides automatic indentation management for hierarchical output structures.
  */
-export function createPrinter(output: Writable): Printer {
+export function createPrinter(output: Writable, options?: PrinterOptions): Printer {
 	const state: PrinterState = {
-		indentUnit: "  ", // 2 spaces
+		indentUnit: options?.indentUnit ?? "  ", // Default: 2 spaces
 		output,
 		indentLevel: 0,
 		atLineStart: true,

@@ -4,7 +4,8 @@
 
 import assert from "node:assert/strict";
 import { Writable } from "node:stream";
-import { describe, test } from "node:test";
+import { describe, it, test } from "node:test";
+import type { PrinterOptions } from "./printer.ts";
 import { createXmlPrinter } from "./xml-printer.ts";
 
 describe("core/xml-printer", () => {
@@ -109,6 +110,40 @@ describe("core/xml-printer", () => {
 				);
 				assert.equal(output, "<test/>");
 			});
+		});
+	});
+
+	describe("createXmlPrinter with options", () => {
+		function captureOutputWithOptions(
+			options: PrinterOptions,
+			fn: (printer: ReturnType<typeof createXmlPrinter>) => void,
+		): string {
+			let output = "";
+			const stream = new Writable({
+				write(chunk, _encoding, callback) {
+					output += chunk.toString();
+					callback();
+				},
+			});
+
+			const printer = createXmlPrinter(stream, options);
+			fn(printer);
+			return output;
+		}
+
+		it("uses custom indentUnit for XML elements", () => {
+			const output = captureOutputWithOptions({ indentUnit: "\t" }, (printer) => {
+				printer.group("XML:");
+				printer.printXmlElementStart("root");
+				printer.newLine();
+				printer.printXmlElementStart("child");
+				printer.print("content");
+				printer.printXmlElementEnd("child");
+				printer.newLine();
+				printer.printXmlElementEnd("root");
+				printer.groupEnd();
+			});
+			assert.equal(output, "XML:\n\t<root>\n\t<child>content</child>\n\t</root>\n");
 		});
 	});
 });

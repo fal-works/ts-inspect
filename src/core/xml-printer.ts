@@ -3,7 +3,11 @@
  */
 
 import type { Writable } from "node:stream";
-import { createPrinter as createBasePrinter, type Printer } from "./printer.ts";
+import {
+	createPrinter as createBasePrinter,
+	type Printer,
+	type PrinterOptions,
+} from "./printer.ts";
 import { objectToXmlAttributesString } from "./xml-string.ts";
 
 /**
@@ -81,8 +85,8 @@ function printXmlSelfClosingElement(
 /**
  * Creates an XML printer instance that extends the base printer with XML-specific methods.
  */
-export function createXmlPrinter(output: Writable): XmlPrinter {
-	const basePrinter = createBasePrinter(output);
+export function createXmlPrinter(output: Writable, options?: PrinterOptions): XmlPrinter {
+	const basePrinter = createBasePrinter(output, options);
 
 	return {
 		...basePrinter,
