@@ -1,12 +1,25 @@
 import { inspectProject, type Reporter, translateSeverityToExitCode } from "@fal-works/ts-inspect";
 
 const customReporter: Reporter = (results, output) => {
-	// Write custom formatted output to the writable stream
 	output.write(`Found ${results.length} inspector results\n`);
 
 	for (const result of results) {
-		if (result.diagnostics.items.length > 0) {
-			output.write(`${result.inspectorName}: ${result.diagnostics.items.length} issues\n`);
+		const { diagnostics } = result;
+		let findingsCount = 0;
+
+		if (diagnostics.type === "simple") {
+			for (const fileScope of diagnostics.perFile.values()) {
+				findingsCount += fileScope.locations.length;
+			}
+		} else if (diagnostics.type === "rich") {
+			findingsCount += diagnostics.project.length;
+			for (const fileScope of diagnostics.perFile.values()) {
+				findingsCount += fileScope.wholeFile.length + fileScope.locations.length;
+			}
+		}
+
+		if (findingsCount > 0) {
+			output.write(`${result.inspectorName}: ${findingsCount} findings\n`);
 		}
 	}
 };

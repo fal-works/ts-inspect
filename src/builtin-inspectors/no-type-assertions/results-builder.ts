@@ -2,11 +2,7 @@
  * Results builder for collecting and structuring type assertion findings.
  */
 
-import type {
-	DiagnosticDetails,
-	LocationDiagnostic,
-	SimpleDiagnostics,
-} from "../../diagnostics/index.ts";
+import type { DiagnosticDetails, SimpleDiagnostics } from "../../diagnostics/index.ts";
 import type { InspectorResult, ResultsBuilder } from "../../inspector/index.ts";
 import { IGNORE_COMMENT } from "./constants.ts";
 import type { TypeAssertionFindings } from "./types.ts";
@@ -33,22 +29,20 @@ But be aware that this is an exceptional case.
  * Results builder for `TypeAssertionFindings`.
  */
 export const resultsBuilder: ResultsBuilder<TypeAssertionFindings> = (resultPerFile) => {
-	const diagnosticItems: LocationDiagnostic[] = [];
+	const perFile: SimpleDiagnostics["perFile"] = new Map();
+	let totalFindings = 0;
 
 	for (const r of resultPerFile) {
-		const file = r.srcFile.file.fileName;
-		for (const found of r.finalState) {
-			diagnosticItems.push({
-				type: "location",
-				severity: "error",
-				file,
-				location: found,
-			});
+		const findings = r.finalState;
+		if (findings.length > 0) {
+			const file = r.srcFile.file.fileName;
+			perFile.set(file, { locations: findings.map((found) => [found, { severity: "error" }]) });
+			totalFindings += findings.length;
 		}
 	}
 
 	const details: DiagnosticDetails =
-		diagnosticItems.length > 0
+		totalFindings > 0
 			? {
 					message: "Found suspicious type assertions.",
 					advices: noTypeAssertionsFriendlyMessage(),
@@ -61,7 +55,7 @@ export const resultsBuilder: ResultsBuilder<TypeAssertionFindings> = (resultPerF
 	const diagnostics: SimpleDiagnostics = {
 		type: "simple",
 		details,
-		items: diagnosticItems,
+		perFile,
 	};
 
 	const result: InspectorResult = {

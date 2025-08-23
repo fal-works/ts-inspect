@@ -1,6 +1,7 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
 import { mockWritable } from "../../../test/test-utils.ts";
+import { createTestRichDiagnostics, createTestSimpleDiagnostics } from "../../diagnostics/index.ts";
 import type { InspectorResult } from "../../inspector/index.ts";
 import { summaryReporter } from "./index.ts";
 
@@ -20,11 +21,11 @@ describe("reporter/summary-reporter/index", () => {
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "clean-inspector",
-					diagnostics: { type: "simple", details: { message: "No issues found." }, items: [] },
+					diagnostics: createTestSimpleDiagnostics({ message: "No issues found." }),
 				},
 				{
 					inspectorName: "another-clean-inspector",
-					diagnostics: { type: "rich", items: [] },
+					diagnostics: createTestRichDiagnostics(),
 				},
 			];
 
@@ -38,9 +39,12 @@ describe("reporter/summary-reporter/index", () => {
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "no-type-assertions",
-					diagnostics: {
-						type: "simple",
-						items: [
+					diagnostics: createTestSimpleDiagnostics(
+						{
+							message: "Found suspicious type assertions.",
+							advices: "Use proper typing instead.",
+						},
+						[
 							{
 								type: "location",
 								severity: "error",
@@ -48,11 +52,7 @@ describe("reporter/summary-reporter/index", () => {
 								location: { line: 42, snippet: "value as any" },
 							},
 						],
-						details: {
-							message: "Found suspicious type assertions.",
-							advices: "Use proper typing instead.",
-						},
-					},
+					),
 				},
 			];
 
@@ -73,32 +73,25 @@ describe("reporter/summary-reporter/index", () => {
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "first-inspector",
-					diagnostics: {
-						type: "simple",
-						items: [
-							{
-								type: "location",
-								severity: "error",
-								file: "src/test1.ts",
-								location: { line: 10, snippet: "first issue" },
-							},
-						],
-						details: { message: "First inspector issues." },
-					},
+					diagnostics: createTestSimpleDiagnostics({ message: "First inspector issues." }, [
+						{
+							type: "location",
+							severity: "error",
+							file: "src/test1.ts",
+							location: { line: 10, snippet: "first issue" },
+						},
+					]),
 				},
 				{
 					inspectorName: "second-inspector",
-					diagnostics: {
-						type: "simple",
-						items: [
-							{
-								type: "file",
-								severity: "warning",
-								file: "src/module.ts",
-							},
-						],
-						details: { message: "Second inspector issues." },
-					},
+					diagnostics: createTestSimpleDiagnostics({ message: "Second inspector issues." }, [
+						{
+							type: "location",
+							severity: "warning",
+							file: "src/module.ts",
+							location: { line: 1 },
+						},
+					]),
 				},
 			];
 
@@ -113,7 +106,7 @@ describe("reporter/summary-reporter/index", () => {
 				"[second-inspector]\n" +
 				"  Second inspector issues.\n" +
 				"\n" +
-				"  ⚠️  src/module.ts\n";
+				"  ⚠️  src/module.ts:1\n";
 			assert.strictEqual(output.getOutput(), expected);
 		});
 
@@ -122,36 +115,29 @@ describe("reporter/summary-reporter/index", () => {
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "dirty-inspector",
-					diagnostics: {
-						type: "simple",
-						items: [
-							{
-								type: "location",
-								severity: "error",
-								file: "src/issue.ts",
-								location: { line: 5, snippet: "problem" },
-							},
-						],
-						details: { message: "Found issues." },
-					},
+					diagnostics: createTestSimpleDiagnostics({ message: "Found issues." }, [
+						{
+							type: "location",
+							severity: "error",
+							file: "src/issue.ts",
+							location: { line: 5, snippet: "problem" },
+						},
+					]),
 				},
 				{
 					inspectorName: "clean-inspector",
-					diagnostics: { type: "simple", details: { message: "No issues found." }, items: [] },
+					diagnostics: createTestSimpleDiagnostics({ message: "No issues found." }),
 				},
 				{
 					inspectorName: "another-dirty-inspector",
-					diagnostics: {
-						type: "simple",
-						items: [
-							{
-								type: "file",
-								severity: "info",
-								file: "src/info.ts",
-							},
-						],
-						details: { message: "Found issues." },
-					},
+					diagnostics: createTestSimpleDiagnostics({ message: "Found issues." }, [
+						{
+							type: "location",
+							severity: "info",
+							file: "src/info.ts",
+							location: { line: 1 },
+						},
+					]),
 				},
 			];
 
@@ -166,7 +152,7 @@ describe("reporter/summary-reporter/index", () => {
 				"[another-dirty-inspector]\n" +
 				"  Found issues.\n" +
 				"\n" +
-				"  ℹ️  src/info.ts\n";
+				"  ℹ️  src/info.ts:1\n";
 			assert.strictEqual(output.getOutput(), expected);
 		});
 
@@ -175,29 +161,28 @@ describe("reporter/summary-reporter/index", () => {
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "complex-inspector",
-					diagnostics: {
-						type: "rich",
-						items: [
-							{
-								type: "location",
-								severity: "error",
-								file: "src/complex1.ts",
-								location: { line: 15, snippet: "complex issue 1" },
-								details: {
-									message: "First complex issue",
-									advices: "Fix the first issue",
-								},
+					diagnostics: createTestRichDiagnostics([
+						{
+							type: "location",
+							severity: "error",
+							file: "src/complex1.ts",
+							location: { line: 15, snippet: "complex issue 1" },
+							details: {
+								message: "First complex issue",
+								advices: "Fix the first issue",
 							},
-							{
-								type: "project",
-								severity: "warning",
-								details: {
-									message: "Architecture problem",
-									advices: "Refactor the architecture",
-								},
+						},
+						{
+							type: "location",
+							severity: "warning",
+							file: "(project-level issue)",
+							location: { line: 1 },
+							details: {
+								message: "Architecture problem",
+								advices: "Refactor the architecture",
 							},
-						],
-					},
+						},
+					]),
 				},
 			];
 
@@ -210,10 +195,9 @@ describe("reporter/summary-reporter/index", () => {
 				"  First complex issue\n" +
 				"  Fix the first issue\n" +
 				"\n" +
-				"  ⚠️  (project-level issue)\n" +
+				"  ⚠️  (project-level issue):1\n" +
 				"  Architecture problem\n" +
-				"  Refactor the architecture\n" +
-				"\n";
+				"  Refactor the architecture\n";
 			assert.strictEqual(output.getOutput(), expected);
 		});
 
@@ -222,36 +206,28 @@ describe("reporter/summary-reporter/index", () => {
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "multiline-inspector",
-					diagnostics: {
-						type: "simple",
-						items: [
-							{
-								type: "location",
-								severity: "error",
-								file: "src/multiline.ts",
-								location: {
-									line: 20,
-									snippet: "{\n    prop: value as any,\n    other: 'test'\n}",
-								},
+					diagnostics: createTestSimpleDiagnostics({ message: "Found issues." }, [
+						{
+							type: "location",
+							severity: "error",
+							file: "src/multiline.ts",
+							location: {
+								line: 20,
+								snippet: "{\n    prop: value as any,\n    other: 'test'\n}",
 							},
-						],
-						details: { message: "Found issues." },
-					},
+						},
+					]),
 				},
 				{
 					inspectorName: "simple-inspector",
-					diagnostics: {
-						type: "simple",
-						items: [
-							{
-								type: "location",
-								severity: "warning",
-								file: "src/simple.ts",
-								location: { line: 5, snippet: "simple issue" },
-							},
-						],
-						details: { message: "Found issues." },
-					},
+					diagnostics: createTestSimpleDiagnostics({ message: "Found issues." }, [
+						{
+							type: "location",
+							severity: "warning",
+							file: "src/simple.ts",
+							location: { line: 5, snippet: "simple issue" },
+						},
+					]),
 				},
 			];
 
@@ -280,23 +256,20 @@ describe("reporter/summary-reporter/index", () => {
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "only-inspector",
-					diagnostics: {
-						type: "simple",
-						items: [
-							{
-								type: "file",
-								severity: "error",
-								file: "src/test.ts",
-							},
-						],
-						details: { message: "Found issues." },
-					},
+					diagnostics: createTestSimpleDiagnostics({ message: "Found issues." }, [
+						{
+							type: "location",
+							severity: "error",
+							file: "src/test.ts",
+							location: { line: 1 },
+						},
+					]),
 				},
 			];
 
 			summaryReporter(results, output);
 
-			const expected = "[only-inspector]\n  Found issues.\n\n  ❌ src/test.ts\n";
+			const expected = "[only-inspector]\n  Found issues.\n\n  ❌ src/test.ts:1\n";
 			assert.strictEqual(output.getOutput(), expected);
 
 			// Verify no trailing newline beyond what the inspector result itself produces
@@ -310,9 +283,13 @@ describe("reporter/summary-reporter/index", () => {
 			const results: InspectorResult[] = [
 				{
 					inspectorName: "no-type-assertions",
-					diagnostics: {
-						type: "simple",
-						items: [
+					diagnostics: createTestSimpleDiagnostics(
+						{
+							message: "Found suspicious type assertions.",
+							advices:
+								"Review these type assertions carefully. In most cases, type assertions should be your last resort.",
+						},
+						[
 							{
 								type: "location",
 								severity: "error",
@@ -332,12 +309,7 @@ describe("reporter/summary-reporter/index", () => {
 								location: { line: 8, snippet: "value as unknown as MyType" },
 							},
 						],
-						details: {
-							message: "Found suspicious type assertions.",
-							advices:
-								"Review these type assertions carefully. In most cases, type assertions should be your last resort.",
-						},
-					},
+					),
 				},
 			];
 

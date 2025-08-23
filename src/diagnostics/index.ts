@@ -5,22 +5,23 @@
 // Export common types
 export type { CodeLocation, DiagnosticDetails, DiagnosticSeverity } from "./common-types.ts";
 
-// Export all item types
+// Export diagnostic types
 export type {
-	Diagnostic,
-	FileDiagnostic,
-	LocationDiagnostic,
-	ProjectDiagnostic,
-	RichDiagnostic,
-	RichFileDiagnostic,
-	RichLocationDiagnostic,
-	SimpleDiagnostic,
-} from "./item-types.ts";
+	Diagnostics,
+	RichDiagnostics,
+	RichDiagnosticsFileScope,
+	SimpleDiagnostics,
+	SimpleDiagnosticsFileScope,
+} from "./diagnostic-types.ts";
 
-// Export all list types
-export type { Diagnostics, RichDiagnostics, SimpleDiagnostics } from "./list-types.ts";
+// Export finding types
+export type { DetailedFinding, Finding } from "./finding-types.ts";
 
-// Export all utility functions
+// Export functions for testing. Do not include in public API
+export { createTestRichDiagnostics, createTestSimpleDiagnostics } from "./test-helpers.ts";
+
+// Export essential utility functions.
+// Some of these are for internal use and not part of the public API
 export {
 	getOverallWorstSeverity,
 	getWorstSeverity,

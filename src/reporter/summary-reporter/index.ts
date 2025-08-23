@@ -14,15 +14,15 @@ export const summaryReporter: Reporter = (results, output) => {
 	const printer = createPrinter(output);
 
 	// Filter out results with no issues to avoid unnecessary spacing
-	const resultsWithIssues = results.filter(
+	const resultsWithDiagnostics = results.filter(
 		(result) => getWorstSeverity(result.diagnostics) !== null,
 	);
 
-	for (let i = 0; i < resultsWithIssues.length; i++) {
-		printInspectorResult(resultsWithIssues[i], printer);
+	for (let i = 0; i < resultsWithDiagnostics.length; i++) {
+		printInspectorResult(resultsWithDiagnostics[i], printer);
 
 		// Add empty line between inspector results (but not after the last one)
-		if (i < resultsWithIssues.length - 1) {
+		if (i < resultsWithDiagnostics.length - 1) {
 			printer.newLine();
 		}
 	}

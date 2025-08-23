@@ -96,19 +96,15 @@ export { createPrinter, type Printer, type PrinterOptions } from "./core/printer
 export { createXmlPrinter, type XmlPrinter } from "./core/xml-printer.ts";
 export type {
 	CodeLocation,
-	Diagnostic,
+	DetailedFinding,
 	DiagnosticDetails,
 	DiagnosticSeverity,
 	Diagnostics,
-	FileDiagnostic,
-	LocationDiagnostic,
-	ProjectDiagnostic,
-	RichDiagnostic,
+	Finding,
 	RichDiagnostics,
-	RichFileDiagnostic,
-	RichLocationDiagnostic,
-	SimpleDiagnostic,
+	RichDiagnosticsFileScope,
 	SimpleDiagnostics,
+	SimpleDiagnosticsFileScope,
 } from "./diagnostics/index.ts";
 export { translateSeverityToExitCode } from "./diagnostics/index.ts";
 export type {

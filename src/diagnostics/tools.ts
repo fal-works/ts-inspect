@@ -3,7 +3,7 @@
  */
 
 import type { DiagnosticSeverity } from "./common-types.ts";
-import type { Diagnostics } from "./list-types.ts";
+import type { Diagnostics } from "./diagnostic-types.ts";
 
 /**
  * Mapping from severity code to precedence order.
@@ -42,10 +42,34 @@ export function translateSeverityToExitCode(severity: DiagnosticSeverity | null)
  * Returns null if no diagnostics (treated as success).
  */
 export function getWorstSeverity(diagnostics: Diagnostics): DiagnosticSeverity | null {
-	const items = diagnostics.items;
-	if (items.length === 0) return null;
+	const severities: DiagnosticSeverity[] = [];
 
-	const severities = items.map((item) => item.severity);
+	if (diagnostics.type === "simple") {
+		// Extract severities from perFile Map structure
+		for (const fileScope of diagnostics.perFile.values()) {
+			for (const [, finding] of fileScope.locations) {
+				severities.push(finding.severity);
+			}
+		}
+	} else if (diagnostics.type === "rich") {
+		// Extract severities from project-level findings
+		for (const finding of diagnostics.project) {
+			severities.push(finding.severity);
+		}
+
+		// Extract severities from perFile Map structure
+		for (const fileScope of diagnostics.perFile.values()) {
+			// From whole-file findings
+			for (const finding of fileScope.wholeFile) {
+				severities.push(finding.severity);
+			}
+			// From location-specific findings
+			for (const [, finding] of fileScope.locations) {
+				severities.push(finding.severity);
+			}
+		}
+	}
+
 	return getWorstSeverityFromArray(severities);
 }
 

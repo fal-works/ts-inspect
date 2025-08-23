@@ -3,51 +3,49 @@
  */
 
 import type { Printer } from "../../core/printer.ts";
-import { getWorstSeverity } from "../../diagnostics/index.ts";
 import type { InspectorResult } from "../../inspector/index.ts";
-import { printRichDiagnostic, printSimpleDiagnostic } from "./diagnostic-printer.ts";
+import { printRichDiagnostics, printSimpleDiagnostics } from "./diagnostics-printer.ts";
+
+/**
+ * Prints inspector-level message for simple diagnostics.
+ */
+function printInspectorMessage(result: InspectorResult, printer: Printer): void {
+	if (result.diagnostics.type === "simple" && result.diagnostics.details.message) {
+		printer.println(result.diagnostics.details.message);
+	}
+}
+
+/**
+ * Prints inspector-level advice for simple diagnostics.
+ */
+function printInspectorAdvice(result: InspectorResult, printer: Printer): void {
+	if (result.diagnostics.type === "simple" && result.diagnostics.details.advices) {
+		printer.newLine(1);
+		printer.println(`💡 ${result.diagnostics.details.advices}`);
+	}
+}
 
 /**
  * Prints a single inspector result.
  */
 export function printInspectorResult(result: InspectorResult, printer: Printer): void {
-	const severity = getWorstSeverity(result.diagnostics);
-	if (severity === null) return; // Skip inspectors with no issues
+	const diagnostics = result.diagnostics;
 
 	printer.group(`[${result.inspectorName}]`);
 
-	const diagnostics = result.diagnostics;
+	// Print inspector message
+	printInspectorMessage(result, printer);
 
-	// Print message from diagnostics (both simple and rich diagnostics may have messages)
-	if (diagnostics.type === "simple" && diagnostics.details.message) {
-		printer.println(diagnostics.details.message);
+	// Print diagnostics
+	printer.newLine();
+	if (diagnostics.type === "simple") {
+		printSimpleDiagnostics(diagnostics, printer);
+	} else {
+		printRichDiagnostics(diagnostics, printer);
 	}
 
-	if (diagnostics.items.length > 0) {
-		printer.newLine();
-
-		if (diagnostics.type === "simple") {
-			// Simple diagnostics: no spacing between items since they're all single-line
-			for (const diagnostic of diagnostics.items) {
-				printSimpleDiagnostic(diagnostic, printer);
-			}
-		} else {
-			// Rich diagnostics: add spacing between multi-line items
-			for (let i = 0; i < diagnostics.items.length; i++) {
-				const diagnostic = diagnostics.items[i];
-				printRichDiagnostic(diagnostic, printer);
-
-				// Add empty line between rich diagnostic items (but not after the last one)
-				printer.newLine();
-			}
-		}
-	}
-
-	// Print advices from diagnostics (simple diagnostics have general advice)
-	if (diagnostics.type === "simple" && diagnostics.details.advices) {
-		printer.newLine(1);
-		printer.println(`💡 ${diagnostics.details.advices}`);
-	}
+	// Print inspector advice
+	printInspectorAdvice(result, printer);
 
 	printer.groupEnd();
 }

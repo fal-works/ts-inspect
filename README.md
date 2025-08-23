@@ -127,19 +127,25 @@ An `Inspector<TState>` has three main components:
 2. **`nodeInspectorFactory`**: Given a `ts.SourceFile`, returns a `NodeInspector` function called for each AST node in depth-first order. Accumulates state across nodes.
 3. **`resultsBuilder`**: Processes all per-file accumulated state and returns structured diagnostic data as `InspectorResult`.
 
-### Diagnostics
+### Diagnostic System
 
-The framework supports several diagnostic types for different reporting scenarios:
+The framework uses a structured diagnostic system. There are two diagnostic patterns:
 
-- Location Diagnostic: File + line number + etc. (used with SimpleDiagnostics that provides a global message)
-- File Diagnostic: File-level issues without specific line numbers
-- Project Diagnostic: Project-wide issues (architecture, dependencies, etc.)
+#### SimpleDiagnostics
 
-Each diagnostic has a severity that affects exit codes:
+The most common pattern, used when an inspector has a single message and advice that applies to all findings.
 
-- **`"error"`**: Code quality issues that should be fixed (exit code 1)
-- **`"warning"`**: Issues to review but don't cause failure (exit code 0)
-- **`"info"`**: Informational notices (exit code 0)
+Findings are organized by file, where each file contains an array of location-specific findings.
+
+#### RichDiagnostics
+
+Used for complex analysis where each finding needs its own specific message and advice.
+
+This pattern supports three scopes of findings:
+
+- **Project-level**: Issues that affect the entire codebase (architecture, dependencies, etc.)
+- **File-level**: Issues that apply to an entire file (missing exports, file structure, etc.)  
+- **Location-specific**: Issues tied to specific code locations (like most linting rules)
 
 ### Example: Count `console.log` Calls
 
@@ -149,7 +155,7 @@ import {
   type DiagnosticDetails,
   type Inspector,
   inspectProject,
-  type LocationDiagnostic,
+  type SimpleDiagnostics,
   translateSeverityToExitCode,
 } from "@fal-works/ts-inspect";
 import ts from "typescript";
@@ -173,36 +179,39 @@ function createConsoleLogInspector(): Inspector<CodeLocation[]> {
       return undefined; // unchanged
     },
     resultsBuilder: (perFile) => {
-      const items: LocationDiagnostic[] = [];
-      let total = 0;
+      const perFileMap: SimpleDiagnostics["perFile"] = new Map();
+      let totalFindings = 0;
 
-      for (const { srcFile, finalState } of perFile) {
-        if (finalState && finalState.length > 0) {
-          total += finalState.length;
-          for (const finding of finalState) {
-            items.push({
-              type: "location",
-              severity: "error",
-              file: srcFile.file.fileName,
-              location: finding,
-            });
-          }
+      for (const r of perFile) {
+        const findings = r.finalState;
+        if (findings.length > 0) {
+          const file = r.srcFile.file.fileName;
+          perFileMap.set(file, {
+            locations: findings.map((found) => [found, { severity: "error" }]),
+          });
+          totalFindings += findings.length;
         }
       }
 
       const details: DiagnosticDetails =
-        total > 0
+        totalFindings > 0
           ? {
-              message: "Found console.log calls.",
+              message: `Found ${totalFindings} console.log calls.`,
               advices: "Consider using a proper logging library instead of console.log",
             }
           : {
               message: "No console.log calls found.",
             };
 
+      const diagnostics: SimpleDiagnostics = {
+        type: "simple",
+        details,
+        perFile: perFileMap,
+      };
+
       return {
         inspectorName: "console-log-inspector",
-        diagnostics: { type: "simple", details, items },
+        diagnostics,
       };
     },
   };
@@ -237,12 +246,25 @@ Create your own reporter by implementing the `Reporter` interface:
 import { inspectProject, type Reporter, translateSeverityToExitCode } from "@fal-works/ts-inspect";
 
 const customReporter: Reporter = (results, output) => {
-  // Write custom formatted output to the writable stream
   output.write(`Found ${results.length} inspector results\n`);
 
   for (const result of results) {
-    if (result.diagnostics.items.length > 0) {
-      output.write(`${result.inspectorName}: ${result.diagnostics.items.length} issues\n`);
+    const { diagnostics } = result;
+    let findingsCount = 0;
+
+    if (diagnostics.type === "simple") {
+      for (const fileScope of diagnostics.perFile.values()) {
+        findingsCount += fileScope.locations.length;
+      }
+    } else if (diagnostics.type === "rich") {
+      findingsCount += diagnostics.project.length;
+      for (const fileScope of diagnostics.perFile.values()) {
+        findingsCount += fileScope.wholeFile.length + fileScope.locations.length;
+      }
+    }
+
+    if (findingsCount > 0) {
+      output.write(`${result.inspectorName}: ${findingsCount} findings\n`);
     }
   }
 };

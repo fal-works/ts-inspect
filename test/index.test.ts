@@ -41,7 +41,7 @@ describe("index", () => {
 
 		it("wraps unexpected exceptions with TsInspectError", async () => {
 			// Test with a completely malformed inspector to trigger an error before inspection
-			const malformedInspector = null as any;
+			const malformedInspector: any = null;
 
 			await assert.rejects(
 				async () => {
@@ -94,13 +94,13 @@ describe("index", () => {
 
 			// Create a mock writable stream to capture output
 			let capturedOutput = "";
-			const mockOutput = {
-				write: (chunk: string) => {
+			const mockOutput: any /* ignore-no-type-assertions */ = {
+				write: (chunk: string): boolean => {
 					capturedOutput += chunk;
 					return true;
 				},
-				end: () => {},
-			} as any;
+				end: (): void => {},
+			};
 
 			const result = await inspectFiles(filePaths, {
 				output: mockOutput,
@@ -118,13 +118,13 @@ describe("index", () => {
 
 			// Create a mock writable stream to capture output
 			let capturedOutput = "";
-			const mockOutput = {
-				write: (chunk: string) => {
+			const mockOutput: any = {
+				write: (chunk: string): boolean => {
 					capturedOutput += chunk;
 					return true;
 				},
-				end: () => {},
-			} as any;
+				end: (): void => {},
+			};
 
 			const customReporter: Reporter = (results, output) => {
 				output.write(`TEST: Found ${results.length} results\n`);

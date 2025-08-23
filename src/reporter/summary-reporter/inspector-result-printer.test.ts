@@ -2,22 +2,25 @@ import assert from "node:assert";
 import { describe, it } from "node:test";
 import { mockWritable } from "../../../test/test-utils.ts";
 import { createPrinter } from "../../core/printer.ts";
+import { createTestRichDiagnostics, createTestSimpleDiagnostics } from "../../diagnostics/index.ts";
 import type { InspectorResult } from "../../inspector/index.ts";
 import { printInspectorResult } from "./inspector-result-printer.ts";
 
 describe("reporter/summary-reporter/inspector-result-printer", () => {
 	describe("printInspectorResult", () => {
-		it("skips inspector results with no issues", () => {
+		it("prints inspector result even without findings (since filtering happens upstream)", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "clean-inspector",
-				diagnostics: { type: "simple", details: { message: "No issues found." }, items: [] },
+				diagnostics: createTestSimpleDiagnostics({ message: "No issues found." }, []),
 			};
 
 			printInspectorResult(result, printer);
 
-			assert.strictEqual(output.getOutput(), "");
+			const outputText = output.getOutput();
+			assert.ok(outputText.includes("[clean-inspector]"));
+			assert.ok(outputText.includes("No issues found."));
 		});
 
 		it("prints simple inspector result with message and diagnostics", () => {
@@ -25,24 +28,20 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "no-type-assertions",
-				diagnostics: {
-					type: "simple",
-					details: { message: "Found suspicious type assertions." },
-					items: [
-						{
-							type: "location",
-							severity: "error",
-							file: "src/test.ts",
-							location: { line: 42, snippet: "value as any" },
-						},
-						{
-							type: "location",
-							severity: "error",
-							file: "src/test.ts",
-							location: { line: 50, snippet: "data as string" },
-						},
-					],
-				},
+				diagnostics: createTestSimpleDiagnostics({ message: "Found suspicious type assertions." }, [
+					{
+						type: "location",
+						severity: "error",
+						file: "src/test.ts",
+						location: { line: 42, snippet: "value as any" },
+					},
+					{
+						type: "location",
+						severity: "error",
+						file: "src/test.ts",
+						location: { line: 50, snippet: "data as string" },
+					},
+				]),
 			};
 
 			printInspectorResult(result, printer);
@@ -61,13 +60,12 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "no-type-assertions",
-				diagnostics: {
-					type: "simple",
-					details: {
+				diagnostics: createTestSimpleDiagnostics(
+					{
 						message: "Found suspicious type assertions.",
 						advices: "Consider using proper typing instead of type assertions.",
 					},
-					items: [
+					[
 						{
 							type: "location",
 							severity: "error",
@@ -75,7 +73,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 							location: { line: 42, snippet: "value as any" },
 						},
 					],
-				},
+				),
 			};
 
 			printInspectorResult(result, printer);
@@ -95,28 +93,25 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "complex-inspector",
-				diagnostics: {
-					type: "rich",
-					items: [
-						{
-							type: "location",
-							severity: "error",
-							file: "src/test1.ts",
-							location: { line: 10, snippet: "first issue" },
-							details: {
-								message: "First diagnostic message",
-								advices: "How to fix the first issue",
-							},
+				diagnostics: createTestRichDiagnostics([
+					{
+						type: "location",
+						severity: "error",
+						file: "src/test1.ts",
+						location: { line: 10, snippet: "first issue" },
+						details: {
+							message: "First diagnostic message",
+							advices: "How to fix the first issue",
 						},
-						{
-							type: "location",
-							severity: "warning",
-							file: "src/test2.ts",
-							location: { line: 20, snippet: "second issue" },
-							details: { message: "Second diagnostic message" },
-						},
-					],
-				},
+					},
+					{
+						type: "location",
+						severity: "warning",
+						file: "src/test2.ts",
+						location: { line: 20, snippet: "second issue" },
+						details: { message: "Second diagnostic message" },
+					},
+				]),
 			};
 
 			printInspectorResult(result, printer);
@@ -129,8 +124,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 				"  How to fix the first issue\n" +
 				"\n" +
 				"  ⚠️  src/test2.ts:20 - second issue\n" +
-				"  Second diagnostic message\n" +
-				"\n";
+				"  Second diagnostic message\n";
 			assert.strictEqual(output.getOutput(), expected);
 		});
 
@@ -139,22 +133,19 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "minimal-inspector",
-				diagnostics: {
-					type: "simple",
-					details: { message: "Found issues." },
-					items: [
-						{
-							type: "file",
-							severity: "warning",
-							file: "src/module.ts",
-						},
-					],
-				},
+				diagnostics: createTestSimpleDiagnostics({ message: "Found issues." }, [
+					{
+						type: "location",
+						severity: "warning",
+						file: "src/module.ts",
+						location: { line: 1 }, // No snippet, so it will just show file:line
+					},
+				]),
 			};
 
 			printInspectorResult(result, printer);
 
-			const expected = "[minimal-inspector]\n  Found issues.\n\n  ⚠️  src/module.ts\n";
+			const expected = "[minimal-inspector]\n  Found issues.\n\n  ⚠️  src/module.ts:1\n";
 			assert.strictEqual(output.getOutput(), expected);
 		});
 
@@ -163,13 +154,12 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "advice-only-inspector",
-				diagnostics: {
-					type: "simple",
-					details: {
+				diagnostics: createTestSimpleDiagnostics(
+					{
 						message: "Found info items.",
 						advices: "General advice for the codebase",
 					},
-					items: [
+					[
 						{
 							type: "location",
 							severity: "info",
@@ -177,7 +167,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 							location: { line: 1, snippet: "info item" },
 						},
 					],
-				},
+				),
 			};
 
 			printInspectorResult(result, printer);
@@ -197,27 +187,23 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "multiline-inspector",
-				diagnostics: {
-					type: "simple",
-					details: { message: "Found multiline issues." },
-					items: [
-						{
-							type: "location",
-							severity: "error",
-							file: "src/complex.ts",
-							location: {
-								line: 15,
-								snippet: "{\n    prop: value as any,\n    other: 'test'\n}",
-							},
+				diagnostics: createTestSimpleDiagnostics({ message: "Found multiline issues." }, [
+					{
+						type: "location",
+						severity: "error",
+						file: "src/complex.ts",
+						location: {
+							line: 15,
+							snippet: "{\n    prop: value as any,\n    other: 'test'\n}",
 						},
-						{
-							type: "location",
-							severity: "error",
-							file: "src/simple.ts",
-							location: { line: 5, snippet: "simple as string" },
-						},
-					],
-				},
+					},
+					{
+						type: "location",
+						severity: "error",
+						file: "src/simple.ts",
+						location: { line: 5, snippet: "simple as string" },
+					},
+				]),
 			};
 
 			printInspectorResult(result, printer);
@@ -245,13 +231,12 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 
 			const result: InspectorResult = {
 				inspectorName: "test-inspector",
-				diagnostics: {
-					type: "simple",
-					details: {
+				diagnostics: createTestSimpleDiagnostics(
+					{
 						message: "Found test issues.",
 						advices: "Some advice",
 					},
-					items: [
+					[
 						{
 							type: "location",
 							severity: "error",
@@ -259,7 +244,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 							location: { line: 1, snippet: "test" },
 						},
 					],
-				},
+				),
 			};
 
 			printInspectorResult(result, printer);
@@ -280,19 +265,18 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
 				inspectorName: "architecture-inspector",
-				diagnostics: {
-					type: "rich",
-					items: [
-						{
-							type: "project",
-							severity: "warning",
-							details: {
-								message: "Circular dependency detected",
-								advices: "Refactor to remove circular imports",
-							},
+				diagnostics: createTestRichDiagnostics([
+					{
+						type: "location",
+						severity: "warning",
+						file: "(project-level issue)",
+						location: { line: 1 },
+						details: {
+							message: "Circular dependency detected",
+							advices: "Refactor to remove circular imports",
 						},
-					],
-				},
+					},
+				]),
 			};
 
 			printInspectorResult(result, printer);
@@ -300,10 +284,9 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			const expected =
 				"[architecture-inspector]\n" +
 				"\n" +
-				"  ⚠️  (project-level issue)\n" +
+				"  ⚠️  (project-level issue):1\n" +
 				"  Circular dependency detected\n" +
-				"  Refactor to remove circular imports\n" +
-				"\n";
+				"  Refactor to remove circular imports\n";
 			assert.strictEqual(output.getOutput(), expected);
 		});
 	});
@@ -315,34 +298,26 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 
 			const result1: InspectorResult = {
 				inspectorName: "first-inspector",
-				diagnostics: {
-					type: "simple",
-					details: { message: "First inspector found issues." },
-					items: [
-						{
-							type: "location",
-							severity: "error",
-							file: "src/test1.ts",
-							location: { line: 1, snippet: "issue1" },
-						},
-					],
-				},
+				diagnostics: createTestSimpleDiagnostics({ message: "First inspector found issues." }, [
+					{
+						type: "location",
+						severity: "error",
+						file: "src/test1.ts",
+						location: { line: 1, snippet: "issue1" },
+					},
+				]),
 			};
 
 			const result2: InspectorResult = {
 				inspectorName: "second-inspector",
-				diagnostics: {
-					type: "simple",
-					details: { message: "Second inspector found issues." },
-					items: [
-						{
-							type: "location",
-							severity: "warning",
-							file: "src/test2.ts",
-							location: { line: 2, snippet: "issue2" },
-						},
-					],
-				},
+				diagnostics: createTestSimpleDiagnostics({ message: "Second inspector found issues." }, [
+					{
+						type: "location",
+						severity: "warning",
+						file: "src/test2.ts",
+						location: { line: 2, snippet: "issue2" },
+					},
+				]),
 			};
 
 			printInspectorResult(result1, printer);
