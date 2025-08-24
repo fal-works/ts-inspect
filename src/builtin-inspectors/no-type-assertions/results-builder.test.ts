@@ -1,6 +1,7 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
 import type ts from "typescript";
+import type { MarkupRootElement } from "../../diagnostics/markup/types.ts";
 import type { FileInspectionResult } from "../../inspector/index.ts";
 import { resultsBuilder } from "./results-builder.ts";
 import type { TypeAssertionFindings } from "./types.ts";
@@ -43,10 +44,21 @@ describe("builtin-inspectors/no-type-assertions/results-builder", () => {
 			const diagnostics = result.diagnostics;
 			assert.strictEqual(diagnostics.type, "simple");
 			assert.strictEqual(diagnostics.details.message, "Found suspicious type assertions.");
-			assert.ok(
-				typeof diagnostics.details.instructions === "string" &&
-					diagnostics.details.instructions.includes("Hint:"),
-			);
+
+			// Verify instructions is a MarkupRootElement with expected structure
+			const instructions = diagnostics.details.instructions as MarkupRootElement;
+			assert.ok(instructions);
+			assert.strictEqual(instructions.type, "element");
+			assert.strictEqual(instructions.name, "markup");
+			assert.ok(instructions.children.length >= 2); // hint + ordered list
+
+			// Check that first child is a hint paragraph
+			const firstChild = instructions.children[0];
+			assert.strictEqual(firstChild.type, "element");
+			if (firstChild.type === "element") {
+				assert.strictEqual(firstChild.name, "paragraph");
+				assert.strictEqual(firstChild.attributes.intention, "hint");
+			}
 			const testFileScope = diagnostics.perFile.get("test.ts");
 			assert.ok(testFileScope);
 			assert.strictEqual(testFileScope.locations.length, 2);

@@ -3,27 +3,64 @@
  */
 
 import type { DiagnosticDetails, SimpleDiagnostics } from "../../diagnostics/index.ts";
+import {
+	code,
+	hint,
+	listItem,
+	markup,
+	orderedList,
+	paragraph,
+	text,
+} from "../../diagnostics/markup/builders.ts";
 import type { InspectorResult, ResultsBuilder } from "../../inspector/index.ts";
 import { IGNORE_COMMENT } from "./constants.ts";
 import type { TypeAssertionFindings } from "./types.ts";
 
 /**
- * Generates a friendly message about type assertions.
+ * Generates markup instructions about type assertions.
  */
 const noTypeAssertionsFriendlyMessage = () =>
-	`Hint:
-Type assertions (like \`as T\`) should be your last resort.
-
-Stepwise Instructions:
-1. Check assignability:
-  If the value already satisfies the target type, just declare it with that type or pass it directly.
-2. Resolve design issues:
-  Needing assertions often means the types aren't aligned. Consider redesigning the types or data flow so the compiler can infer types safely.
-3. Allow explicit exceptions:
-  If you truly must keep it (e.g., for an isolated utility function or third-party integration), and if it is explicitly permitted by the code maintainer, then add the comment: \`/* ${IGNORE_COMMENT} */\`
-4. Escalate if unresolved:
-  If none of the above steps solve the issue, consult the code maintainer.
-`.trim();
+	markup([
+		hint([text("Type assertions (like "), code("as T"), text(") should be your last resort.")]),
+		orderedList(
+			[
+				listItem([
+					paragraph(
+						"If the value already satisfies the target type, just declare it with that type or pass it directly.",
+						undefined,
+						"Check assignability",
+					),
+				]),
+				listItem([
+					paragraph(
+						"Needing assertions often means the types aren't aligned. Consider redesigning the types or data flow so the compiler can infer types safely.",
+						undefined,
+						"Resolve design issues",
+					),
+				]),
+				listItem([
+					paragraph(
+						[
+							text(
+								"If you truly must keep it (e.g., for an isolated utility function or third-party integration), and if it is explicitly permitted by the code maintainer, then add the comment: ",
+							),
+							code(`/* ${IGNORE_COMMENT} */`),
+						],
+						undefined,
+						"Allow explicit exceptions",
+					),
+				]),
+				listItem([
+					paragraph(
+						"If none of the above steps solve the issue, consult the code maintainer.",
+						undefined,
+						"Escalate if unresolved",
+					),
+				]),
+			],
+			"stepwise-instructions",
+		),
+	]);
 
 /**
  * Results builder for `TypeAssertionFindings`.
