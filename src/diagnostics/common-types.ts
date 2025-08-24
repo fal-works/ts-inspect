@@ -24,12 +24,12 @@ export interface CodeLocation {
 }
 
 /**
- * Common structure for diagnostic messages and advice.
+ * Common structure for diagnostic messages and instructions.
  * Shared by both simple diagnostics and rich diagnostic extensions.
  */
 export interface DiagnosticDetails {
-	/** Message describing the diagnostic */
+	/** Message describing the diagnostics/findings */
 	message: string;
-	/** Optional advice or guidance for addressing the issue */
-	advices?: string | undefined;
+	/** Optional instructions or guidance for addressing the issue */
+	instructions?: string | undefined;
 }

@@ -2,6 +2,7 @@ import assert from "node:assert";
 import { describe, it } from "node:test";
 import { mockWritable } from "../../../test/test-utils.ts";
 import { createPrinter } from "../../core/printer.ts";
+import type { DetailedFinding } from "../../diagnostics/finding-types.ts";
 import {
 	printFileFinding,
 	printLocationFinding,
@@ -58,13 +59,13 @@ describe("reporter/summary-reporter/finding-printer", () => {
 	});
 
 	describe("printRichLocationFinding", () => {
-		it("prints rich location finding with message and advice", () => {
+		it("prints rich location finding with message and instructions", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
-			const finding = {
-				severity: "error" as const,
+			const finding: DetailedFinding = {
+				severity: "error",
 				message: "Type assertion found",
-				advices: "Consider proper typing",
+				instructions: "Consider proper typing",
 			};
 
 			printRichLocationFinding(
@@ -80,11 +81,11 @@ describe("reporter/summary-reporter/finding-printer", () => {
 			assert.ok(outputStr.includes("Consider proper typing"));
 		});
 
-		it("prints rich location finding without advice", () => {
+		it("prints rich location finding without instructions", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
-			const finding = {
-				severity: "warning" as const,
+			const finding: DetailedFinding = {
+				severity: "warning",
 				message: "Potential issue detected",
 			};
 
@@ -98,13 +99,13 @@ describe("reporter/summary-reporter/finding-printer", () => {
 	});
 
 	describe("printFileFinding", () => {
-		it("prints file-level finding with message and advice", () => {
+		it("prints file-level finding with message and instructions", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
-			const finding = {
-				severity: "error" as const,
+			const finding: DetailedFinding = {
+				severity: "error",
 				message: "File has issues",
-				advices: "Fix the file structure",
+				instructions: "Fix the file structure",
 			};
 
 			printFileFinding("src/test.ts", finding, printer);
@@ -113,11 +114,11 @@ describe("reporter/summary-reporter/finding-printer", () => {
 			assert.strictEqual(output.getOutput(), expected);
 		});
 
-		it("prints file-level finding without advice", () => {
+		it("prints file-level finding without instructions", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
-			const finding = {
-				severity: "warning" as const,
+			const finding: DetailedFinding = {
+				severity: "warning",
 				message: "File warning",
 			};
 
@@ -129,13 +130,13 @@ describe("reporter/summary-reporter/finding-printer", () => {
 	});
 
 	describe("printProjectFinding", () => {
-		it("prints project-level finding with message and advice", () => {
+		it("prints project-level finding with message and instructions", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
-			const finding = {
-				severity: "error" as const,
+			const finding: DetailedFinding = {
+				severity: "error",
 				message: "Project configuration issue",
-				advices: "Update your configuration",
+				instructions: "Update your configuration",
 			};
 
 			printProjectFinding(finding, printer);
@@ -145,11 +146,11 @@ describe("reporter/summary-reporter/finding-printer", () => {
 			assert.strictEqual(output.getOutput(), expected);
 		});
 
-		it("prints project-level finding without advice", () => {
+		it("prints project-level finding without instructions", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
-			const finding = {
-				severity: "info" as const,
+			const finding: DetailedFinding = {
+				severity: "info",
 				message: "Project info",
 			};
 

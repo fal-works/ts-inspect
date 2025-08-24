@@ -16,12 +16,12 @@ function printInspectorMessage(result: InspectorResult, printer: Printer): void 
 }
 
 /**
- * Prints inspector-level advice for simple diagnostics.
+ * Prints inspector-level instructions for simple diagnostics.
  */
-function printInspectorAdvice(result: InspectorResult, printer: Printer): void {
-	if (result.diagnostics.type === "simple" && result.diagnostics.details.advices) {
+function printInspectorInstructions(result: InspectorResult, printer: Printer): void {
+	if (result.diagnostics.type === "simple" && result.diagnostics.details.instructions) {
 		printer.newLine(1);
-		printer.println(`💡 ${result.diagnostics.details.advices}`);
+		printer.println(`💡 ${result.diagnostics.details.instructions}`);
 	}
 }
 
@@ -44,8 +44,8 @@ export function printInspectorResult(result: InspectorResult, printer: Printer):
 		printRichDiagnostics(diagnostics, printer);
 	}
 
-	// Print inspector advice
-	printInspectorAdvice(result, printer);
+	// Print inspector instructions
+	printInspectorInstructions(result, printer);
 
 	printer.groupEnd();
 }

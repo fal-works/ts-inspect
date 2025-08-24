@@ -42,7 +42,7 @@ describe("reporter/summary-reporter/index", () => {
 					diagnostics: createTestSimpleDiagnostics(
 						{
 							message: "Found suspicious type assertions.",
-							advices: "Use proper typing instead.",
+							instructions: "Use proper typing instead.",
 						},
 						[
 							{
@@ -169,7 +169,7 @@ describe("reporter/summary-reporter/index", () => {
 							location: { line: 15, snippet: "complex issue 1" },
 							details: {
 								message: "First complex issue",
-								advices: "Fix the first issue",
+								instructions: "Fix the first issue",
 							},
 						},
 						{
@@ -179,7 +179,7 @@ describe("reporter/summary-reporter/index", () => {
 							location: { line: 1 },
 							details: {
 								message: "Architecture problem",
-								advices: "Refactor the architecture",
+								instructions: "Refactor the architecture",
 							},
 						},
 					]),
@@ -286,7 +286,7 @@ describe("reporter/summary-reporter/index", () => {
 					diagnostics: createTestSimpleDiagnostics(
 						{
 							message: "Found suspicious type assertions.",
-							advices:
+							instructions:
 								"Review these type assertions carefully. In most cases, type assertions should be your last resort.",
 						},
 						[

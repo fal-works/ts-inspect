@@ -45,7 +45,7 @@ function createConsoleLogInspector(): Inspector<CodeLocation[]> {
 				totalFindings > 0
 					? {
 							message: `Found ${totalFindings} console.log calls.`,
-							advices: "Consider using a proper logging library instead of console.log",
+							instructions: "Consider using a proper logging library instead of console.log",
 						}
 					: {
 							message: "No console.log calls found.",

@@ -48,7 +48,7 @@ export function createTestRichDiagnostics(
 		severity: DiagnosticSeverity;
 		file?: string;
 		location?: CodeLocation;
-		details: { message: string; advices?: string };
+		details: DiagnosticDetails;
 	}>,
 ): RichDiagnostics {
 	const project: DetailedFinding[] = [];
@@ -62,7 +62,7 @@ export function createTestRichDiagnostics(
 			const finding: DetailedFinding = {
 				severity: item.severity,
 				message: item.details.message,
-				...(item.details.advices && { advices: item.details.advices }),
+				...(item.details.instructions && { instructions: item.details.instructions }),
 			};
 
 			if (item.type === "project") {

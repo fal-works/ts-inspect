@@ -55,7 +55,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			assert.strictEqual(output.getOutput(), expected);
 		});
 
-		it("prints inspector result with message, diagnostics, and advice", () => {
+		it("prints inspector result with message, diagnostics, and instructions", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
 			const result: InspectorResult = {
@@ -63,7 +63,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 				diagnostics: createTestSimpleDiagnostics(
 					{
 						message: "Found suspicious type assertions.",
-						advices: "Consider using proper typing instead of type assertions.",
+						instructions: "Consider using proper typing instead of type assertions.",
 					},
 					[
 						{
@@ -101,7 +101,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 						location: { line: 10, snippet: "first issue" },
 						details: {
 							message: "First diagnostic message",
-							advices: "How to fix the first issue",
+							instructions: "How to fix the first issue",
 						},
 					},
 					{
@@ -149,39 +149,6 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			assert.strictEqual(output.getOutput(), expected);
 		});
 
-		it("prints inspector result with only advice (no message or diagnostics)", () => {
-			const output = mockWritable();
-			const printer = createPrinter(output);
-			const result: InspectorResult = {
-				inspectorName: "advice-only-inspector",
-				diagnostics: createTestSimpleDiagnostics(
-					{
-						message: "Found info items.",
-						advices: "General advice for the codebase",
-					},
-					[
-						{
-							type: "location",
-							severity: "info",
-							file: "src/info.ts",
-							location: { line: 1, snippet: "info item" },
-						},
-					],
-				),
-			};
-
-			printInspectorResult(result, printer);
-
-			const expected =
-				"[advice-only-inspector]\n" +
-				"  Found info items.\n" +
-				"\n" +
-				"  ℹ️  src/info.ts:1 - info item\n" +
-				"\n" +
-				"  💡 General advice for the codebase\n";
-			assert.strictEqual(output.getOutput(), expected);
-		});
-
 		it("handles multiline snippets in simple diagnostics within inspector result", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
@@ -222,7 +189,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 			assert.strictEqual(output.getOutput(), expected);
 		});
 
-		it("uses newLine(1) for advice to prevent excessive empty lines", () => {
+		it("uses newLine(1) for instructions to prevent excessive empty lines", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
 
@@ -234,7 +201,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 				diagnostics: createTestSimpleDiagnostics(
 					{
 						message: "Found test issues.",
-						advices: "Some advice",
+						instructions: "Some instructions",
 					},
 					[
 						{
@@ -256,7 +223,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 				"\n" +
 				"  ❌ src/test.ts:1 - test\n" +
 				"\n" +
-				"  💡 Some advice\n";
+				"  💡 Some instructions\n";
 			assert.strictEqual(output.getOutput(), expected);
 		});
 
@@ -273,7 +240,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 						location: { line: 1 },
 						details: {
 							message: "Circular dependency detected",
-							advices: "Refactor to remove circular imports",
+							instructions: "Refactor to remove circular imports",
 						},
 					},
 				]),

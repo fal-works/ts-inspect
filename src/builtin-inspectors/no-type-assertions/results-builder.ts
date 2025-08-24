@@ -45,11 +45,11 @@ export const resultsBuilder: ResultsBuilder<TypeAssertionFindings> = (resultPerF
 		totalFindings > 0
 			? {
 					message: "Found suspicious type assertions.",
-					advices: noTypeAssertionsFriendlyMessage(),
+					instructions: noTypeAssertionsFriendlyMessage(),
 				}
 			: {
 					message: "No suspicious type assertions found.",
-					advices: undefined,
+					instructions: undefined,
 				};
 
 	const diagnostics: SimpleDiagnostics = {

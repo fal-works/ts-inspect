@@ -133,13 +133,13 @@ The framework uses a structured diagnostic system. There are two diagnostic patt
 
 #### SimpleDiagnostics
 
-The most common pattern, used when an inspector has a single message and advice that applies to all findings.
+The most common pattern, used when an inspector has a single message that applies to all findings.
 
 Findings are organized by file, where each file contains an array of location-specific findings.
 
 #### RichDiagnostics
 
-Used for complex analysis where each finding needs its own specific message and advice.
+Used for complex analysis where each finding needs its own specific message.
 
 This pattern supports three scopes of findings:
 
@@ -197,7 +197,7 @@ function createConsoleLogInspector(): Inspector<CodeLocation[]> {
         totalFindings > 0
           ? {
               message: `Found ${totalFindings} console.log calls.`,
-              advices: "Consider using a proper logging library instead of console.log",
+              instructions: "Consider using a proper logging library instead of console.log",
             }
           : {
               message: "No console.log calls found.",

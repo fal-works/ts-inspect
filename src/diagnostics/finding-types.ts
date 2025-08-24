@@ -2,7 +2,7 @@
  * Core finding types for diagnostic content.
  */
 
-import type { DiagnosticSeverity } from "./common-types.ts";
+import type { DiagnosticDetails, DiagnosticSeverity } from "./common-types.ts";
 
 /**
  * Basic finding with severity level.
@@ -13,10 +13,7 @@ export interface Finding {
 }
 
 /**
- * Finding with individual message and advice.
+ * Finding with individual message and instructions.
  * Used in rich diagnostics where each finding has its own explanation.
  */
-export interface DetailedFinding extends Finding {
-	message: string;
-	advices?: string;
-}
+export interface DetailedFinding extends Finding, DiagnosticDetails {}

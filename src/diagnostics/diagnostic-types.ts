@@ -11,7 +11,7 @@ import type { DetailedFinding, Finding } from "./finding-types.ts";
  */
 export interface SimpleDiagnostics {
 	type: "simple";
-	/** Inspector-level message and advice that applies to all findings */
+	/** Inspector-level message and instructions that applies to all findings */
 	details: DiagnosticDetails;
 	/** Findings organized by file path */
 	perFile: Map<string, SimpleDiagnosticsFileScope>;
@@ -27,7 +27,7 @@ export interface SimpleDiagnosticsFileScope {
 
 /**
  * Rich diagnostics pattern where each finding can have its own message
- * and advice. Used for complex analysis with varied finding types.
+ * and instructions. Used for complex analysis with varied finding types.
  */
 export interface RichDiagnostics {
 	type: "rich";

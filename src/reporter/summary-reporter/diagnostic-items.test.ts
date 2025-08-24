@@ -86,11 +86,11 @@ describe("reporter/summary-reporter/diagnostic-items", () => {
 			// Should have spacing between items but not after the last one
 			// Project finding prints: icon + newline + message + newline
 			// Then spacing newline
-			// File finding prints: icon + newline + message + newline + advice + newline
+			// File finding prints: icon + newline + message + newline + instructions + newline
 			const lines = result.split("\n");
 			const emptyLineCount = lines.filter((line) => line === "").length;
 			// Project item: 0 empty lines, File item: 0 empty lines, 1 spacing line = 1 total
-			// But file finding with advice adds extra newline, so we expect 1 spacing line
+			// But file finding with instructions adds extra newline, so we expect 1 spacing line
 			assert.ok(
 				emptyLineCount >= 1,
 				`Expected at least 1 empty line, got ${emptyLineCount}. Full output:\n${JSON.stringify(result)}`,

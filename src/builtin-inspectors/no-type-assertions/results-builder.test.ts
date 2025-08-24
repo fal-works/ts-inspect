@@ -43,7 +43,7 @@ describe("builtin-inspectors/no-type-assertions/results-builder", () => {
 			const diagnostics = result.diagnostics;
 			assert.strictEqual(diagnostics.type, "simple");
 			assert.strictEqual(diagnostics.details.message, "Found suspicious type assertions.");
-			assert.ok(diagnostics.details.advices?.includes("Tip:"));
+			assert.ok(diagnostics.details.instructions?.includes("Tip:"));
 			const testFileScope = diagnostics.perFile.get("test.ts");
 			assert.ok(testFileScope);
 			assert.strictEqual(testFileScope.locations.length, 2);
@@ -64,7 +64,7 @@ describe("builtin-inspectors/no-type-assertions/results-builder", () => {
 			const diagnostics = result.diagnostics;
 			assert.strictEqual(diagnostics.type, "simple");
 			assert.strictEqual(diagnostics.details.message, "No suspicious type assertions found.");
-			assert.strictEqual(diagnostics.details.advices, undefined);
+			assert.strictEqual(diagnostics.details.instructions, undefined);
 			assert.strictEqual(diagnostics.perFile.size, 0);
 		});
 
