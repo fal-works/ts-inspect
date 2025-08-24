@@ -2,6 +2,8 @@
  * Common types shared across the diagnostics system.
  */
 
+import type { MarkupRootElement } from "./markup/index.ts";
+
 /**
  * Severity levels for diagnostics.
  * - `error`: Issues that should be fixed (causes exit code 1)
@@ -31,5 +33,5 @@ export interface DiagnosticDetails {
 	/** Message describing the diagnostics/findings */
 	message: string;
 	/** Optional instructions or guidance for addressing the issue */
-	instructions?: string | undefined;
+	instructions?: string | MarkupRootElement | undefined;
 }

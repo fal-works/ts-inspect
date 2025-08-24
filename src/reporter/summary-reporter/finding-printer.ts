@@ -4,7 +4,9 @@
 
 import type { Printer } from "../../core/printer.ts";
 import type { CodeLocation, DetailedFinding, DiagnosticSeverity } from "../../diagnostics/index.ts";
+import type { MarkupRootElement } from "../../diagnostics/markup/types.ts";
 import { formatCodeSnippet } from "./formatter.ts";
+import { printMarkup } from "./markup-printer/index.ts";
 
 /**
  * Mapping from diagnostic severity to console icons.
@@ -14,6 +16,21 @@ const icons: Record<DiagnosticSeverity, string> = {
 	warning: "⚠️ ", // extra space needed for alignment
 	info: "ℹ️ ", // same here
 };
+
+/**
+ * Helper function to print instructions (string or MarkupRootElement) using the printer.
+ * @package
+ */
+export function printInstructions(
+	instructions: string | MarkupRootElement,
+	printer: Printer,
+): void {
+	if (typeof instructions === "string") {
+		printer.println(instructions.trim());
+	} else {
+		printMarkup(instructions, printer);
+	}
+}
 
 /**
  * Prints a location finding.
@@ -55,7 +72,7 @@ export function printRichLocationFinding(
 	// Print individual message and instructions
 	printer.println(finding.details.message);
 	if (finding.details.instructions) {
-		printer.println(finding.details.instructions);
+		printInstructions(finding.details.instructions, printer);
 	}
 }
 
@@ -67,7 +84,8 @@ export function printFileFinding(file: string, finding: DetailedFinding, printer
 	printer.println(`${icon} ${file}`);
 	printer.println(finding.details.message);
 	if (finding.details.instructions) {
-		printer.println(`💡 ${finding.details.instructions}`);
+		printer.print("💡 ");
+		printInstructions(finding.details.instructions, printer);
 	}
 }
 
@@ -79,6 +97,7 @@ export function printProjectFinding(finding: DetailedFinding, printer: Printer):
 	printer.println(`${icon} (project-level issue)`);
 	printer.println(finding.details.message);
 	if (finding.details.instructions) {
-		printer.println(`💡 ${finding.details.instructions}`);
+		printer.print("💡 ");
+		printInstructions(finding.details.instructions, printer);
 	}
 }

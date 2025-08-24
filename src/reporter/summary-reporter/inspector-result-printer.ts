@@ -5,6 +5,7 @@
 import type { Printer } from "../../core/printer.ts";
 import type { InspectorResult } from "../../inspector/index.ts";
 import { printRichDiagnostics, printSimpleDiagnostics } from "./diagnostics-printer.ts";
+import { printMarkup } from "./markup-printer/index.ts";
 
 /**
  * Prints inspector-level message for simple diagnostics.
@@ -21,7 +22,12 @@ function printInspectorMessage(result: InspectorResult, printer: Printer): void 
 function printInspectorInstructions(result: InspectorResult, printer: Printer): void {
 	if (result.diagnostics.type === "simple" && result.diagnostics.details.instructions) {
 		printer.newLine(1);
-		printer.println(`💡 ${result.diagnostics.details.instructions}`);
+		printer.print("💡 ");
+		if (typeof result.diagnostics.details.instructions === "string") {
+			printer.println(result.diagnostics.details.instructions.trim());
+		} else {
+			printMarkup(result.diagnostics.details.instructions, printer);
+		}
 	}
 }
 
