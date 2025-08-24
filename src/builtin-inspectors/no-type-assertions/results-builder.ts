@@ -11,18 +11,18 @@ import type { TypeAssertionFindings } from "./types.ts";
  * Generates a friendly message about type assertions.
  */
 const noTypeAssertionsFriendlyMessage = () =>
-	`Tip:
-Review these type assertions carefully. In most cases, type assertions (like \`as T\`) should be your last resort.
-- Prefer assignability over assertion:
-  If a value already matches a target type,
-  just declare it with that type or pass it to a function that accepts that type.
-- Avoid type assertions to work around design issues:
-  Needing assertions often means the types aren't aligned.
-  Consider redesigning the types or the data flow so the compiler can infer types safely.
+	`Hint:
+Type assertions (like \`as T\`) should be your last resort.
 
-If you truly must keep it e.g. it is an isolated utility function
-or a third-party library integration, add a comment: /* ${IGNORE_COMMENT} */
-But be aware that this is an exceptional case.
+Stepwise Instructions:
+1. Check assignability:
+  If the value already satisfies the target type, just declare it with that type or pass it directly.
+2. Resolve design issues:
+  Needing assertions often means the types aren't aligned. Consider redesigning the types or data flow so the compiler can infer types safely.
+3. Allow explicit exceptions:
+  If you truly must keep it (e.g., for an isolated utility function or third-party integration), and if it is explicitly permitted by the code maintainer, then add the comment: \`/* ${IGNORE_COMMENT} */\`
+4. Escalate if unresolved:
+  If none of the above steps solve the issue, consult the code maintainer.
 `.trim();
 
 /**

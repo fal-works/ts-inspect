@@ -45,7 +45,7 @@ describe("builtin-inspectors/no-type-assertions/results-builder", () => {
 			assert.strictEqual(diagnostics.details.message, "Found suspicious type assertions.");
 			assert.ok(
 				typeof diagnostics.details.instructions === "string" &&
-					diagnostics.details.instructions.includes("Tip:"),
+					diagnostics.details.instructions.includes("Hint:"),
 			);
 			const testFileScope = diagnostics.perFile.get("test.ts");
 			assert.ok(testFileScope);
