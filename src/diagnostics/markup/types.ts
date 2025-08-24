@@ -128,6 +128,6 @@ export type MarkupGeneralElementContent =
 
 // ---- Ensuring type compatibility ------------------------
 
-assertExtends<xast.Node, MarkupNode>();
-assertExtends<xast.Text, MarkupTextLiteral>();
-assertExtends<xast.Element, MarkupElement>();
+/*#__PURE__*/ assertExtends<xast.Node, MarkupNode>();
+/*#__PURE__*/ assertExtends<xast.Text, MarkupTextLiteral>();
+/*#__PURE__*/ assertExtends<xast.Element, MarkupElement>();
