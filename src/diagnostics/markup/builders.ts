@@ -3,15 +3,17 @@
  */
 
 import type {
-	ListIntentionType,
+	BulletListIntentionType,
+	MarkupBulletListElement,
 	MarkupCodeElement,
 	MarkupGeneralElementContent,
-	MarkupListElement,
 	MarkupListItemElement,
+	MarkupOrderedListElement,
 	MarkupParagraphElement,
 	MarkupRootElement,
 	MarkupStrongElement,
 	MarkupTextLiteral,
+	OrderedListIntentionType,
 	ParagraphIntentionType,
 } from "./types.ts";
 
@@ -56,18 +58,17 @@ export function strong(content: StringOrContentNodes): MarkupStrongElement {
 }
 
 /**
- * Creates a paragraph element with semantic intention.
+ * Creates a paragraph element with optional semantic intention.
  */
 export function paragraph(
-	intention: ParagraphIntentionType,
 	content: StringOrContentNodes,
+	intention?: ParagraphIntentionType,
 	caption?: string,
 ): MarkupParagraphElement {
 	const children: MarkupGeneralElementContent[] =
 		typeof content === "string" ? [text(content)] : content;
-	const attributes: MarkupParagraphElement["attributes"] = caption
-		? { intention, caption }
-		: { intention };
+	const attributes: MarkupParagraphElement["attributes"] =
+		intention || caption ? { ...(intention && { intention }), ...(caption && { caption }) } : {};
 	return {
 		type: "element",
 		name: "paragraph",
@@ -77,20 +78,38 @@ export function paragraph(
 }
 
 /**
- * Creates a list element with semantic intention.
+ * Creates a bullet list element with optional semantic intention.
  */
-export function list(
-	intention: ListIntentionType,
+export function bulletList(
 	items: MarkupListItemElement[],
+	intention?: BulletListIntentionType,
 	caption?: string,
-): MarkupListElement {
-	const attributes: MarkupListElement["attributes"] = caption
-		? { intention, caption }
-		: { intention };
+): MarkupBulletListElement {
+	const attributes: MarkupBulletListElement["attributes"] =
+		intention || caption ? { ...(intention && { intention }), ...(caption && { caption }) } : {};
 
 	return {
 		type: "element",
-		name: "list",
+		name: "bullet-list",
+		attributes,
+		children: items,
+	};
+}
+
+/**
+ * Creates an ordered list element with optional semantic intention.
+ */
+export function orderedList(
+	items: MarkupListItemElement[],
+	intention?: OrderedListIntentionType,
+	caption?: string,
+): MarkupOrderedListElement {
+	const attributes: MarkupOrderedListElement["attributes"] =
+		intention || caption ? { ...(intention && { intention }), ...(caption && { caption }) } : {};
+
+	return {
+		type: "element",
+		name: "ordered-list",
 		attributes,
 		children: items,
 	};
@@ -126,83 +145,34 @@ export function markup(content: MarkupGeneralElementContent[]): MarkupRootElemen
 // ---- Convenience helpers --------------------------------
 
 /**
- * Creates a bullet list from an array of strings.
- */
-export function bulletList(items: StringOrContentNodes[], caption?: string): MarkupListElement {
-	return list(
-		"bullets",
-		items.map((item) => listItem(item)),
-		caption,
-	);
-}
-
-/**
- * Creates an ordered list from an array of strings.
- */
-export function orderedList(items: StringOrContentNodes[], caption?: string): MarkupListElement {
-	return list(
-		"ordered",
-		items.map((item) => listItem(item)),
-		caption,
-	);
-}
-
-/**
- * Creates a stepwise instructions list from an array of strings.
- */
-export function stepwiseInstructionList(
-	items: StringOrContentNodes[],
-	caption?: string,
-): MarkupListElement {
-	return list(
-		"stepwise-instructions",
-		items.map((item) => listItem(item)),
-		caption,
-	);
-}
-
-/**
- * Creates an examples list from an array of strings.
- *
- * @param content - Typically an array of `example` elements (use `example()`).
- */
-export function exampleList(items: StringOrContentNodes[], caption?: string): MarkupListElement {
-	return list(
-		"examples",
-		items.map((item) => listItem(item)),
-		caption,
-	);
-}
-
-/**
  * Creates an introducer paragraph.
  */
 export function introducer(
 	content: StringOrContentNodes,
 	caption?: string,
 ): MarkupParagraphElement {
-	return paragraph("introducer", content, caption);
+	return paragraph(content, "introducer", caption);
 }
 
 /**
  * Creates a hint paragraph.
  */
 export function hint(content: StringOrContentNodes, caption?: string): MarkupParagraphElement {
-	return paragraph("hint", content, caption);
+	return paragraph(content, "hint", caption);
 }
 
 /**
  * Creates a task paragraph.
  */
 export function task(content: StringOrContentNodes, caption?: string): MarkupParagraphElement {
-	return paragraph("task", content, caption);
+	return paragraph(content, "task", caption);
 }
 
 /**
  * Creates an example paragraph.
  */
 export function example(content: StringOrContentNodes, caption?: string): MarkupParagraphElement {
-	return paragraph("example", content, caption);
+	return paragraph(content, "example", caption);
 }
 
 /**
@@ -214,7 +184,7 @@ export function exampleInput(
 	content: StringOrContentNodes,
 	caption?: string,
 ): MarkupParagraphElement {
-	return paragraph("example-input", content, caption);
+	return paragraph(content, "example-input", caption);
 }
 
 /**
@@ -226,5 +196,35 @@ export function exampleOutput(
 	content: StringOrContentNodes,
 	caption?: string,
 ): MarkupParagraphElement {
-	return paragraph("example-output", content, caption);
+	return paragraph(content, "example-output", caption);
+}
+
+/**
+ * Creates an examples list.
+ *
+ * @param content - Typically an array of `example` elements (use `example()`).
+ */
+export function exampleList(
+	items: StringOrContentNodes[],
+	caption?: string,
+): MarkupBulletListElement {
+	return bulletList(
+		items.map((item) => listItem(item)),
+		"examples",
+		caption,
+	);
+}
+
+/**
+ * Creates a stepwise instructions list.
+ */
+export function stepwiseInstructionList(
+	items: StringOrContentNodes[],
+	caption?: string,
+): MarkupOrderedListElement {
+	return orderedList(
+		items.map((item) => listItem(item)),
+		"stepwise-instructions",
+		caption,
+	);
 }

@@ -13,7 +13,6 @@ import {
 	exampleOutput,
 	hint,
 	introducer,
-	list,
 	listItem,
 	markup,
 	orderedList,
@@ -24,10 +23,11 @@ import {
 	text,
 } from "./builders.ts";
 import type {
+	MarkupBulletListElement,
 	MarkupCodeElement,
 	MarkupGeneralElementContent,
-	MarkupListElement,
 	MarkupListItemElement,
+	MarkupOrderedListElement,
 	MarkupParagraphElement,
 	MarkupRootElement,
 	MarkupStrongElement,
@@ -91,39 +91,72 @@ describe("diagnostics/markup/builders", () => {
 	});
 
 	describe("paragraph", () => {
-		it("creates a paragraph from string without caption", () => {
+		it("creates a paragraph without intention and caption", () => {
 			const expected: MarkupParagraphElement = {
 				type: "element",
 				name: "paragraph",
-				attributes: { intention: "introducer" },
-				children: [{ type: "text", value: "Welcome" }],
+				attributes: {},
+				children: [{ type: "text", value: "Remember this" }],
 			};
-			deepStrictEqual(paragraph("introducer", "Welcome"), expected);
+			deepStrictEqual(paragraph("Remember this"), expected);
 		});
 
-		it("creates a paragraph from string with caption", () => {
+		it("creates a paragraph with intention and caption", () => {
 			const expected: MarkupParagraphElement = {
 				type: "element",
 				name: "paragraph",
 				attributes: { intention: "hint", caption: "Pro tip" },
 				children: [{ type: "text", value: "Remember this" }],
 			};
-			deepStrictEqual(paragraph("hint", "Remember this", "Pro tip"), expected);
+			deepStrictEqual(paragraph("Remember this", "hint", "Pro tip"), expected);
+		});
+	});
+
+	describe("bulletList", () => {
+		it("creates a bullet list without intention and caption", () => {
+			const items = [listItem("First"), listItem("Second")];
+			const expected: MarkupBulletListElement = {
+				type: "element",
+				name: "bullet-list",
+				attributes: {},
+				children: items,
+			};
+			deepStrictEqual(bulletList(items), expected);
 		});
 
-		it("creates a paragraph from content array", () => {
-			const content: MarkupGeneralElementContent[] = [
-				text("Use "),
-				code("npm install", "bash"),
-				text(" to install"),
-			];
-			const expected: MarkupParagraphElement = {
+		it("creates a bullet list with intention and caption", () => {
+			const items = [listItem("Example 1"), listItem("Example 2")];
+			const expected: MarkupBulletListElement = {
 				type: "element",
-				name: "paragraph",
-				attributes: { intention: "task" },
-				children: content,
+				name: "bullet-list",
+				attributes: { intention: "examples", caption: "Examples" },
+				children: items,
 			};
-			deepStrictEqual(paragraph("task", content), expected);
+			deepStrictEqual(bulletList(items, "examples", "Examples"), expected);
+		});
+	});
+
+	describe("orderedList", () => {
+		it("creates an ordered list without intention and caption", () => {
+			const items = [listItem("Step 1"), listItem("Step 2")];
+			const expected: MarkupOrderedListElement = {
+				type: "element",
+				name: "ordered-list",
+				attributes: {},
+				children: items,
+			};
+			deepStrictEqual(orderedList(items), expected);
+		});
+
+		it("creates an ordered list with intention and caption", () => {
+			const items = [listItem("Step 1"), listItem("Step 2")];
+			const expected: MarkupOrderedListElement = {
+				type: "element",
+				name: "ordered-list",
+				attributes: { intention: "stepwise-instructions", caption: "Installation" },
+				children: items,
+			};
+			deepStrictEqual(orderedList(items, "stepwise-instructions", "Installation"), expected);
 		});
 	});
 
@@ -150,35 +183,11 @@ describe("diagnostics/markup/builders", () => {
 		});
 	});
 
-	describe("list", () => {
-		it("creates a list without caption", () => {
-			const items = [listItem("First"), listItem("Second")];
-			const expected: MarkupListElement = {
-				type: "element",
-				name: "list",
-				attributes: { intention: "bullets" },
-				children: items,
-			};
-			deepStrictEqual(list("bullets", items), expected);
-		});
-
-		it("creates a list with caption", () => {
-			const items = [listItem("Step 1"), listItem("Step 2")];
-			const expected: MarkupListElement = {
-				type: "element",
-				name: "list",
-				attributes: { intention: "stepwise-instructions", caption: "Installation" },
-				children: items,
-			};
-			deepStrictEqual(list("stepwise-instructions", items, "Installation"), expected);
-		});
-	});
-
 	describe("markup", () => {
 		it("creates a root markup element", () => {
 			const content: MarkupGeneralElementContent[] = [
-				paragraph("introducer", "Hello"),
-				bulletList(["Item 1", "Item 2"]),
+				paragraph("Hello", "introducer"),
+				bulletList(["Item 1", "Item 2"].map(listItem)),
 			];
 			const expected: MarkupRootElement = {
 				type: "element",
@@ -191,106 +200,6 @@ describe("diagnostics/markup/builders", () => {
 	});
 
 	describe("convenience helpers", () => {
-		describe("bulletList", () => {
-			it("creates a bullet list from strings", () => {
-				const expected: MarkupListElement = {
-					type: "element",
-					name: "list",
-					attributes: { intention: "bullets" },
-					children: [
-						{
-							type: "element",
-							name: "list-item",
-							attributes: {},
-							children: [{ type: "text", value: "First" }],
-						},
-						{
-							type: "element",
-							name: "list-item",
-							attributes: {},
-							children: [{ type: "text", value: "Second" }],
-						},
-					],
-				};
-				deepStrictEqual(bulletList(["First", "Second"]), expected);
-			});
-
-			it("creates a bullet list with caption", () => {
-				const result = bulletList(["A", "B"], "Options");
-				deepStrictEqual(result.attributes.caption, "Options");
-			});
-
-			it("creates a bullet list with mixed content types", () => {
-				const result = bulletList([
-					"Simple text item",
-					[text("Complex item with "), code("code", "javascript")],
-				]);
-				deepStrictEqual(result.attributes.intention, "bullets");
-				deepStrictEqual(result.children.length, 2);
-
-				// First item should be simple text
-				const firstItem = result.children[0];
-				deepStrictEqual(firstItem.children, [{ type: "text", value: "Simple text item" }]);
-
-				// Second item should be complex content
-				const secondItem = result.children[1];
-				deepStrictEqual(secondItem.children.length, 2);
-				deepStrictEqual(secondItem.children[0], { type: "text", value: "Complex item with " });
-			});
-		});
-
-		describe("orderedList", () => {
-			it("creates an ordered list from strings", () => {
-				const result = orderedList(["First", "Second"]);
-				deepStrictEqual(result.attributes.intention, "ordered");
-				deepStrictEqual(result.children.length, 2);
-			});
-
-			it("creates an ordered list with mixed content types", () => {
-				const result = orderedList([
-					"Step 1: Install",
-					[text("Step 2: Run "), code("npm start", "bash")],
-				]);
-				deepStrictEqual(result.attributes.intention, "ordered");
-				deepStrictEqual(result.children.length, 2);
-			});
-		});
-
-		describe("steps", () => {
-			it("creates a stepwise instructions list", () => {
-				const result = stepwiseInstructionList(["Install", "Configure", "Run"], "Setup");
-				deepStrictEqual(result.attributes.intention, "stepwise-instructions");
-				deepStrictEqual(result.attributes.caption, "Setup");
-				deepStrictEqual(result.children.length, 3);
-			});
-
-			it("creates a stepwise instructions list with mixed content", () => {
-				const result = stepwiseInstructionList([
-					"First step",
-					[text("Run "), code("build", "bash"), text(" command")],
-				]);
-				deepStrictEqual(result.attributes.intention, "stepwise-instructions");
-				deepStrictEqual(result.children.length, 2);
-			});
-		});
-
-		describe("examples", () => {
-			it("creates an examples list", () => {
-				const result = exampleList(["Example 1", "Example 2"]);
-				deepStrictEqual(result.attributes.intention, "examples");
-				deepStrictEqual(result.children.length, 2);
-			});
-
-			it("creates an examples list with rich content", () => {
-				const result = exampleList([
-					[exampleInput([text("Input: "), code("hello", "text")])],
-					[exampleOutput("Output: Hello!")],
-				]);
-				deepStrictEqual(result.attributes.intention, "examples");
-				deepStrictEqual(result.children.length, 2);
-			});
-		});
-
 		describe("introducer", () => {
 			it("creates an introducer paragraph", () => {
 				const result = introducer("Welcome to our system");
@@ -300,18 +209,10 @@ describe("diagnostics/markup/builders", () => {
 		});
 
 		describe("hint", () => {
-			it("creates a hint paragraph from string", () => {
+			it("creates a hint paragraph", () => {
 				const result = hint("Remember this");
 				deepStrictEqual(result.attributes.intention, "hint");
 				deepStrictEqual(result.children, [{ type: "text", value: "Remember this" }]);
-			});
-
-			it("creates a hint paragraph from content array", () => {
-				const content = [text("Use "), code("--help")];
-				const result = hint(content, "Tip");
-				deepStrictEqual(result.attributes.intention, "hint");
-				deepStrictEqual(result.attributes.caption, "Tip");
-				deepStrictEqual(result.children, content);
 			});
 		});
 
@@ -319,6 +220,7 @@ describe("diagnostics/markup/builders", () => {
 			it("creates a task paragraph", () => {
 				const result = task("Complete the implementation");
 				deepStrictEqual(result.attributes.intention, "task");
+				deepStrictEqual(result.children, [{ type: "text", value: "Complete the implementation" }]);
 			});
 		});
 
@@ -345,6 +247,41 @@ describe("diagnostics/markup/builders", () => {
 				deepStrictEqual(result.attributes.caption, "Expected Result");
 			});
 		});
+
+		describe("exampleList", () => {
+			it("creates an examples list", () => {
+				const result = exampleList(["Example 1", "Example 2"]);
+				deepStrictEqual(result.attributes.intention, "examples");
+				deepStrictEqual(result.children.length, 2);
+			});
+
+			it("creates an examples list with rich content", () => {
+				const result = exampleList([
+					[exampleInput([text("Input: "), code("hello", "text")])],
+					[exampleOutput("Output: Hello!")],
+				]);
+				deepStrictEqual(result.attributes.intention, "examples");
+				deepStrictEqual(result.children.length, 2);
+			});
+		});
+
+		describe("stepwiseInstructionList", () => {
+			it("creates a stepwise instructions list", () => {
+				const result = stepwiseInstructionList(["Install", "Configure", "Run"], "Setup");
+				deepStrictEqual(result.attributes.intention, "stepwise-instructions");
+				deepStrictEqual(result.attributes.caption, "Setup");
+				deepStrictEqual(result.children.length, 3);
+			});
+
+			it("creates a stepwise instructions list with mixed content", () => {
+				const result = stepwiseInstructionList([
+					"First step",
+					[text("Run "), code("build", "bash"), text(" command")],
+				]);
+				deepStrictEqual(result.attributes.intention, "stepwise-instructions");
+				deepStrictEqual(result.children.length, 2);
+			});
+		});
 	});
 
 	describe("complex composition", () => {
@@ -357,9 +294,9 @@ describe("diagnostics/markup/builders", () => {
 					code("TypeScript", "typescript"),
 				]),
 				hint("Remember to check the examples below"),
-				list("examples", [
-					listItem([text("Example 1: "), code('console.log("Hello")', "javascript")]),
-					listItem([text("Example 2: "), code('alert("World")', "javascript")]),
+				exampleList([
+					[text("Example 1: "), code('console.log("Hello")', "javascript")],
+					[text("Example 2: "), code('alert("World")', "javascript")],
 				]),
 				stepwiseInstructionList(["Install dependencies", "Run the build", "Deploy"], "Deployment"),
 			]);
@@ -369,10 +306,10 @@ describe("diagnostics/markup/builders", () => {
 			deepStrictEqual(doc.children.length, 4);
 
 			// Verify first paragraph structure
-			const firstPara = doc.children[0];
-			deepStrictEqual(firstPara.type, "element");
-			deepStrictEqual(firstPara.name, "paragraph");
-			deepStrictEqual(firstPara.children.length, 4);
+			const firstParagraph = doc.children[0];
+			deepStrictEqual(firstParagraph.type, "element");
+			deepStrictEqual(firstParagraph.name, "paragraph");
+			deepStrictEqual(firstParagraph.children.length, 4);
 		});
 	});
 });

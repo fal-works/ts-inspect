@@ -11,7 +11,14 @@ import { assertExtends } from "../../core/type-utils.ts";
 export type MarkupNodeType = "text" | "element";
 
 /** Valid element names in the markup DSL */
-export type MarkupElementName = "markup" | "code" | "strong" | "paragraph" | "list" | "list-item";
+export type MarkupElementName =
+	| "markup"
+	| "code"
+	| "strong"
+	| "paragraph"
+	| "bullet-list"
+	| "ordered-list"
+	| "list-item";
 
 /** Semantic intention types for paragraph elements */
 export type ParagraphIntentionType =
@@ -22,8 +29,11 @@ export type ParagraphIntentionType =
 	| "example-input"
 	| "example-output";
 
-/** Semantic intention types for list elements */
-export type ListIntentionType = "bullets" | "ordered" | "stepwise-instructions" | "examples";
+/** Semantic intention types for bullet list elements (currently only one) */
+export type BulletListIntentionType = "examples";
+
+/** Semantic intention types for ordered list elements (currently only one) */
+export type OrderedListIntentionType = "stepwise-instructions";
 
 // ---- Base types -----------------------------------------
 
@@ -67,17 +77,24 @@ export interface MarkupStrongElement extends MarkupElementBase {
 	children: MarkupGeneralElementContent[];
 }
 
-/** Paragraph element with semantic intention and optional caption */
+/** Paragraph element with optional semantic intention and caption */
 export interface MarkupParagraphElement extends MarkupElementBase {
 	name: "paragraph";
-	attributes: { intention: ParagraphIntentionType; caption?: string };
+	attributes: { intention?: ParagraphIntentionType; caption?: string };
 	children: MarkupGeneralElementContent[];
 }
 
-/** List container element with semantic intention and optional caption */
-export interface MarkupListElement extends MarkupElementBase {
-	name: "list";
-	attributes: { intention: ListIntentionType; caption?: string };
+/** Bullet list container element with optional semantic intention and caption */
+export interface MarkupBulletListElement extends MarkupElementBase {
+	name: "bullet-list";
+	attributes: { intention?: BulletListIntentionType; caption?: string };
+	children: MarkupListItemElement[];
+}
+
+/** Ordered list container element with optional semantic intention and caption */
+export interface MarkupOrderedListElement extends MarkupElementBase {
+	name: "ordered-list";
+	attributes: { intention?: OrderedListIntentionType; caption?: string };
 	children: MarkupListItemElement[];
 }
 
@@ -96,7 +113,8 @@ export type MarkupElement =
 	| MarkupCodeElement
 	| MarkupStrongElement
 	| MarkupParagraphElement
-	| MarkupListElement
+	| MarkupBulletListElement
+	| MarkupOrderedListElement
 	| MarkupListItemElement;
 
 /** Content that can appear within general container elements */
@@ -105,7 +123,8 @@ export type MarkupGeneralElementContent =
 	| MarkupCodeElement
 	| MarkupStrongElement
 	| MarkupParagraphElement
-	| MarkupListElement;
+	| MarkupBulletListElement
+	| MarkupOrderedListElement;
 
 // ---- Ensuring type compatibility ------------------------
 
