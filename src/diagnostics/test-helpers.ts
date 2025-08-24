@@ -61,8 +61,10 @@ export function createTestRichDiagnostics(
 		for (const item of items) {
 			const finding: DetailedFinding = {
 				severity: item.severity,
-				message: item.details.message,
-				...(item.details.instructions && { instructions: item.details.instructions }),
+				details: {
+					message: item.details.message,
+					...(item.details.instructions && { instructions: item.details.instructions }),
+				},
 			};
 
 			if (item.type === "project") {

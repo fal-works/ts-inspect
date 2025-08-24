@@ -16,4 +16,6 @@ export interface Finding {
  * Finding with individual message and instructions.
  * Used in rich diagnostics where each finding has its own explanation.
  */
-export interface DetailedFinding extends Finding, DiagnosticDetails {}
+export interface DetailedFinding extends Finding {
+	details: DiagnosticDetails;
+}

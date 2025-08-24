@@ -21,12 +21,12 @@ describe("reporter/summary-reporter/diagnostic-items", () => {
 		it("collects all rich diagnostic items in order", () => {
 			const diagnostics: RichDiagnostics = {
 				type: "rich",
-				project: [{ severity: "error", message: "Project issue" }],
+				project: [{ severity: "error", details: { message: "Project issue" } }],
 				perFile: new Map([
 					[
 						"test.ts",
 						{
-							wholeFile: [{ severity: "warning", message: "File issue" }],
+							wholeFile: [{ severity: "warning", details: { message: "File issue" } }],
 							locations: [],
 						},
 					],
@@ -34,7 +34,9 @@ describe("reporter/summary-reporter/diagnostic-items", () => {
 						"other.ts",
 						{
 							wholeFile: [],
-							locations: [[{ line: 1 }, { severity: "info", message: "Location issue" }]],
+							locations: [
+								[{ line: 1 }, { severity: "info", details: { message: "Location issue" } }],
+							],
 						},
 					],
 				]),
@@ -44,15 +46,15 @@ describe("reporter/summary-reporter/diagnostic-items", () => {
 			assert.strictEqual(items.length, 3);
 
 			assert.strictEqual(items[0].type, "project");
-			assert.strictEqual(items[0].finding.message, "Project issue");
+			assert.strictEqual(items[0].finding.details.message, "Project issue");
 
 			assert.strictEqual(items[1].type, "file");
 			assert.strictEqual(items[1].type === "file" ? items[1].file : "", "test.ts");
-			assert.strictEqual(items[1].finding.message, "File issue");
+			assert.strictEqual(items[1].finding.details.message, "File issue");
 
 			assert.strictEqual(items[2].type, "location");
 			assert.strictEqual(items[2].type === "location" ? items[2].file : "", "other.ts");
-			assert.strictEqual(items[2].finding.message, "Location issue");
+			assert.strictEqual(items[2].finding.details.message, "Location issue");
 		});
 	});
 
@@ -62,12 +64,12 @@ describe("reporter/summary-reporter/diagnostic-items", () => {
 			const printer = createPrinter(output);
 			const diagnostics: RichDiagnostics = {
 				type: "rich",
-				project: [{ severity: "error", message: "Project issue" }],
+				project: [{ severity: "error", details: { message: "Project issue" } }],
 				perFile: new Map([
 					[
 						"test.ts",
 						{
-							wholeFile: [{ severity: "warning", message: "File issue" }],
+							wholeFile: [{ severity: "warning", details: { message: "File issue" } }],
 							locations: [],
 						},
 					],
@@ -111,7 +113,7 @@ describe("reporter/summary-reporter/diagnostic-items", () => {
 							locations: [
 								[
 									{ line: 1, snippet: "code" },
-									{ severity: "error", message: "Location issue" },
+									{ severity: "error", details: { message: "Location issue" } },
 								],
 							],
 						},

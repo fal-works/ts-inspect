@@ -57,12 +57,12 @@ describe("reporter/summary-reporter/diagnostics-printer", () => {
 			const printer = createPrinter(output);
 			const diagnostics: RichDiagnostics = {
 				type: "rich",
-				project: [{ severity: "error", message: "Project issue" }],
+				project: [{ severity: "error", details: { message: "Project issue" } }],
 				perFile: new Map([
 					[
 						"test.ts",
 						{
-							wholeFile: [{ severity: "warning", message: "File issue" }],
+							wholeFile: [{ severity: "warning", details: { message: "File issue" } }],
 							locations: [],
 						},
 					],

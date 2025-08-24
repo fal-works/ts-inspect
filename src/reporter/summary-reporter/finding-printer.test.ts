@@ -64,8 +64,10 @@ describe("reporter/summary-reporter/finding-printer", () => {
 			const printer = createPrinter(output);
 			const finding: DetailedFinding = {
 				severity: "error",
-				message: "Type assertion found",
-				instructions: "Consider proper typing",
+				details: {
+					message: "Type assertion found",
+					instructions: "Consider proper typing",
+				},
 			};
 
 			printRichLocationFinding(
@@ -86,7 +88,9 @@ describe("reporter/summary-reporter/finding-printer", () => {
 			const printer = createPrinter(output);
 			const finding: DetailedFinding = {
 				severity: "warning",
-				message: "Potential issue detected",
+				details: {
+					message: "Potential issue detected",
+				},
 			};
 
 			printRichLocationFinding("src/test.ts", { line: 10 }, finding, printer);
@@ -104,8 +108,10 @@ describe("reporter/summary-reporter/finding-printer", () => {
 			const printer = createPrinter(output);
 			const finding: DetailedFinding = {
 				severity: "error",
-				message: "File has issues",
-				instructions: "Fix the file structure",
+				details: {
+					message: "File has issues",
+					instructions: "Fix the file structure",
+				},
 			};
 
 			printFileFinding("src/test.ts", finding, printer);
@@ -119,7 +125,9 @@ describe("reporter/summary-reporter/finding-printer", () => {
 			const printer = createPrinter(output);
 			const finding: DetailedFinding = {
 				severity: "warning",
-				message: "File warning",
+				details: {
+					message: "File warning",
+				},
 			};
 
 			printFileFinding("src/test.ts", finding, printer);
@@ -135,8 +143,10 @@ describe("reporter/summary-reporter/finding-printer", () => {
 			const printer = createPrinter(output);
 			const finding: DetailedFinding = {
 				severity: "error",
-				message: "Project configuration issue",
-				instructions: "Update your configuration",
+				details: {
+					message: "Project configuration issue",
+					instructions: "Update your configuration",
+				},
 			};
 
 			printProjectFinding(finding, printer);
@@ -151,7 +161,9 @@ describe("reporter/summary-reporter/finding-printer", () => {
 			const printer = createPrinter(output);
 			const finding: DetailedFinding = {
 				severity: "info",
-				message: "Project info",
+				details: {
+					message: "Project info",
+				},
 			};
 
 			printProjectFinding(finding, printer);

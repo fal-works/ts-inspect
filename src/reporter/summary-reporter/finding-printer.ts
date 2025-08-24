@@ -53,9 +53,9 @@ export function printRichLocationFinding(
 ): void {
 	printLocationFinding(file, location, finding.severity, printer);
 	// Print individual message and instructions
-	printer.println(finding.message);
-	if (finding.instructions) {
-		printer.println(finding.instructions);
+	printer.println(finding.details.message);
+	if (finding.details.instructions) {
+		printer.println(finding.details.instructions);
 	}
 }
 
@@ -65,9 +65,9 @@ export function printRichLocationFinding(
 export function printFileFinding(file: string, finding: DetailedFinding, printer: Printer): void {
 	const icon = icons[finding.severity];
 	printer.println(`${icon} ${file}`);
-	printer.println(finding.message);
-	if (finding.instructions) {
-		printer.println(`💡 ${finding.instructions}`);
+	printer.println(finding.details.message);
+	if (finding.details.instructions) {
+		printer.println(`💡 ${finding.details.instructions}`);
 	}
 }
 
@@ -77,8 +77,8 @@ export function printFileFinding(file: string, finding: DetailedFinding, printer
 export function printProjectFinding(finding: DetailedFinding, printer: Printer): void {
 	const icon = icons[finding.severity];
 	printer.println(`${icon} (project-level issue)`);
-	printer.println(finding.message);
-	if (finding.instructions) {
-		printer.println(`💡 ${finding.instructions}`);
+	printer.println(finding.details.message);
+	if (finding.details.instructions) {
+		printer.println(`💡 ${finding.details.instructions}`);
 	}
 }
