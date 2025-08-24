@@ -39,8 +39,9 @@
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"@biomejs/biome": "^2.2.0",
+		"@biomejs/biome": "^2.2.2",
 		"@types/node": "^24.3.0",
+		"@types/xast": "^2.0.4",
 		"tsdown": "^0.14.1",
 		"typescript": "~5.0.0"
 	},
