@@ -15,6 +15,6 @@
 		"exactOptionalPropertyTypes": true,
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedIndexedAccess": false,
-		"stripInternal": true,
+		"stripInternal": true
 	}
 }
