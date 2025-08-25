@@ -17,6 +17,7 @@ import {
 	markup,
 	orderedList,
 	paragraph,
+	setCaption,
 	stepwiseInstructionList,
 	strong,
 	task,
@@ -310,6 +311,32 @@ describe("diagnostics/markup/builders", () => {
 			deepStrictEqual(firstParagraph.type, "element");
 			deepStrictEqual(firstParagraph.name, "paragraph");
 			deepStrictEqual(firstParagraph.children.length, 4);
+		});
+	});
+
+	describe("setCaption", () => {
+		it("sets caption on an element", () => {
+			const elem = paragraph("Some content");
+			const result = setCaption("My Caption", elem);
+
+			deepStrictEqual(result, elem); // Verifies it returns the same instance
+			deepStrictEqual(elem.attributes.caption, "My Caption");
+		});
+
+		it("overwrites existing caption", () => {
+			const elem = paragraph("Some content", "hint", "Old Caption");
+			deepStrictEqual(elem.attributes.caption, "Old Caption");
+
+			setCaption("New Caption", elem);
+			deepStrictEqual(elem.attributes.caption, "New Caption");
+		});
+
+		it("works with lists", () => {
+			const items: MarkupListItemElement[] = [listItem("Item 1"), listItem("Item 2")];
+			const list = bulletList(items);
+
+			setCaption("My List", list);
+			deepStrictEqual(list.attributes.caption, "My List");
 		});
 	});
 });

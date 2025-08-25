@@ -6,6 +6,7 @@ import type {
 	BulletListIntentionType,
 	MarkupBulletListElement,
 	MarkupCodeElement,
+	MarkupElement,
 	MarkupGeneralElementContent,
 	MarkupListItemElement,
 	MarkupOrderedListElement,
@@ -142,7 +143,7 @@ export function markup(content: MarkupGeneralElementContent[]): MarkupRootElemen
 	};
 }
 
-// ---- Convenience helpers --------------------------------
+// ---- Element generator with specific intentions ---------
 
 /**
  * Creates an introducer paragraph.
@@ -227,4 +228,27 @@ export function stepwiseInstructionList(
 		"stepwise-instructions",
 		caption,
 	);
+}
+
+// ---- Convenience helpers --------------------------------
+
+/**
+ * Sets or overwrites the caption attribute on an element in-place.
+ *
+ * Useful for caption-first usage patterns since the builder functions accept caption
+ * as the last parameter: `setCaption("Title", paragraph("content"))` reads more
+ * naturally than `paragraph("content", undefined, "Title")`.
+ *
+ * WARNING: This function mutates the element's attributes object.
+ *
+ * @param caption - The caption text to set
+ * @param element - The element to modify
+ * @returns The same element instance with modified attributes
+ */
+export function setCaption<TElement extends MarkupElement & { attributes: { caption?: string } }>(
+	caption: string,
+	element: TElement,
+): TElement {
+	element.attributes.caption = caption;
+	return element;
 }

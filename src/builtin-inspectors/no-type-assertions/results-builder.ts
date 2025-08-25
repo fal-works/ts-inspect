@@ -6,10 +6,10 @@ import type { DiagnosticDetails, SimpleDiagnostics } from "../../diagnostics/ind
 import {
 	code,
 	hint,
-	listItem,
 	markup,
-	orderedList,
 	paragraph,
+	setCaption,
+	stepwiseInstructionList,
 	text,
 } from "../../diagnostics/markup/builders.ts";
 import type { InspectorResult, ResultsBuilder } from "../../inspector/index.ts";
@@ -22,44 +22,41 @@ import type { TypeAssertionFindings } from "./types.ts";
 const noTypeAssertionsFriendlyMessage = () =>
 	markup([
 		hint([text("Type assertions (like "), code("as T"), text(") should be your last resort.")]),
-		orderedList(
+		stepwiseInstructionList([
 			[
-				listItem([
+				setCaption(
+					"Check assignability",
 					paragraph(
 						"If the value already satisfies the target type, just declare it with that type or pass it directly.",
-						undefined,
-						"Check assignability",
 					),
-				]),
-				listItem([
+				),
+			],
+			[
+				setCaption(
+					"Resolve design issues",
 					paragraph(
 						"Needing assertions often means the types aren't aligned. Consider redesigning the types or data flow so the compiler can infer types safely.",
-						undefined,
-						"Resolve design issues",
 					),
-				]),
-				listItem([
-					paragraph(
-						[
-							text(
-								"If you truly must keep it (e.g., for an isolated utility function or third-party integration), and if it is explicitly permitted by the code maintainer, then add the comment: ",
-							),
-							code(`/* ${IGNORE_COMMENT} */`),
-						],
-						undefined,
-						"Allow explicit exceptions",
-					),
-				]),
-				listItem([
-					paragraph(
-						"If none of the above steps solve the issue, consult the code maintainer.",
-						undefined,
-						"Escalate if unresolved",
-					),
-				]),
+				),
 			],
-			"stepwise-instructions",
-		),
+			[
+				setCaption(
+					"Allow explicit exceptions",
+					paragraph([
+						text(
+							"If you truly must keep it (e.g., for an isolated utility function or third-party integration), and if it is explicitly permitted by the code maintainer, then add the comment: ",
+						),
+						code(`/* ${IGNORE_COMMENT} */`),
+					]),
+				),
+			],
+			[
+				setCaption(
+					"Escalate if unresolved",
+					paragraph("If none of the above steps solve the issue, consult the code maintainer."),
+				),
+			],
+		]),
 	]);
 
 /**
