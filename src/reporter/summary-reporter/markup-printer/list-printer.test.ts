@@ -11,8 +11,7 @@ import type { MarkupGeneralElementContent } from "../../../diagnostics/markup/ty
 import {
 	printBulletList,
 	printListItem,
-	printListItemsWithHeader,
-	printListItemsWithoutHeader,
+	printListItems,
 	printOrderedList,
 } from "./list-printer.ts";
 import type { PrintContext } from "./spacing.ts";
@@ -138,27 +137,25 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 		});
 	});
 
-	describe("printListItemsWithHeader", () => {
-		it("prints header and list items at same indentation level", () => {
+	describe("printListItems", () => {
+		it("prints list items with header at same indentation level", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
 			const items = [{ children: [text("First")] }, { children: [text("Second")] }];
 			const prefixGenerator = () => "- ";
 
-			printListItemsWithHeader("My Header", items, prefixGenerator, printer, mockPrintChildren, 1);
+			printListItems(items, prefixGenerator, printer, mockPrintChildren, 1, "My Header");
 
 			strictEqual(output.getOutput(), "My Header:\n- First\n- Second\n");
 		});
-	});
 
-	describe("printListItemsWithoutHeader", () => {
-		it("prints list items without indentation", () => {
+		it("prints list items without header when no header provided", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
 			const items = [{ children: [text("First")] }, { children: [text("Second")] }];
 			const prefixGenerator = (index: number) => `${index + 1}. `;
 
-			printListItemsWithoutHeader(items, prefixGenerator, printer, mockPrintChildren, 2);
+			printListItems(items, prefixGenerator, printer, mockPrintChildren, 2);
 
 			strictEqual(output.getOutput(), "1. First\n2. Second\n");
 		});

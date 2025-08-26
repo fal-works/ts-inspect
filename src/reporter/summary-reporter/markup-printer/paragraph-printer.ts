@@ -20,35 +20,19 @@ type PrintChildrenFunction = (
 ) => void;
 
 /**
- * Prints a paragraph with header indentation.
+ * Prints paragraph content with optional header.
  * @package
  */
-export function printParagraphWithHeader(
-	header: string,
+export function printParagraphContent(
 	children: MarkupGeneralElementContent[],
 	printer: Printer,
 	context: PrintContext,
 	printChildren: PrintChildrenFunction,
+	header?: string,
 ): void {
-	printer.println(`${header}:`);
-	printChildren(children, printer, {
-		isInsideListItem: context.isInsideListItem,
-		isFirstElement: true,
-		isLastElement: true,
-	});
-	printer.newLine();
-}
-
-/**
- * Prints a paragraph without header.
- * @package
- */
-export function printParagraphWithoutHeader(
-	children: MarkupGeneralElementContent[],
-	printer: Printer,
-	context: PrintContext,
-	printChildren: PrintChildrenFunction,
-): void {
+	if (header) {
+		printer.println(`${header}:`);
+	}
 	printChildren(children, printer, {
 		isInsideListItem: context.isInsideListItem,
 		isFirstElement: true,
@@ -70,9 +54,5 @@ export function printParagraph(
 	const { caption, intention } = element.attributes;
 	const header = caption || (intention && intentionToString(intention));
 
-	if (header) {
-		printParagraphWithHeader(header, element.children, printer, context, printChildren);
-	} else {
-		printParagraphWithoutHeader(element.children, printer, context, printChildren);
-	}
+	printParagraphContent(element.children, printer, context, printChildren, header);
 }

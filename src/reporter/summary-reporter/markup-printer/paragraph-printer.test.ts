@@ -10,8 +10,7 @@ import { paragraph, text } from "../../../diagnostics/markup/builders.ts";
 import type { MarkupGeneralElementContent } from "../../../diagnostics/markup/types.ts";
 import {
 	printParagraph,
-	printParagraphWithHeader,
-	printParagraphWithoutHeader,
+	printParagraphContent,
 } from "./paragraph-printer.ts";
 import type { PrintContext } from "./spacing.ts";
 
@@ -28,7 +27,7 @@ describe("reporter/summary-reporter/markup-printer/paragraph-printer", () => {
 		});
 	};
 
-	describe("printParagraphWithHeader", () => {
+	describe("printParagraphContent", () => {
 		it("prints paragraph with header at same indentation level", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
@@ -39,14 +38,12 @@ describe("reporter/summary-reporter/markup-printer/paragraph-printer", () => {
 				isLastElement: true,
 			};
 
-			printParagraphWithHeader("Header", children, printer, context, mockPrintChildren);
+			printParagraphContent(children, printer, context, mockPrintChildren, "Header");
 
 			strictEqual(output.getOutput(), "Header:\nThis is content\n");
 		});
-	});
 
-	describe("printParagraphWithoutHeader", () => {
-		it("prints paragraph content with newline", () => {
+		it("prints paragraph content without header when no header provided", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
 			const children = [text("Simple paragraph")];
@@ -56,7 +53,7 @@ describe("reporter/summary-reporter/markup-printer/paragraph-printer", () => {
 				isLastElement: true,
 			};
 
-			printParagraphWithoutHeader(children, printer, context, mockPrintChildren);
+			printParagraphContent(children, printer, context, mockPrintChildren);
 
 			strictEqual(output.getOutput(), "Simple paragraph\n");
 		});

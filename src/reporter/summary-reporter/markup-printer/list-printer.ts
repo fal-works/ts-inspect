@@ -58,35 +58,20 @@ export function printListItem(
 }
 
 /**
- * Prints list items with header.
+ * Prints list items with optional header.
  * @package
  */
-export function printListItemsWithHeader(
-	header: string,
+export function printListItems(
 	items: { children: MarkupGeneralElementContent[] }[],
 	prefixGenerator: (index: number) => string,
 	printer: Printer,
 	printChildren: PrintChildrenFunction,
 	indentLevels: number,
+	header?: string,
 ): void {
-	printer.println(`${header}:`);
-	items.forEach((item, index) => {
-		const prefix = prefixGenerator(index);
-		printListItem(item, index, items.length, prefix, printer, printChildren, indentLevels);
-	});
-}
-
-/**
- * Prints list items without header indentation.
- * @package
- */
-export function printListItemsWithoutHeader(
-	items: { children: MarkupGeneralElementContent[] }[],
-	prefixGenerator: (index: number) => string,
-	printer: Printer,
-	printChildren: PrintChildrenFunction,
-	indentLevels: number,
-): void {
+	if (header) {
+		printer.println(`${header}:`);
+	}
 	items.forEach((item, index) => {
 		const prefix = prefixGenerator(index);
 		printListItem(item, index, items.length, prefix, printer, printChildren, indentLevels);
@@ -106,11 +91,7 @@ export function printBulletList(
 	const header = caption || (intention && intentionToString(intention));
 	const prefixGenerator = () => "- ";
 
-	if (header) {
-		printListItemsWithHeader(header, element.children, prefixGenerator, printer, printChildren, 1);
-	} else {
-		printListItemsWithoutHeader(element.children, prefixGenerator, printer, printChildren, 1);
-	}
+	printListItems(element.children, prefixGenerator, printer, printChildren, 1, header);
 }
 
 /**
@@ -126,9 +107,5 @@ export function printOrderedList(
 	const header = caption || (intention && intentionToString(intention));
 	const prefixGenerator = (index: number) => `${index + 1}. `;
 
-	if (header) {
-		printListItemsWithHeader(header, element.children, prefixGenerator, printer, printChildren, 2);
-	} else {
-		printListItemsWithoutHeader(element.children, prefixGenerator, printer, printChildren, 2);
-	}
+	printListItems(element.children, prefixGenerator, printer, printChildren, 2, header);
 }
