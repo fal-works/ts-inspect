@@ -31,24 +31,29 @@ export function printListItem(
 	prefix: string,
 	printer: Printer,
 	printChildren: PrintChildrenFunction,
+	indentLevels: number,
 ): void {
 	printer.print(prefix);
+	// Apply the correct indentation for subsequent lines
+	for (let i = 0; i < indentLevels; i++) {
+		printer.indent();
+	}
+
+	printChildren(item.children, printer, {
+		isInsideListItem: true,
+		isFirstElement: index === 0,
+		isLastElement: index === totalItems - 1,
+	});
+
+	// Add newline for simple text content (nested elements handle their own spacing)
 	const hasNestedElements = hasNonTextElements(item.children);
-	if (hasNestedElements) {
-		printer.group();
-		printChildren(item.children, printer, {
-			isInsideListItem: true,
-			isFirstElement: index === 0,
-			isLastElement: index === totalItems - 1,
-		});
-		printer.groupEnd();
-	} else {
-		printChildren(item.children, printer, {
-			isInsideListItem: true,
-			isFirstElement: index === 0,
-			isLastElement: index === totalItems - 1,
-		});
+	if (!hasNestedElements) {
 		printer.newLine();
+	}
+
+	// Restore indentation level
+	for (let i = 0; i < indentLevels; i++) {
+		printer.dedent();
 	}
 }
 
@@ -62,12 +67,13 @@ export function printListItemsWithHeader(
 	prefixGenerator: (index: number) => string,
 	printer: Printer,
 	printChildren: PrintChildrenFunction,
+	indentLevels: number,
 ): void {
 	printer.println(`${header}:`);
 	printer.group();
 	items.forEach((item, index) => {
 		const prefix = prefixGenerator(index);
-		printListItem(item, index, items.length, prefix, printer, printChildren);
+		printListItem(item, index, items.length, prefix, printer, printChildren, indentLevels);
 	});
 	printer.groupEnd();
 }
@@ -81,10 +87,11 @@ export function printListItemsWithoutHeader(
 	prefixGenerator: (index: number) => string,
 	printer: Printer,
 	printChildren: PrintChildrenFunction,
+	indentLevels: number,
 ): void {
 	items.forEach((item, index) => {
 		const prefix = prefixGenerator(index);
-		printListItem(item, index, items.length, prefix, printer, printChildren);
+		printListItem(item, index, items.length, prefix, printer, printChildren, indentLevels);
 	});
 }
 
@@ -102,9 +109,9 @@ export function printBulletList(
 	const prefixGenerator = () => "- ";
 
 	if (header) {
-		printListItemsWithHeader(header, element.children, prefixGenerator, printer, printChildren);
+		printListItemsWithHeader(header, element.children, prefixGenerator, printer, printChildren, 1);
 	} else {
-		printListItemsWithoutHeader(element.children, prefixGenerator, printer, printChildren);
+		printListItemsWithoutHeader(element.children, prefixGenerator, printer, printChildren, 1);
 	}
 }
 
@@ -122,8 +129,8 @@ export function printOrderedList(
 	const prefixGenerator = (index: number) => `${index + 1}. `;
 
 	if (header) {
-		printListItemsWithHeader(header, element.children, prefixGenerator, printer, printChildren);
+		printListItemsWithHeader(header, element.children, prefixGenerator, printer, printChildren, 2);
 	} else {
-		printListItemsWithoutHeader(element.children, prefixGenerator, printer, printChildren);
+		printListItemsWithoutHeader(element.children, prefixGenerator, printer, printChildren, 2);
 	}
 }

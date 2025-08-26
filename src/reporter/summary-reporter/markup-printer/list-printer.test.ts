@@ -37,7 +37,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 			const printer = createPrinter(output);
 			const item = listItem("Simple item");
 
-			printListItem(item, 0, 1, "- ", printer, mockPrintChildren);
+			printListItem(item, 0, 1, "- ", printer, mockPrintChildren, 1);
 
 			strictEqual(output.getOutput(), "- Simple item\n");
 		});
@@ -47,19 +47,27 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 			const printer = createPrinter(output);
 			const item = listItem([text("Item with "), bulletList([listItem("nested")])]);
 
-			printListItem(item, 0, 1, "1. ", printer, (children, p, _context) => {
-				children.forEach((child) => {
-					if (child.type === "text") {
-						p.print(child.value);
-					} else if (child.type === "element" && child.name === "bullet-list") {
-						p.print("nested content");
-					}
-				});
-			});
+			printListItem(
+				item,
+				0,
+				1,
+				"1. ",
+				printer,
+				(children, p, _context) => {
+					children.forEach((child) => {
+						if (child.type === "text") {
+							p.print(child.value);
+						} else if (child.type === "element" && child.name === "bullet-list") {
+							p.print("nested content");
+						}
+					});
+				},
+				2,
+			);
 
-			// The actual indentation depends on printer group behavior -
-			// the key is that it uses groups for nested content
-			strictEqual(output.getOutput(), "1. Item with nested content\n");
+			// The actual output depends on how nested content is handled -
+			// nested elements handle their own spacing
+			strictEqual(output.getOutput(), "1. Item with nested content");
 		});
 	});
 
@@ -140,7 +148,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 			const items = [{ children: [text("First")] }, { children: [text("Second")] }];
 			const prefixGenerator = () => "- ";
 
-			printListItemsWithHeader("My Header", items, prefixGenerator, printer, mockPrintChildren);
+			printListItemsWithHeader("My Header", items, prefixGenerator, printer, mockPrintChildren, 1);
 
 			strictEqual(output.getOutput(), "My Header:\n  - First\n  - Second\n");
 		});
@@ -153,9 +161,180 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 			const items = [{ children: [text("First")] }, { children: [text("Second")] }];
 			const prefixGenerator = (index: number) => `${index + 1}. `;
 
-			printListItemsWithoutHeader(items, prefixGenerator, printer, mockPrintChildren);
+			printListItemsWithoutHeader(items, prefixGenerator, printer, mockPrintChildren, 2);
 
 			strictEqual(output.getOutput(), "1. First\n2. Second\n");
+		});
+	});
+
+	describe("multiline list items", () => {
+		const multilinePrintChildren = (
+			children: MarkupGeneralElementContent[],
+			printer: any,
+			_context: PrintContext,
+		): void => {
+			children.forEach((child) => {
+				if (child.type === "text") {
+					printer.print(child.value);
+				}
+			});
+		};
+
+		it("prints bullet list item with multiline text properly indented", () => {
+			const output = mockWritable();
+			const printer = createPrinter(output);
+			const item = listItem("First line\nSecond line\nThird line");
+
+			printListItem(item, 0, 1, "- ", printer, multilinePrintChildren, 1);
+
+			strictEqual(output.getOutput(), "- First line\n  Second line\n  Third line\n");
+		});
+
+		it("prints ordered list item with multiline text properly indented", () => {
+			const output = mockWritable();
+			const printer = createPrinter(output);
+			const item = listItem("First line\nSecond line\nThird line");
+
+			printListItem(item, 0, 1, "1. ", printer, multilinePrintChildren, 2);
+
+			strictEqual(output.getOutput(), "1. First line\n    Second line\n    Third line\n");
+		});
+
+		it("handles multiple multiline bullet list items", () => {
+			const output = mockWritable();
+			const printer = createPrinter(output);
+			const list = bulletList([
+				listItem("Item 1\nContinued on line 2"),
+				listItem("Item 2\nAlso multiline\nWith third line"),
+			]);
+
+			printBulletList(list, printer, multilinePrintChildren);
+
+			strictEqual(
+				output.getOutput(),
+				"- Item 1\n  Continued on line 2\n- Item 2\n  Also multiline\n  With third line\n",
+			);
+		});
+
+		it("handles multiple multiline ordered list items", () => {
+			const output = mockWritable();
+			const printer = createPrinter(output);
+			const list = orderedList([
+				listItem("Step 1\nWith details"),
+				listItem("Step 2\nMore details\nEven more"),
+			]);
+
+			printOrderedList(list, printer, multilinePrintChildren);
+
+			strictEqual(
+				output.getOutput(),
+				"1. Step 1\n    With details\n2. Step 2\n    More details\n    Even more\n",
+			);
+		});
+
+		it("handles multiline list items with header", () => {
+			const output = mockWritable();
+			const printer = createPrinter(output);
+			const list = bulletList(
+				[listItem("First item\nWith continuation"), listItem("Second item\nAlso continued")],
+				undefined,
+				"My List",
+			);
+
+			printBulletList(list, printer, multilinePrintChildren);
+
+			strictEqual(
+				output.getOutput(),
+				"My List:\n  - First item\n    With continuation\n  - Second item\n    Also continued\n",
+			);
+		});
+
+		it("handles ordered list with nested paragraphs with correct indentation", () => {
+			const output = mockWritable();
+			const printer = createPrinter(output);
+			const nestedPrintChildren = (
+				children: MarkupGeneralElementContent[],
+				printer: any,
+				_context: PrintContext,
+			): void => {
+				children.forEach((child, index) => {
+					if (child.type === "text") {
+						printer.print(child.value);
+					} else if (child.type === "element" && child.name === "paragraph") {
+						if (index > 0) printer.newLine(); // Add spacing between paragraphs
+						// Simulate paragraph printing
+						child.children.forEach((paragraphChild) => {
+							if (paragraphChild.type === "text") {
+								printer.print(paragraphChild.value);
+							}
+						});
+						printer.newLine();
+					}
+				});
+			};
+
+			const item = {
+				children: [
+					{
+						type: "element",
+						name: "paragraph",
+						attributes: {},
+						children: [text("First paragraph\nwith multiple lines")],
+					},
+					{
+						type: "element",
+						name: "paragraph",
+						attributes: {},
+						children: [text("Second paragraph")],
+					},
+				] as MarkupGeneralElementContent[],
+			};
+
+			printListItem(item, 0, 1, "1. ", printer, nestedPrintChildren, 2);
+
+			// Nested paragraphs in ordered list should have +2 indent levels (4 spaces)
+			strictEqual(
+				output.getOutput(),
+				"1. First paragraph\n    with multiple lines\n\n    Second paragraph\n",
+			);
+		});
+
+		it("handles bullet list with nested elements with correct indentation", () => {
+			const output = mockWritable();
+			const printer = createPrinter(output);
+			const nestedPrintChildren = (
+				children: MarkupGeneralElementContent[],
+				printer: any,
+				_context: PrintContext,
+			): void => {
+				children.forEach((child) => {
+					if (child.type === "element" && child.name === "paragraph") {
+						// Simulate paragraph printing
+						child.children.forEach((paragraphChild) => {
+							if (paragraphChild.type === "text") {
+								printer.print(paragraphChild.value);
+							}
+						});
+						printer.newLine();
+					}
+				});
+			};
+
+			const item = {
+				children: [
+					{
+						type: "element",
+						name: "paragraph",
+						attributes: {},
+						children: [text("Paragraph content\nspanning lines")],
+					},
+				] as MarkupGeneralElementContent[],
+			};
+
+			printListItem(item, 0, 1, "- ", printer, nestedPrintChildren, 1);
+
+			// Nested elements in bullet list should have +1 indent level (2 spaces)
+			strictEqual(output.getOutput(), "- Paragraph content\n  spanning lines\n");
 		});
 	});
 });
