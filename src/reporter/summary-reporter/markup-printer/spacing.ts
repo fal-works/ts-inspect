@@ -32,11 +32,7 @@ export function shouldAddEmptyLineBefore(
 	if (!isStructuralElement) return false;
 
 	if (context.isInsideListItem) {
-		// Inside list-item: empty line before paragraph (but not first), newline before lists (but not first)
-		if (element.name === "paragraph") {
-			return !context.isFirstElement;
-		}
-		// Add newline before nested lists (but not if it's the first element)
+		// Inside list-item: newline before nested lists (but not first), no empty lines before paragraphs
 		if (
 			(element.name === "bullet-list" || element.name === "ordered-list") &&
 			!context.isFirstElement
@@ -47,34 +43,5 @@ export function shouldAddEmptyLineBefore(
 	} else {
 		// Normal context: empty line before paragraph/list (but not at root level)
 		return !context.isFirstElement;
-	}
-}
-
-/**
- * Determines if empty line should be added after element.
- * @package
- */
-export function shouldAddEmptyLineAfter(
-	element: MarkupGeneralElementContent,
-	context: PrintContext,
-): boolean {
-	if (element.type === "text") return false;
-
-	const isStructuralElement =
-		element.name === "paragraph" ||
-		element.name === "bullet-list" ||
-		element.name === "ordered-list";
-
-	if (!isStructuralElement) return false;
-
-	if (context.isInsideListItem) {
-		// Inside list-item: empty line after paragraph only if it's the last element
-		if (element.name === "paragraph" && context.isLastElement) {
-			return true;
-		}
-		return false;
-	} else {
-		// Normal context: no additional empty lines after (spacing handled by before logic)
-		return false;
 	}
 }

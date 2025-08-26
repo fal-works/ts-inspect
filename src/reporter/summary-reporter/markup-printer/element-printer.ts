@@ -6,7 +6,7 @@ import type { Printer } from "../../../core/printer.ts";
 import type { MarkupGeneralElementContent } from "../../../diagnostics/markup/types.ts";
 import { printBulletList, printOrderedList } from "./list-printer.ts";
 import { printParagraph } from "./paragraph-printer.ts";
-import { type PrintContext, shouldAddEmptyLineAfter, shouldAddEmptyLineBefore } from "./spacing.ts";
+import { type PrintContext, shouldAddEmptyLineBefore } from "./spacing.ts";
 
 /**
  * Prints text elements.
@@ -64,11 +64,6 @@ export function printMarkupElement(
 		case "code":
 			printFormattingElement(element.children, printer, context);
 			break;
-	}
-
-	// Add empty line after element if needed
-	if (shouldAddEmptyLineAfter(element, context)) {
-		printer.newLine();
 	}
 }
 

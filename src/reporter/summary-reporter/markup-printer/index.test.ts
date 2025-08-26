@@ -252,10 +252,7 @@ describe("reporter/summary-reporter/markup-printer", () => {
 
 			printMarkup(markupDoc, printer);
 
-			strictEqual(
-				output.getOutput(),
-				"- First paragraph in item\n\n  Second paragraph in item\n\n",
-			);
+			strictEqual(output.getOutput(), "- First paragraph in item\n  Second paragraph in item\n");
 		});
 
 		it("HTML-like spacing: mixed content in list item with final paragraph", () => {
@@ -273,8 +270,8 @@ describe("reporter/summary-reporter/markup-printer", () => {
 
 			printMarkup(markupDoc, printer);
 
-			// Text, then newline before nested list, then empty line before final paragraph, then empty line after (last element)
-			strictEqual(output.getOutput(), "- Some text\n  - Nested item\n\n  Final paragraph\n\n");
+			// Text, then newline before nested list, then final paragraph - no empty lines inside list items
+			strictEqual(output.getOutput(), "- Some text\n  - Nested item\n  Final paragraph\n");
 		});
 	});
 });
