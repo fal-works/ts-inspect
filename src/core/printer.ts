@@ -56,6 +56,20 @@ export interface Printer {
 	 * End current group and decrease indentation.
 	 */
 	groupEnd(): void;
+
+	/**
+	 * Increase indentation level for subsequent lines.
+	 * If called at line start, affects the current line.
+	 * If called mid-line, affects only subsequent lines.
+	 */
+	indent(): void;
+
+	/**
+	 * Decrease indentation level for subsequent lines.
+	 * If called at line start, affects the current line.
+	 * If called mid-line, affects only subsequent lines.
+	 */
+	dedent(): void;
 }
 
 /**
@@ -129,18 +143,32 @@ function group(state: PrinterState, heading?: string): void {
 		}
 		println(state, heading);
 	}
-	state.indentLevel++;
+	indent(state);
 }
 
 /**
  * @see Printer.groupEnd
  */
 function groupEnd(state: PrinterState): void {
+	dedent(state);
+	if (!state.atLineStart) {
+		newLine(state); // Ensure we end at line start
+	}
+}
+
+/**
+ * @see Printer.indent
+ */
+function indent(state: PrinterState): void {
+	state.indentLevel++;
+}
+
+/**
+ * @see Printer.dedent
+ */
+function dedent(state: PrinterState): void {
 	if (state.indentLevel > state.initialIndentLevel) {
 		state.indentLevel--;
-		if (!state.atLineStart) {
-			newLine(state); // Ensure we end at line start
-		}
 	}
 }
 
@@ -168,5 +196,7 @@ export function createPrinter(output: Writable, options?: PrinterOptions): Print
 		newLine: newLine.bind(null, state),
 		group: group.bind(null, state),
 		groupEnd: groupEnd.bind(null, state),
+		indent: indent.bind(null, state),
+		dedent: dedent.bind(null, state),
 	};
 }
