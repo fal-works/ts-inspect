@@ -70,12 +70,10 @@ export function printListItemsWithHeader(
 	indentLevels: number,
 ): void {
 	printer.println(`${header}:`);
-	printer.group();
 	items.forEach((item, index) => {
 		const prefix = prefixGenerator(index);
 		printListItem(item, index, items.length, prefix, printer, printChildren, indentLevels);
 	});
-	printer.groupEnd();
 }
 
 /**

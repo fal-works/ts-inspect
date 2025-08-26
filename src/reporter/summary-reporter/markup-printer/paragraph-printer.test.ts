@@ -29,7 +29,7 @@ describe("reporter/summary-reporter/markup-printer/paragraph-printer", () => {
 	};
 
 	describe("printParagraphWithHeader", () => {
-		it("prints paragraph with header and indentation", () => {
+		it("prints paragraph with header at same indentation level", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
 			const children = [text("This is content")];
@@ -41,7 +41,7 @@ describe("reporter/summary-reporter/markup-printer/paragraph-printer", () => {
 
 			printParagraphWithHeader("Header", children, printer, context, mockPrintChildren);
 
-			strictEqual(output.getOutput(), "Header:\n  This is content\n");
+			strictEqual(output.getOutput(), "Header:\nThis is content\n");
 		});
 	});
 
@@ -90,7 +90,7 @@ describe("reporter/summary-reporter/markup-printer/paragraph-printer", () => {
 
 			printParagraph(para, printer, context, mockPrintChildren);
 
-			strictEqual(output.getOutput(), "Custom Caption:\n  Content here\n");
+			strictEqual(output.getOutput(), "Custom Caption:\nContent here\n");
 		});
 
 		it("prints paragraph with intention as header", () => {
@@ -105,7 +105,7 @@ describe("reporter/summary-reporter/markup-printer/paragraph-printer", () => {
 
 			printParagraph(para, printer, context, mockPrintChildren);
 
-			strictEqual(output.getOutput(), "Hint:\n  Helpful information\n");
+			strictEqual(output.getOutput(), "Hint:\nHelpful information\n");
 		});
 
 		it("prefers caption over intention", () => {
@@ -120,7 +120,7 @@ describe("reporter/summary-reporter/markup-printer/paragraph-printer", () => {
 
 			printParagraph(para, printer, context, mockPrintChildren);
 
-			strictEqual(output.getOutput(), "Custom Header:\n  Content\n");
+			strictEqual(output.getOutput(), "Custom Header:\nContent\n");
 		});
 	});
 });

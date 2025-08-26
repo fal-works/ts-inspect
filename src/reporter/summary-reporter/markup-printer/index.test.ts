@@ -126,7 +126,7 @@ describe("reporter/summary-reporter/markup-printer", () => {
 
 			printMarkup(markupDoc, printer);
 
-			strictEqual(output.getOutput(), "Custom Header:\n  This is important information\n");
+			strictEqual(output.getOutput(), "Custom Header:\nThis is important information\n");
 		});
 
 		it("prints paragraph with intention (converts to Title Case)", () => {
@@ -136,7 +136,7 @@ describe("reporter/summary-reporter/markup-printer", () => {
 
 			printMarkup(markupDoc, printer);
 
-			strictEqual(output.getOutput(), "Hint:\n  This is a helpful hint\n");
+			strictEqual(output.getOutput(), "Hint:\nThis is a helpful hint\n");
 		});
 
 		it("prints bullet list with custom caption", () => {
@@ -148,7 +148,7 @@ describe("reporter/summary-reporter/markup-printer", () => {
 
 			printMarkup(markupDoc, printer);
 
-			strictEqual(output.getOutput(), "My List:\n  - First item\n  - Second item\n");
+			strictEqual(output.getOutput(), "My List:\n- First item\n- Second item\n");
 		});
 
 		it("prints bullet list with intention (examples)", () => {
@@ -158,7 +158,7 @@ describe("reporter/summary-reporter/markup-printer", () => {
 
 			printMarkup(markupDoc, printer);
 
-			strictEqual(output.getOutput(), "Examples:\n  - Example one\n  - Example two\n");
+			strictEqual(output.getOutput(), "Examples:\n- Example one\n- Example two\n");
 		});
 
 		it("prints ordered list with intention (stepwise-instructions)", () => {
@@ -168,10 +168,7 @@ describe("reporter/summary-reporter/markup-printer", () => {
 
 			printMarkup(markupDoc, printer);
 
-			strictEqual(
-				output.getOutput(),
-				"Stepwise Instructions:\n  1. First step\n  2. Second step\n",
-			);
+			strictEqual(output.getOutput(), "Stepwise Instructions:\n1. First step\n2. Second step\n");
 		});
 
 		it("prefers caption over intention when both are present", () => {
@@ -183,7 +180,7 @@ describe("reporter/summary-reporter/markup-printer", () => {
 
 			printMarkup(markupDoc, printer);
 
-			strictEqual(output.getOutput(), "Custom Examples Header:\n  - Item\n");
+			strictEqual(output.getOutput(), "Custom Examples Header:\n- Item\n");
 		});
 
 		it("falls back to intention when caption is empty string", () => {
@@ -193,7 +190,7 @@ describe("reporter/summary-reporter/markup-printer", () => {
 
 			printMarkup(markupDoc, printer);
 
-			strictEqual(output.getOutput(), "Hint:\n  Content with empty caption\n");
+			strictEqual(output.getOutput(), "Hint:\nContent with empty caption\n");
 		});
 
 		it("handles empty caption with bullet list", () => {
@@ -205,7 +202,7 @@ describe("reporter/summary-reporter/markup-printer", () => {
 
 			printMarkup(markupDoc, printer);
 
-			strictEqual(output.getOutput(), "Examples:\n  - Item one\n  - Item two\n");
+			strictEqual(output.getOutput(), "Examples:\n- Item one\n- Item two\n");
 		});
 
 		it("handles empty caption with ordered list", () => {
@@ -217,7 +214,7 @@ describe("reporter/summary-reporter/markup-printer", () => {
 
 			printMarkup(markupDoc, printer);
 
-			strictEqual(output.getOutput(), "Stepwise Instructions:\n  1. Step one\n  2. Step two\n");
+			strictEqual(output.getOutput(), "Stepwise Instructions:\n1. Step one\n2. Step two\n");
 		});
 
 		it("behaves normally when both caption and intention are empty/undefined", () => {

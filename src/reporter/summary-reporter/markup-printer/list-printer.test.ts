@@ -89,7 +89,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 
 			printBulletList(list, printer, mockPrintChildren);
 
-			strictEqual(output.getOutput(), "My List:\n  - First\n  - Second\n");
+			strictEqual(output.getOutput(), "My List:\n- First\n- Second\n");
 		});
 
 		it("prints bullet list with intention", () => {
@@ -99,7 +99,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 
 			printBulletList(list, printer, mockPrintChildren);
 
-			strictEqual(output.getOutput(), "Examples:\n  - Example one\n  - Example two\n");
+			strictEqual(output.getOutput(), "Examples:\n- Example one\n- Example two\n");
 		});
 	});
 
@@ -121,7 +121,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 
 			printOrderedList(list, printer, mockPrintChildren);
 
-			strictEqual(output.getOutput(), "Steps:\n  1. First\n  2. Second\n");
+			strictEqual(output.getOutput(), "Steps:\n1. First\n2. Second\n");
 		});
 
 		it("prints ordered list with intention", () => {
@@ -134,15 +134,12 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 
 			printOrderedList(list, printer, mockPrintChildren);
 
-			strictEqual(
-				output.getOutput(),
-				"Stepwise Instructions:\n  1. First step\n  2. Second step\n",
-			);
+			strictEqual(output.getOutput(), "Stepwise Instructions:\n1. First step\n2. Second step\n");
 		});
 	});
 
 	describe("printListItemsWithHeader", () => {
-		it("prints header and list items with indentation", () => {
+		it("prints header and list items at same indentation level", () => {
 			const output = mockWritable();
 			const printer = createPrinter(output);
 			const items = [{ children: [text("First")] }, { children: [text("Second")] }];
@@ -150,7 +147,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 
 			printListItemsWithHeader("My Header", items, prefixGenerator, printer, mockPrintChildren, 1);
 
-			strictEqual(output.getOutput(), "My Header:\n  - First\n  - Second\n");
+			strictEqual(output.getOutput(), "My Header:\n- First\n- Second\n");
 		});
 	});
 
@@ -245,7 +242,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 
 			strictEqual(
 				output.getOutput(),
-				"My List:\n  - First item\n    With continuation\n  - Second item\n    Also continued\n",
+				"My List:\n- First item\n  With continuation\n- Second item\n  Also continued\n",
 			);
 		});
 

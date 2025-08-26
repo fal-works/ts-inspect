@@ -31,13 +31,12 @@ export function printParagraphWithHeader(
 	printChildren: PrintChildrenFunction,
 ): void {
 	printer.println(`${header}:`);
-	printer.group();
 	printChildren(children, printer, {
 		isInsideListItem: context.isInsideListItem,
 		isFirstElement: true,
 		isLastElement: true,
 	});
-	printer.groupEnd();
+	printer.newLine();
 }
 
 /**
