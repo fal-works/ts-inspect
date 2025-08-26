@@ -72,7 +72,7 @@ describe("reporter/summary-reporter/markup-printer", () => {
 
 			printMarkup(markupDoc, printer);
 
-			strictEqual(output.getOutput(), "1. First item\n2. Second item\n");
+			strictEqual(output.getOutput(), " 1. First item\n 2. Second item\n");
 		});
 
 		it("handles nested list indentation using printer groups", () => {
@@ -168,7 +168,7 @@ describe("reporter/summary-reporter/markup-printer", () => {
 
 			printMarkup(markupDoc, printer);
 
-			strictEqual(output.getOutput(), "Stepwise Instructions:\n1. First step\n2. Second step\n");
+			strictEqual(output.getOutput(), "Stepwise Instructions:\n 1. First step\n 2. Second step\n");
 		});
 
 		it("prefers caption over intention when both are present", () => {
@@ -214,7 +214,7 @@ describe("reporter/summary-reporter/markup-printer", () => {
 
 			printMarkup(markupDoc, printer);
 
-			strictEqual(output.getOutput(), "Stepwise Instructions:\n1. Step one\n2. Step two\n");
+			strictEqual(output.getOutput(), "Stepwise Instructions:\n 1. Step one\n 2. Step two\n");
 		});
 
 		it("behaves normally when both caption and intention are empty/undefined", () => {

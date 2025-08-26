@@ -50,7 +50,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 				item,
 				0,
 				1,
-				"1. ",
+				" 1. ",
 				printer,
 				(children, p, _context) => {
 					children.forEach((child) => {
@@ -66,7 +66,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 
 			// The actual output depends on how nested content is handled -
 			// nested elements handle their own spacing
-			strictEqual(output.getOutput(), "1. Item with nested content");
+			strictEqual(output.getOutput(), " 1. Item with nested content");
 		});
 	});
 
@@ -110,7 +110,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 
 			printOrderedList(list, printer, mockPrintChildren);
 
-			strictEqual(output.getOutput(), "1. First\n2. Second\n");
+			strictEqual(output.getOutput(), " 1. First\n 2. Second\n");
 		});
 
 		it("prints ordered list with caption", () => {
@@ -120,7 +120,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 
 			printOrderedList(list, printer, mockPrintChildren);
 
-			strictEqual(output.getOutput(), "Steps:\n1. First\n2. Second\n");
+			strictEqual(output.getOutput(), "Steps:\n 1. First\n 2. Second\n");
 		});
 
 		it("prints ordered list with intention", () => {
@@ -133,7 +133,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 
 			printOrderedList(list, printer, mockPrintChildren);
 
-			strictEqual(output.getOutput(), "Stepwise Instructions:\n1. First step\n2. Second step\n");
+			strictEqual(output.getOutput(), "Stepwise Instructions:\n 1. First step\n 2. Second step\n");
 		});
 	});
 
@@ -189,9 +189,9 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 			const printer = createPrinter(output);
 			const item = listItem("First line\nSecond line\nThird line");
 
-			printListItem(item, 0, 1, "1. ", printer, multilinePrintChildren, 2);
+			printListItem(item, 0, 1, " 1. ", printer, multilinePrintChildren, 2);
 
-			strictEqual(output.getOutput(), "1. First line\n    Second line\n    Third line\n");
+			strictEqual(output.getOutput(), " 1. First line\n    Second line\n    Third line\n");
 		});
 
 		it("handles multiple multiline bullet list items", () => {
@@ -222,7 +222,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 
 			strictEqual(
 				output.getOutput(),
-				"1. Step 1\n    With details\n2. Step 2\n    More details\n    Even more\n",
+				" 1. Step 1\n    With details\n 2. Step 2\n    More details\n    Even more\n",
 			);
 		});
 
@@ -284,12 +284,12 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 				] as MarkupGeneralElementContent[],
 			};
 
-			printListItem(item, 0, 1, "1. ", printer, nestedPrintChildren, 2);
+			printListItem(item, 0, 1, " 1. ", printer, nestedPrintChildren, 2);
 
 			// Nested paragraphs in ordered list should have +2 indent levels (4 spaces)
 			strictEqual(
 				output.getOutput(),
-				"1. First paragraph\n    with multiple lines\n\n    Second paragraph\n",
+				" 1. First paragraph\n    with multiple lines\n\n    Second paragraph\n",
 			);
 		});
 
@@ -329,6 +329,35 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 
 			// Nested elements in bullet list should have +1 indent level (2 spaces)
 			strictEqual(output.getOutput(), "- Paragraph content\n  spanning lines\n");
+		});
+
+		it("handles ordered list with many items to test alignment", () => {
+			const output = mockWritable();
+			const printer = createPrinter(output);
+			// Create a list with 12 items to test multi-digit alignment
+			const items = Array.from({ length: 12 }, (_, i) => listItem(`Item ${i + 1}`));
+			const list = orderedList(items);
+
+			printOrderedList(list, printer, multilinePrintChildren);
+
+			// All markers should be exactly 4 characters wide
+			const expected = [
+				" 1. Item 1",
+				" 2. Item 2",
+				" 3. Item 3",
+				" 4. Item 4",
+				" 5. Item 5",
+				" 6. Item 6",
+				" 7. Item 7",
+				" 8. Item 8",
+				" 9. Item 9",
+				"10. Item 10",
+				"11. Item 11",
+				"12. Item 12",
+				"",
+			].join("\n");
+
+			strictEqual(output.getOutput(), expected);
 		});
 	});
 });

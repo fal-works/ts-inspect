@@ -105,7 +105,11 @@ export function printOrderedList(
 ): void {
 	const { caption, intention } = element.attributes;
 	const header = caption || (intention && intentionToString(intention));
-	const prefixGenerator = (index: number) => `${index + 1}. `;
+
+	const prefixGenerator = (index: number) => {
+		const number = (index + 1).toString();
+		return `${number}. `.padStart(4, " ");
+	};
 
 	printListItems(element.children, prefixGenerator, printer, printChildren, 2, header);
 }
