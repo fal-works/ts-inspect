@@ -14,6 +14,5 @@ export function printMarkup(markup: MarkupRootElement, printer: Printer): void {
 	printMarkupChildren(markup.children, printer, {
 		isInsideListItem: false,
 		isFirstElement: true,
-		isLastElement: true,
 	});
 }

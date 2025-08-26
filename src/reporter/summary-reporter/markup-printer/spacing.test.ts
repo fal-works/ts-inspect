@@ -14,7 +14,6 @@ describe("reporter/summary-reporter/markup-printer/spacing", () => {
 			const context: PrintContext = {
 				isInsideListItem: false,
 				isFirstElement: false,
-				isLastElement: false,
 			};
 			strictEqual(shouldAddEmptyLineBefore(element, context), false);
 		});
@@ -24,7 +23,6 @@ describe("reporter/summary-reporter/markup-printer/spacing", () => {
 			const context: PrintContext = {
 				isInsideListItem: false,
 				isFirstElement: true,
-				isLastElement: false,
 			};
 			strictEqual(shouldAddEmptyLineBefore(element, context), false);
 		});
@@ -34,7 +32,6 @@ describe("reporter/summary-reporter/markup-printer/spacing", () => {
 			const context: PrintContext = {
 				isInsideListItem: false,
 				isFirstElement: false,
-				isLastElement: false,
 			};
 			strictEqual(shouldAddEmptyLineBefore(element, context), true);
 		});
@@ -44,7 +41,6 @@ describe("reporter/summary-reporter/markup-printer/spacing", () => {
 			const context: PrintContext = {
 				isInsideListItem: true,
 				isFirstElement: true,
-				isLastElement: false,
 			};
 			strictEqual(shouldAddEmptyLineBefore(element, context), false);
 		});
@@ -54,7 +50,6 @@ describe("reporter/summary-reporter/markup-printer/spacing", () => {
 			const context: PrintContext = {
 				isInsideListItem: true,
 				isFirstElement: false,
-				isLastElement: false,
 			};
 			strictEqual(shouldAddEmptyLineBefore(element, context), false);
 		});
@@ -64,7 +59,6 @@ describe("reporter/summary-reporter/markup-printer/spacing", () => {
 			const context: PrintContext = {
 				isInsideListItem: true,
 				isFirstElement: false,
-				isLastElement: false,
 			};
 			strictEqual(shouldAddEmptyLineBefore(element, context), true);
 		});
@@ -74,7 +68,6 @@ describe("reporter/summary-reporter/markup-printer/spacing", () => {
 			const context: PrintContext = {
 				isInsideListItem: true,
 				isFirstElement: true,
-				isLastElement: false,
 			};
 			strictEqual(shouldAddEmptyLineBefore(element, context), false);
 		});

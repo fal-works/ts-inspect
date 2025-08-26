@@ -27,7 +27,6 @@ type PrintChildrenFunction = (
 export function printListItem(
 	item: { children: MarkupGeneralElementContent[] },
 	index: number,
-	totalItems: number,
 	prefix: string,
 	printer: Printer,
 	printChildren: PrintChildrenFunction,
@@ -42,7 +41,6 @@ export function printListItem(
 	printChildren(item.children, printer, {
 		isInsideListItem: true,
 		isFirstElement: index === 0,
-		isLastElement: index === totalItems - 1,
 	});
 
 	// Add newline for simple text content (nested elements handle their own spacing)
@@ -74,7 +72,7 @@ export function printListItems(
 	}
 	items.forEach((item, index) => {
 		const prefix = prefixGenerator(index);
-		printListItem(item, index, items.length, prefix, printer, printChildren, indentLevels);
+		printListItem(item, index, prefix, printer, printChildren, indentLevels);
 	});
 }
 

@@ -11,7 +11,6 @@ import type { MarkupGeneralElementContent } from "../../../diagnostics/markup/ty
 export interface PrintContext {
 	isInsideListItem: boolean;
 	isFirstElement: boolean;
-	isLastElement: boolean;
 }
 
 /**
@@ -24,22 +23,20 @@ export function shouldAddEmptyLineBefore(
 ): boolean {
 	if (element.type === "text") return false;
 
-	const isStructuralElement =
-		element.name === "paragraph" ||
-		element.name === "bullet-list" ||
-		element.name === "ordered-list";
-
-	if (!isStructuralElement) return false;
+	// Only structural elements (paragraph, lists) need spacing considerations
+	if (
+		element.name !== "paragraph" &&
+		element.name !== "bullet-list" &&
+		element.name !== "ordered-list"
+	) {
+		return false;
+	}
 
 	if (context.isInsideListItem) {
 		// Inside list-item: newline before nested lists (but not first), no empty lines before paragraphs
-		if (
-			(element.name === "bullet-list" || element.name === "ordered-list") &&
-			!context.isFirstElement
-		) {
-			return true;
-		}
-		return false;
+		return (
+			(element.name === "bullet-list" || element.name === "ordered-list") && !context.isFirstElement
+		);
 	} else {
 		// Normal context: empty line before paragraph/list (but not at root level)
 		return !context.isFirstElement;

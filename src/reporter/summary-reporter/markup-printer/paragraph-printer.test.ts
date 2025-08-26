@@ -32,7 +32,6 @@ describe("reporter/summary-reporter/markup-printer/paragraph-printer", () => {
 			const context: PrintContext = {
 				isInsideListItem: false,
 				isFirstElement: true,
-				isLastElement: true,
 			};
 
 			printParagraphContent(children, printer, context, mockPrintChildren, "Header");
@@ -47,7 +46,6 @@ describe("reporter/summary-reporter/markup-printer/paragraph-printer", () => {
 			const context: PrintContext = {
 				isInsideListItem: false,
 				isFirstElement: true,
-				isLastElement: true,
 			};
 
 			printParagraphContent(children, printer, context, mockPrintChildren);
@@ -64,7 +62,6 @@ describe("reporter/summary-reporter/markup-printer/paragraph-printer", () => {
 			const context: PrintContext = {
 				isInsideListItem: false,
 				isFirstElement: true,
-				isLastElement: true,
 			};
 
 			printParagraph(para, printer, context, mockPrintChildren);
@@ -79,7 +76,6 @@ describe("reporter/summary-reporter/markup-printer/paragraph-printer", () => {
 			const context: PrintContext = {
 				isInsideListItem: false,
 				isFirstElement: true,
-				isLastElement: true,
 			};
 
 			printParagraph(para, printer, context, mockPrintChildren);
@@ -94,7 +90,6 @@ describe("reporter/summary-reporter/markup-printer/paragraph-printer", () => {
 			const context: PrintContext = {
 				isInsideListItem: false,
 				isFirstElement: true,
-				isLastElement: true,
 			};
 
 			printParagraph(para, printer, context, mockPrintChildren);
@@ -109,7 +104,6 @@ describe("reporter/summary-reporter/markup-printer/paragraph-printer", () => {
 			const context: PrintContext = {
 				isInsideListItem: false,
 				isFirstElement: true,
-				isLastElement: true,
 			};
 
 			printParagraph(para, printer, context, mockPrintChildren);

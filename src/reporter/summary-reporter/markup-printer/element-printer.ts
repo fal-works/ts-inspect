@@ -80,7 +80,6 @@ export function printMarkupChildren(
 		const childContext: PrintContext = {
 			...context,
 			isFirstElement: index === 0,
-			isLastElement: index === children.length - 1,
 		};
 		printMarkupElement(child, printer, childContext);
 	});

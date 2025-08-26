@@ -36,7 +36,6 @@ export function printParagraphContent(
 	printChildren(children, printer, {
 		isInsideListItem: context.isInsideListItem,
 		isFirstElement: true,
-		isLastElement: true,
 	});
 	printer.newLine();
 }

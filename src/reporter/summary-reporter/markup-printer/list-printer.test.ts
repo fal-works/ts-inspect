@@ -36,7 +36,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 			const printer = createPrinter(output);
 			const item = listItem("Simple item");
 
-			printListItem(item, 0, 1, "- ", printer, mockPrintChildren, 1);
+			printListItem(item, 0, "- ", printer, mockPrintChildren, 1);
 
 			strictEqual(output.getOutput(), "- Simple item\n");
 		});
@@ -49,7 +49,6 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 			printListItem(
 				item,
 				0,
-				1,
 				" 1. ",
 				printer,
 				(children, p, _context) => {
@@ -179,7 +178,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 			const printer = createPrinter(output);
 			const item = listItem("First line\nSecond line\nThird line");
 
-			printListItem(item, 0, 1, "- ", printer, multilinePrintChildren, 1);
+			printListItem(item, 0, "- ", printer, multilinePrintChildren, 1);
 
 			strictEqual(output.getOutput(), "- First line\n  Second line\n  Third line\n");
 		});
@@ -189,7 +188,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 			const printer = createPrinter(output);
 			const item = listItem("First line\nSecond line\nThird line");
 
-			printListItem(item, 0, 1, " 1. ", printer, multilinePrintChildren, 2);
+			printListItem(item, 0, " 1. ", printer, multilinePrintChildren, 2);
 
 			strictEqual(output.getOutput(), " 1. First line\n    Second line\n    Third line\n");
 		});
@@ -284,7 +283,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 				] as MarkupGeneralElementContent[],
 			};
 
-			printListItem(item, 0, 1, " 1. ", printer, nestedPrintChildren, 2);
+			printListItem(item, 0, " 1. ", printer, nestedPrintChildren, 2);
 
 			// Nested paragraphs in ordered list should have +2 indent levels (4 spaces)
 			strictEqual(
@@ -325,7 +324,7 @@ describe("reporter/summary-reporter/markup-printer/list-printer", () => {
 				] as MarkupGeneralElementContent[],
 			};
 
-			printListItem(item, 0, 1, "- ", printer, nestedPrintChildren, 1);
+			printListItem(item, 0, "- ", printer, nestedPrintChildren, 1);
 
 			// Nested elements in bullet list should have +1 indent level (2 spaces)
 			strictEqual(output.getOutput(), "- Paragraph content\n  spanning lines\n");
