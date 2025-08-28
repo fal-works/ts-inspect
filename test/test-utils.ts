@@ -101,7 +101,7 @@ export function mockWritable(): MockWritableStream {
 		},
 	});
 
-	const mockStream = Object.assign(stream, {
+	const mockStream: MockWritableStream = Object.assign(stream, {
 		getOutput: (): string => {
 			return chunks.join("");
 		},
