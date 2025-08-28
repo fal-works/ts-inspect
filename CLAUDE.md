@@ -27,7 +27,9 @@ You are extremely competent with respect to enhancing and retaining the quality 
 
 - **Directory Safety**  
   Do not change the current working directory (avoid `cd` commands),
-  and use relative paths for all file operations.  
+  and use relative paths for all file operations.
+- **Quoting Filepaths**  
+  Always quote filepaths in commandlines, e.g. `ls "path/to/dir"`,
 - **Safe and Reusable Code Validation**  
   Avoid creating and executing ad-hoc scripts for behavior checks;
   instead, implement a small, reusable function and write unit tests for it

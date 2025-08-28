@@ -1,8 +1,11 @@
 {
 	"permissions": {
 		"allow": [
+			"Bash(npx ts-inspect:*)",
 			"Bash(node src/bin.ts:*)",
 			"Bash(node dist/bin.js:*)",
+			"Bash(node \"src/bin.ts\":*)",
+			"Bash(node \"dist/bin.js\":*)",
 			"Bash(node --test:*)",
 			"Bash(npm test:*)",
 			"Bash(npm run test:*)",
@@ -15,9 +18,10 @@
 			"Bash(mkdir:*)",
 			"Bash(find:*)",
 			"Bash(grep:*)",
-			"Bash(rm TMP_:*)",
-			"Bash(rm src:*)",
-			"Bash(mv src:*)",
+			"Bash(rg:*)",
+			"Bash(rm \"TMP_:*)",
+			"Bash(rm \"src:*)",
+			"Bash(mv \"src:*)",
 			"Bash(npx tsc:*)",
 			"Bash(git diff:*)"
 		],

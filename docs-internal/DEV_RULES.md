@@ -32,6 +32,8 @@ See [Development Environment](./DEV_ENVIRONMENT.md) for details.
 	  only allow in a few isolated utility functions.
 	- Minimize runtime type checks. Maximize compile-time type checks.
 	- Default type parameters should only be specified if alternative types are almost never needed.
+	- When declaring local variables with object literals, always prefer explicit and named types
+	  over inline type annotations or inferred types.
 - Module Separation:
 	- If a module contains a function that should not be exported publicly but needs to be tested,
 		place it in a separate module and mark it with a JSDoc `@package` tag.
