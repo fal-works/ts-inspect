@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 import { mockWritable } from "../../test/test-utils.ts";
 import { createPrinter, type PrinterOptions } from "./printer.ts";
 
-describe("core/printer", () => {
+describe("printer/printer", () => {
 	describe("createPrinter", () => {
 		it("returns Printer with all required methods", () => {
 			const printer = createPrinter(process.stdout);

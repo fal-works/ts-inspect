@@ -8,7 +8,7 @@ import { mockWritable } from "../../test/test-utils.ts";
 import type { PrinterOptions } from "./printer.ts";
 import { createXmlPrinter } from "./xml-printer.ts";
 
-describe("core/xml-printer", () => {
+describe("printer/xml-printer", () => {
 	describe("createXmlPrinter", () => {
 		test("returns XmlPrinter with all required methods", () => {
 			const stream = mockWritable();
