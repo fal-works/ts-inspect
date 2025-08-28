@@ -84,7 +84,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 				"\n" +
 				"  ❌ src/test.ts:42 - value as any\n" +
 				"\n" +
-				"  💡 Consider using proper typing instead of type assertions.\n";
+				"  Consider using proper typing instead of type assertions.\n";
 			assert.strictEqual(output.getOutput(), expected);
 		});
 
@@ -223,7 +223,7 @@ describe("reporter/summary-reporter/inspector-result-printer", () => {
 				"\n" +
 				"  ❌ src/test.ts:1 - test\n" +
 				"\n" +
-				"  💡 Some instructions\n";
+				"  Some instructions\n";
 			assert.strictEqual(output.getOutput(), expected);
 		});
 

@@ -64,7 +64,7 @@ describe("reporter/summary-reporter/index", () => {
 				"\n" +
 				"  ❌ src/test.ts:42 - value as any\n" +
 				"\n" +
-				"  💡 Use proper typing instead.\n";
+				"  Use proper typing instead.\n";
 			assert.strictEqual(output.getOutput(), expected);
 		});
 
@@ -323,7 +323,7 @@ describe("reporter/summary-reporter/index", () => {
 				"  ❌ src/components/Form.tsx:42 - event.target as HTMLInputElement\n" +
 				"  ❌ src/types.ts:8 - value as unknown as MyType\n" +
 				"\n" +
-				"  💡 Review these type assertions carefully. In most cases, type assertions should be your last resort.\n";
+				"  Review these type assertions carefully. In most cases, type assertions should be your last resort.\n";
 			assert.strictEqual(output.getOutput(), expected);
 		});
 	});

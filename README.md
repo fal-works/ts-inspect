@@ -116,7 +116,7 @@ Found suspicious type assertions:
 ❌  src/example.ts:42 - user as any
 ❌  src/example.ts:58 - <string>data
 
-💡 (instruction message ...)
+(instruction message ...)
 ```
 
 ## Creating a Custom Inspector

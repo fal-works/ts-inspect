@@ -98,7 +98,6 @@ describe("reporter/summary-reporter/finding-printer", () => {
 			const outputStr = output.getOutput();
 			assert.ok(outputStr.includes("⚠️  src/test.ts:10"));
 			assert.ok(outputStr.includes("Potential issue detected"));
-			assert.ok(!outputStr.includes("💡"));
 		});
 	});
 
@@ -116,7 +115,7 @@ describe("reporter/summary-reporter/finding-printer", () => {
 
 			printFileFinding("src/test.ts", finding, printer);
 
-			const expected = "❌ src/test.ts\nFile has issues\n💡 Fix the file structure\n";
+			const expected = "❌ src/test.ts\nFile has issues\nFix the file structure\n";
 			assert.strictEqual(output.getOutput(), expected);
 		});
 
@@ -152,7 +151,7 @@ describe("reporter/summary-reporter/finding-printer", () => {
 			printProjectFinding(finding, printer);
 
 			const expected =
-				"❌ (project-level issue)\nProject configuration issue\n💡 Update your configuration\n";
+				"❌ (project-level issue)\nProject configuration issue\nUpdate your configuration\n";
 			assert.strictEqual(output.getOutput(), expected);
 		});
 

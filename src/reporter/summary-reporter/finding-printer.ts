@@ -84,7 +84,6 @@ export function printFileFinding(file: string, finding: DetailedFinding, printer
 	printer.println(`${icon} ${file}`);
 	printer.println(finding.details.message);
 	if (finding.details.instructions) {
-		printer.print("💡 ");
 		printInstructions(finding.details.instructions, printer);
 	}
 }
@@ -97,7 +96,6 @@ export function printProjectFinding(finding: DetailedFinding, printer: Printer):
 	printer.println(`${icon} (project-level issue)`);
 	printer.println(finding.details.message);
 	if (finding.details.instructions) {
-		printer.print("💡 ");
 		printInstructions(finding.details.instructions, printer);
 	}
 }

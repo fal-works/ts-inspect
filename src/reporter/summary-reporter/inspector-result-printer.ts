@@ -22,7 +22,6 @@ function printInspectorMessage(result: InspectorResult, printer: Printer): void 
 function printInspectorInstructions(result: InspectorResult, printer: Printer): void {
 	if (result.diagnostics.type === "simple" && result.diagnostics.details.instructions) {
 		printer.newLine(1);
-		printer.print("💡 ");
 		if (typeof result.diagnostics.details.instructions === "string") {
 			printer.println(result.diagnostics.details.instructions.trim());
 		} else {
