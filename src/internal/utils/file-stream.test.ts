@@ -4,11 +4,11 @@
 
 import assert from "node:assert";
 import { before, describe, it } from "node:test";
-import { prepareTestOutputDirectory } from "../../test/test-utils.ts";
-import { TsInspectError } from "../error.ts";
+import { prepareTestOutputDirectory } from "../../../test/test-utils.ts";
+import { TsInspectError } from "../../error.ts";
 import { executeWithFileOutput } from "./file-stream.ts";
 
-describe("core/file-stream", () => {
+describe("internal/utils/file-stream", () => {
 	before(async () => {
 		await prepareTestOutputDirectory("test-out/file-stream");
 	});

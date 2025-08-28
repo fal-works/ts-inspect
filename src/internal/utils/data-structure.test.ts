@@ -1,8 +1,8 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { setHasValue } from "./ds.ts";
+import { setHasValue } from "./data-structure.ts";
 
-describe("core/utils", () => {
+describe("internal/utils/data-structure", () => {
 	describe("setHasValue", () => {
 		it("returns true for values in the set", () => {
 			const set = new Set(["a", "b", "c"]);

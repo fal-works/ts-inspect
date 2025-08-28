@@ -4,8 +4,8 @@
 
 import { createWriteStream, type WriteStream } from "node:fs";
 import { finished } from "node:stream/promises";
-import { TsInspectError } from "../error.ts";
-import { ensureDirectoryExists } from "./files.ts";
+import { TsInspectError } from "../../error.ts";
+import { ensureDirectoryExists } from "./file-system.ts";
 
 /**
  * Represents an output file stream with its completion promise and metadata.

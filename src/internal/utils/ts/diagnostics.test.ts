@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 import ts from "typescript";
 import { formatDiagnostics } from "./diagnostics.ts";
 
-describe("core/ts/diagnostics", () => {
+describe("internal/utils/ts/diagnostics", () => {
 	describe("formatDiagnostics", () => {
 		it("formats empty diagnostics array", () => {
 			const result = formatDiagnostics([]);

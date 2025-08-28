@@ -4,7 +4,7 @@
 
 import { extname } from "node:path";
 import ts from "typescript";
-import { setHasValue } from "../core/ds.ts";
+import { setHasValue } from "../internal/utils/data-structure.ts";
 
 /**
  * Supported file types for TypeScript source inspection.

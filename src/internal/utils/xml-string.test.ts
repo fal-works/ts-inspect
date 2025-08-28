@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 import { describe, test } from "node:test";
 import { escapeXmlAttribute, escapeXmlText, objectToXmlAttributesString } from "./xml-string.ts";
 
-describe("core/xml-string", () => {
+describe("internal/utils/xml-string", () => {
 	describe("escapeXmlText", () => {
 		test("escapes XML special characters in text", () => {
 			assert.equal(escapeXmlText("Hello & <world>"), "Hello &amp; &lt;world&gt;");

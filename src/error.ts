@@ -3,7 +3,7 @@
  */
 
 import type ts from "typescript";
-import { formatDiagnostics } from "./core/ts/diagnostics.ts";
+import { formatDiagnostics } from "./internal/utils/ts/diagnostics.ts";
 
 /**
  * Error types using discriminated union with errorCode.

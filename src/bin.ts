@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import { parseArgs } from "node:util";
-import { executeWithFileOutput } from "./core/file-stream.ts";
 import {
 	type InspectOptions,
 	inspectProject,
@@ -10,6 +9,7 @@ import {
 	summaryReporter,
 	translateSeverityToExitCode,
 } from "./index.ts";
+import { executeWithFileOutput } from "./internal/utils/file-stream.ts";
 
 /**
  * Main CLI function without catching fatal errors.

@@ -1,9 +1,9 @@
 import assert from "node:assert";
 import { before, describe, it } from "node:test";
-import { prepareTestOutputDirectory } from "../../test/test-utils.ts";
-import { ensureDirectoryExists, fileExists, isDirectory } from "./files.ts";
+import { prepareTestOutputDirectory } from "../../../test/test-utils.ts";
+import { ensureDirectoryExists, fileExists, isDirectory } from "./file-system.ts";
 
-describe("core/files", () => {
+describe("internal/utils/file-system", () => {
 	before(async () => {
 		await prepareTestOutputDirectory("test-out/files");
 	});

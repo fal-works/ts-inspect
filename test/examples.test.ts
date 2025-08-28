@@ -6,7 +6,7 @@ import assert from "node:assert";
 import { readFile, unlink } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, it } from "node:test";
-import { fileExists } from "../src/core/files.ts";
+import { fileExists } from "../src/internal/utils/file-system.ts";
 import { executeNodeScript } from "./test-utils.ts";
 
 describe("examples", () => {
