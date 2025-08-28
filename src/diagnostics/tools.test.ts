@@ -6,12 +6,12 @@ import assert from "node:assert";
 import { describe, it } from "node:test";
 import {
 	type DiagnosticSeverity,
-	type Diagnostics,
 	getOverallWorstSeverity,
 	getWorstSeverity,
 	getWorstSeverityFromArray,
 	translateSeverityToExitCode,
 } from "./index.ts";
+import { createTestRichDiagnostics, createTestSimpleDiagnostics } from "./test-helpers.ts";
 
 describe("diagnostics/tools", () => {
 	describe("getWorstSeverityFromArray", () => {
@@ -86,45 +86,36 @@ describe("diagnostics/tools", () => {
 
 	describe("getWorstSeverity", () => {
 		it("returns null for empty diagnostics", () => {
-			const diagnostics: Diagnostics = {
-				type: "simple",
-				items: [],
-			};
+			const diagnostics = createTestSimpleDiagnostics({ message: "No issues found." }, []);
 			assert.strictEqual(getWorstSeverity(diagnostics), null);
 		});
 
 		it("returns worst severity from simple diagnostics", () => {
-			const diagnostics: Diagnostics = {
-				type: "simple",
-				items: [
-					{ type: "location", severity: "warning", file: "test.ts", location: { line: 1 } },
-					{ type: "location", severity: "error", file: "test.ts", location: { line: 2 } },
-					{ type: "location", severity: "info", file: "test.ts", location: { line: 3 } },
-				],
-			};
+			const diagnostics = createTestSimpleDiagnostics({ message: "Found mixed severity issues." }, [
+				{ type: "location", severity: "warning", file: "test.ts", location: { line: 1 } },
+				{ type: "location", severity: "error", file: "test.ts", location: { line: 2 } },
+				{ type: "location", severity: "info", file: "test.ts", location: { line: 3 } },
+			]);
 			assert.strictEqual(getWorstSeverity(diagnostics), "error");
 		});
 
 		it("returns worst severity from rich diagnostics", () => {
-			const diagnostics: Diagnostics = {
-				type: "rich",
-				items: [
-					{
-						type: "location",
-						severity: "info",
-						file: "test.ts",
-						location: { line: 1 },
-						message: "Info message",
-					},
-					{
-						type: "location",
-						severity: "warning",
-						file: "test.ts",
-						location: { line: 2 },
-						message: "Warning message",
-					},
-				],
-			};
+			const diagnostics = createTestRichDiagnostics([
+				{
+					type: "location",
+					severity: "info",
+					file: "test.ts",
+					location: { line: 1 },
+					details: { message: "Info message" },
+				},
+				{
+					type: "location",
+					severity: "warning",
+					file: "test.ts",
+					location: { line: 2 },
+					details: { message: "Warning message" },
+				},
+			]);
 			assert.strictEqual(getWorstSeverity(diagnostics), "warning");
 		});
 	});
@@ -137,43 +128,34 @@ describe("diagnostics/tools", () => {
 		it("returns worst severity across multiple inspector results", () => {
 			const results = [
 				{
-					diagnostics: {
-						type: "simple" as const,
-						items: [
-							{
-								type: "location" as const,
-								severity: "warning" as const,
-								file: "test.ts",
-								location: { line: 1 },
-							},
-						],
-					},
+					diagnostics: createTestSimpleDiagnostics({ message: "Found warning." }, [
+						{
+							type: "location" as const,
+							severity: "warning" as const,
+							file: "test.ts",
+							location: { line: 1 },
+						},
+					]),
 				},
 				{
-					diagnostics: {
-						type: "simple" as const,
-						items: [
-							{
-								type: "location" as const,
-								severity: "error" as const,
-								file: "test.ts",
-								location: { line: 2 },
-							},
-						],
-					},
+					diagnostics: createTestSimpleDiagnostics({ message: "Found error." }, [
+						{
+							type: "location" as const,
+							severity: "error" as const,
+							file: "test.ts",
+							location: { line: 2 },
+						},
+					]),
 				},
 				{
-					diagnostics: {
-						type: "simple" as const,
-						items: [
-							{
-								type: "location" as const,
-								severity: "info" as const,
-								file: "test.ts",
-								location: { line: 3 },
-							},
-						],
-					},
+					diagnostics: createTestSimpleDiagnostics({ message: "Found info." }, [
+						{
+							type: "location" as const,
+							severity: "info" as const,
+							file: "test.ts",
+							location: { line: 3 },
+						},
+					]),
 				},
 			];
 			assert.strictEqual(getOverallWorstSeverity(results), "error");
@@ -181,8 +163,8 @@ describe("diagnostics/tools", () => {
 
 		it("returns null when all results have empty diagnostics", () => {
 			const results = [
-				{ diagnostics: { type: "simple" as const, items: [] } },
-				{ diagnostics: { type: "simple" as const, items: [] } },
+				{ diagnostics: createTestSimpleDiagnostics({ message: "No issues." }, []) },
+				{ diagnostics: createTestSimpleDiagnostics({ message: "No issues." }, []) },
 			];
 			assert.strictEqual(getOverallWorstSeverity(results), null);
 		});

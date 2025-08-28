@@ -2,61 +2,107 @@
  * Results builder for collecting and structuring type assertion findings.
  */
 
-import type { LocationDiagnostic, SimpleDiagnostics } from "../../diagnostics/index.ts";
+import type { DiagnosticDetails, SimpleDiagnostics } from "../../diagnostics/index.ts";
+import {
+	code,
+	hint,
+	markup,
+	paragraph,
+	setCaption,
+	stepwiseInstructionList,
+	text,
+} from "../../diagnostics/markup/builders.ts";
 import type { InspectorResult, ResultsBuilder } from "../../inspector/index.ts";
 import { IGNORE_COMMENT } from "./constants.ts";
 import type { TypeAssertionFindings } from "./types.ts";
 
 /**
- * Generates a friendly message about type assertions.
+ * Generates markup instructions about type assertions.
  */
 const noTypeAssertionsFriendlyMessage = () =>
-	`Tip:
-Review these type assertions carefully. In most cases, type assertions (like \`as T\`) should be your last resort.
-- Prefer assignability over assertion:
-  If a value already matches a target type,
-  just declare it with that type or pass it to a function that accepts that type.
-- Avoid type assertions to work around design issues:
-  Needing assertions often means the types aren't aligned.
-  Consider redesigning the types or the data flow so the compiler can infer types safely.
-
-If you truly must keep it e.g. it is an isolated utility function
-or a third-party library integration, add a comment: /* ${IGNORE_COMMENT} */
-But be aware that this is an exceptional case.
-`.trim();
+	markup([
+		hint([text("Type assertions (like "), code("as T"), text(") should be your last resort.")]),
+		stepwiseInstructionList([
+			[
+				setCaption(
+					"Check assignability",
+					paragraph(
+						"If the value already satisfies the target type, just declare it with that type or pass it directly.",
+					),
+				),
+			],
+			[
+				setCaption(
+					"Resolve design issues",
+					paragraph(
+						[
+							"Needing assertions often means the types aren't aligned.",
+							"Consider redesigning the types or data flow so the compiler can infer types safely.",
+						].join("\n"),
+					),
+				),
+			],
+			[
+				setCaption(
+					"Allow explicit exceptions",
+					paragraph([
+						text(
+							[
+								"If you truly must keep it (e.g., for an isolated utility function or third-party integration),",
+								"and if it is explicitly permitted by the code maintainer,",
+								"then add the comment: ",
+							].join("\n"),
+						),
+						code(`/* ${IGNORE_COMMENT} */`),
+					]),
+				),
+			],
+			[
+				setCaption(
+					"Escalate if unresolved",
+					paragraph("If none of the above steps solve the issue, consult the code maintainer."),
+				),
+			],
+		]),
+	]);
 
 /**
  * Results builder for `TypeAssertionFindings`.
  */
 export const resultsBuilder: ResultsBuilder<TypeAssertionFindings> = (resultPerFile) => {
-	const diagnosticItems: LocationDiagnostic[] = [];
+	const perFile: SimpleDiagnostics["perFile"] = new Map();
+	let totalFindings = 0;
 
 	for (const r of resultPerFile) {
-		const file = r.srcFile.file.fileName;
-		for (const found of r.finalState) {
-			diagnosticItems.push({
-				type: "location",
-				severity: "error",
-				file,
-				location: found,
-			});
+		const findings = r.finalState;
+		if (findings.length > 0) {
+			const file = r.srcFile.file.fileName;
+			perFile.set(file, { locations: findings.map((found) => [found, { severity: "error" }]) });
+			totalFindings += findings.length;
 		}
 	}
 
+	const details: DiagnosticDetails =
+		totalFindings > 0
+			? {
+					message: "Found suspicious type assertions.",
+					instructions: noTypeAssertionsFriendlyMessage(),
+				}
+			: {
+					message: "No suspicious type assertions found.",
+					instructions: undefined,
+				};
+
 	const diagnostics: SimpleDiagnostics = {
 		type: "simple",
-		items: diagnosticItems,
+		details,
+		perFile,
 	};
 
 	const result: InspectorResult = {
 		inspectorName: "no-type-assertions",
 		diagnostics,
 	};
-
-	if (diagnosticItems.length > 0) {
-		result.message = "Found suspicious type assertions.";
-		result.advices = noTypeAssertionsFriendlyMessage();
-	}
 
 	return result;
 };

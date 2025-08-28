@@ -99,11 +99,13 @@ export function mockWritable(): MockWritableStream {
 			chunks.push(chunk.toString());
 			callback();
 		},
-	}) as MockWritableStream;
+	});
 
-	stream.getOutput = (): string => {
-		return chunks.join("");
-	};
+	const mockStream: MockWritableStream = Object.assign(stream, {
+		getOutput: (): string => {
+			return chunks.join("");
+		},
+	});
 
-	return stream;
+	return mockStream;
 }

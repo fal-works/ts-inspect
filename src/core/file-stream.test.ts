@@ -41,7 +41,7 @@ describe("core/file-stream", () => {
 
 		it("passes WriteStream to execution function", async () => {
 			const filePath = "test-out/file-stream/write-stream.txt";
-			let receivedStream: unknown;
+			let receivedStream: NodeJS.WritableStream | undefined;
 
 			await executeWithFileOutput(async (output) => {
 				receivedStream = output;
@@ -52,7 +52,7 @@ describe("core/file-stream", () => {
 			assert.strictEqual(typeof receivedStream, "object");
 			assert.strictEqual(receivedStream !== null, true);
 			// WriteStream should have write method
-			assert.strictEqual(typeof (receivedStream as any).write, "function");
+			assert.ok(receivedStream && typeof receivedStream.write === "function");
 		});
 
 		it("creates nested directories automatically", async () => {

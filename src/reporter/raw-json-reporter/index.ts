@@ -2,11 +2,14 @@
  * Raw JSON reporter that outputs inspection results as JSON without any conversion.
  */
 
-import type { Reporter } from "./reporter.ts";
+import type { Reporter } from "../reporter.ts";
+import { toSerializable } from "./serializer.ts";
 
 /**
  * Built-in reporter that outputs inspection results as JSON without any conversion.
  */
 export const rawJsonReporter: Reporter = (results, output) => {
-	output.write(JSON.stringify(results));
+	// Convert any Maps to objects for JSON serialization
+	const serializable = toSerializable(results);
+	output.write(JSON.stringify(serializable));
 };

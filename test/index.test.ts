@@ -6,6 +6,7 @@ import assert from "node:assert";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import { TsInspectError } from "../src/error.ts";
+import { mockWritable } from "./test-utils.ts";
 import {
 	inspectFiles,
 	inspectProject,
@@ -41,7 +42,7 @@ describe("index", () => {
 
 		it("wraps unexpected exceptions with TsInspectError", async () => {
 			// Test with a completely malformed inspector to trigger an error before inspection
-			const malformedInspector = null as any;
+			const malformedInspector: any = null;
 
 			await assert.rejects(
 				async () => {
@@ -93,14 +94,7 @@ describe("index", () => {
 			const filePaths = [join("test", "fixtures", "src", "sample.ts")];
 
 			// Create a mock writable stream to capture output
-			let capturedOutput = "";
-			const mockOutput = {
-				write: (chunk: string) => {
-					capturedOutput += chunk;
-					return true;
-				},
-				end: () => {},
-			} as any;
+			const mockOutput = mockWritable();
 
 			const result = await inspectFiles(filePaths, {
 				output: mockOutput,
@@ -108,7 +102,7 @@ describe("index", () => {
 
 			assert.ok(result === null || ["error", "warning", "info"].includes(result));
 			// Output should be captured in our mock stream instead of going to stdout
-			assert.ok(typeof capturedOutput === "string");
+			assert.ok(typeof mockOutput.getOutput() === "string");
 		});
 
 		it("uses custom output stream with custom reporter", async () => {
@@ -117,14 +111,7 @@ describe("index", () => {
 			];
 
 			// Create a mock writable stream to capture output
-			let capturedOutput = "";
-			const mockOutput = {
-				write: (chunk: string) => {
-					capturedOutput += chunk;
-					return true;
-				},
-				end: () => {},
-			} as any;
+			const mockOutput = mockWritable();
 
 			const customReporter: Reporter = (results, output) => {
 				output.write(`TEST: Found ${results.length} results\n`);
@@ -136,7 +123,7 @@ describe("index", () => {
 			});
 
 			assert.strictEqual(result, "error"); // Should find type assertions
-			assert.strictEqual(capturedOutput, "TEST: Found 1 results\n");
+			assert.strictEqual(mockOutput.getOutput(), "TEST: Found 1 results\n");
 		});
 	});
 

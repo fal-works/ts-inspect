@@ -14,6 +14,8 @@ describe("core/printer", () => {
 			assert.strictEqual(typeof printer.newLine, "function");
 			assert.strictEqual(typeof printer.group, "function");
 			assert.strictEqual(typeof printer.groupEnd, "function");
+			assert.strictEqual(typeof printer.indent, "function");
+			assert.strictEqual(typeof printer.dedent, "function");
 		});
 	});
 
@@ -256,6 +258,136 @@ describe("core/printer", () => {
 					printer.print("Final");
 				});
 				assert.strictEqual(output, "Content\nAfter\nFinal");
+			});
+		});
+
+		describe("indent", () => {
+			it("increases indentation for subsequent lines when called at line start", () => {
+				const output = captureOutput((printer) => {
+					printer.println("No indent");
+					printer.indent();
+					printer.println("Indented once");
+					printer.indent();
+					printer.println("Indented twice");
+				});
+				assert.strictEqual(output, "No indent\n  Indented once\n    Indented twice\n");
+			});
+
+			it("increases indentation for subsequent lines when called mid-line", () => {
+				const output = captureOutput((printer) => {
+					printer.print("Start");
+					printer.indent(); // Mid-line, affects only next lines
+					printer.print(" same line");
+					printer.newLine();
+					printer.println("Indented line");
+				});
+				assert.strictEqual(output, "Start same line\n  Indented line\n");
+			});
+
+			it("works with multiple calls on same line", () => {
+				const output = captureOutput((printer) => {
+					printer.print("Start");
+					printer.indent();
+					printer.indent();
+					printer.indent(); // Three indents mid-line
+					printer.newLine();
+					printer.print("Triple indented");
+				});
+				assert.strictEqual(output, "Start\n      Triple indented");
+			});
+
+			it("affects current line when at line start", () => {
+				const output = captureOutput((printer) => {
+					printer.newLine(); // Ensure we're at line start
+					printer.indent();
+					printer.print("Indented");
+				});
+				assert.strictEqual(output, "\n  Indented");
+			});
+		});
+
+		describe("dedent", () => {
+			it("decreases indentation for subsequent lines when called at line start", () => {
+				const output = captureOutput((printer) => {
+					printer.indent();
+					printer.indent();
+					printer.println("Double indented");
+					printer.dedent();
+					printer.println("Single indented");
+					printer.dedent();
+					printer.println("No indent");
+				});
+				assert.strictEqual(output, "    Double indented\n  Single indented\nNo indent\n");
+			});
+
+			it("decreases indentation for subsequent lines when called mid-line", () => {
+				const output = captureOutput((printer) => {
+					printer.indent();
+					printer.print("Indented start");
+					printer.dedent(); // Mid-line, affects only next lines
+					printer.print(" same line");
+					printer.newLine();
+					printer.print("No indent");
+				});
+				assert.strictEqual(output, "  Indented start same line\nNo indent");
+			});
+
+			it("prevents negative indentation", () => {
+				const output = captureOutput((printer) => {
+					printer.dedent(); // Should not cause negative indent
+					printer.dedent(); // Should not cause negative indent
+					printer.println("Normal text");
+					printer.indent();
+					printer.println("Indented");
+					printer.dedent();
+					printer.dedent(); // Extra dedent, should stop at 0
+					printer.println("Back to normal");
+				});
+				assert.strictEqual(output, "Normal text\n  Indented\nBack to normal\n");
+			});
+
+			it("respects initialIndentLevel as minimum", () => {
+				const outputFn = mockWritable();
+				const printer = createPrinter(outputFn, { indentUnit: "  ", initialIndentLevel: 2 });
+				printer.println("Initial level");
+				printer.dedent();
+				printer.dedent();
+				printer.dedent(); // Should not go below initial level
+				printer.println("Still at initial level");
+				const output = outputFn.getOutput();
+				assert.strictEqual(output, "    Initial level\n    Still at initial level\n");
+			});
+		});
+
+		describe("indent/dedent interaction with group", () => {
+			it("group uses indent internally", () => {
+				const output = captureOutput((printer) => {
+					printer.println("Start");
+					printer.group(); // Should call indent internally
+					printer.println("In group");
+					printer.dedent(); // Manually dedent
+					printer.println("Manually dedented");
+					printer.groupEnd(); // Should call dedent internally, back to original
+					printer.println("After group");
+				});
+				assert.strictEqual(output, "Start\n  In group\nManually dedented\nAfter group\n");
+			});
+
+			it("manual indent before group stacks with group indent", () => {
+				const output = captureOutput((printer) => {
+					printer.indent();
+					printer.println("Manually indented");
+					printer.group("Group:");
+					printer.println("In group");
+					printer.groupEnd();
+					printer.println("Still manually indented");
+					printer.dedent();
+					printer.println("Back to normal");
+				});
+				assert.strictEqual(
+					output,
+					"  Manually indented\n  Group:\n    In group\n  Still manually indented\nBack to normal\n",
+				);
 			});
 		});
 	});

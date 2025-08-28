@@ -1,8 +1,9 @@
 import {
 	type CodeLocation,
+	type DiagnosticDetails,
 	type Inspector,
 	inspectProject,
-	type LocationDiagnostic,
+	type SimpleDiagnostics,
 	translateSeverityToExitCode,
 } from "@fal-works/ts-inspect";
 import ts from "typescript";
@@ -26,29 +27,39 @@ function createConsoleLogInspector(): Inspector<CodeLocation[]> {
 			return undefined; // unchanged
 		},
 		resultsBuilder: (perFile) => {
-			const items: LocationDiagnostic[] = [];
-			let total = 0;
+			const perFileMap: SimpleDiagnostics["perFile"] = new Map();
+			let totalFindings = 0;
 
-			for (const { srcFile, finalState } of perFile) {
-				if (finalState && finalState.length > 0) {
-					total += finalState.length;
-					for (const finding of finalState) {
-						items.push({
-							type: "location",
-							severity: "error",
-							file: srcFile.file.fileName,
-							location: finding,
-						});
-					}
+			for (const r of perFile) {
+				const findings = r.finalState;
+				if (findings.length > 0) {
+					const file = r.srcFile.file.fileName;
+					perFileMap.set(file, {
+						locations: findings.map((found) => [found, { severity: "error" }]),
+					});
+					totalFindings += findings.length;
 				}
 			}
 
+			const details: DiagnosticDetails =
+				totalFindings > 0
+					? {
+							message: `Found ${totalFindings} console.log calls.`,
+							instructions: "Consider using a proper logging library instead of console.log",
+						}
+					: {
+							message: "No console.log calls found.",
+						};
+
+			const diagnostics: SimpleDiagnostics = {
+				type: "simple",
+				details,
+				perFile: perFileMap,
+			};
+
 			return {
 				inspectorName: "console-log-inspector",
-				message: total > 0 ? `Found ${total} console.log calls` : undefined,
-				diagnostics: { type: "simple", items },
-				advices:
-					total > 0 ? "Consider using a proper logging library instead of console.log" : undefined,
+				diagnostics,
 			};
 		},
 	};

@@ -116,8 +116,8 @@ describe("bin", () => {
 				assert.ok("code" in error);
 				assert.ok(error.code === 1, `Expected exit code 1 but got ${error.code}`);
 				// Should still be valid JSON even with errors
-				if ("stdout" in error) {
-					JSON.parse(error.stdout as string);
+				if ("stdout" in error && typeof error.stdout === "string") {
+					JSON.parse(error.stdout);
 				}
 			}
 		});
@@ -217,7 +217,7 @@ describe("bin", () => {
 				assert.ok("code" in error);
 				assert.strictEqual(error.code, 2);
 				assert.ok("stderr" in error);
-				assert.ok((error.stderr as string).includes("Unknown reporter"));
+				assert.ok(typeof error.stderr === "string" && error.stderr.includes("Unknown reporter"));
 			}
 		});
 	});

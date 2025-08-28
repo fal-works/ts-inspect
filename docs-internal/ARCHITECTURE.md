@@ -8,7 +8,8 @@ making it efficient to run many specialized checks without N× performance costs
 
 ## Module Responsibility Boundaries
 
-- **`inspector/`**: Central framework - abstraction of pluggable inspectors, diagnostic types, and execution engine
+- **`inspector/`**: Central framework - abstraction of pluggable inspectors and execution engine
+- **`diagnostics/`**: Diagnostic types and severity handling utilities
 - **`reporter/`**: Output formatting and presentation layer (console, JSON, etc.)
 - **`source-file/`**: TypeScript Compiler API abstraction layer for source file parsing
 - **`tsconfig/`**: tsconfig resolution and parsing
@@ -22,17 +23,23 @@ making it efficient to run many specialized checks without N× performance costs
 2. **Concurrent Parsing**: Source files parsed to TypeScript AST in parallel (non-blocking)
 3. **Per-File Inspection**: Single AST traversal executes all inspectors per file, each inspector accumulating its own state
 4. **Per-Inspector Aggregation**: Each inspector's `ResultsBuilder` independently processes accumulated state of all files into structured diagnostic data
-5. **Reporting**: Reporter functions format the diagnostic results for output (console, JSON, etc.)
-6. **Exit Code Determination**: Final exit code determined by worst severity among all diagnostic results
+5. **Reporting**: Reporter functions format the diagnostic results for output
+6. **Exit Code Determination**: Final exit code determined by worst severity among all findings
 
 ## Diagnostic System
 
-The framework uses a structured diagnostic system with several main types, such as:
+The framework uses a structured diagnostic system. There are two diagnostic patterns:
 
-- **`LocationDiagnostic`**: File + line + snippet (inspector provides global message/advice)
-- **`ModuleDiagnostic`**: File-level issues without specific line numbers
-- **`ProjectDiagnostic`**: Project-wide issues (architecture, dependencies, etc.)
+### SimpleDiagnostics
 
-Each diagnostic has a severity (`error`, `warning`, `info`) that determines the final exit code:
-- `error` diagnostics → exit code 1
-- `warning`/`info` diagnostics → exit code 0
+The most common pattern, used when an inspector has a single message that applies to all findings.
+Findings are organized by file, where each file contains an array of location-specific findings.
+
+### RichDiagnostics
+
+Used for complex analysis where each finding needs its own specific message.
+This pattern supports three scopes of findings:
+
+- **Project-level**: Issues that affect the entire codebase (architecture, dependencies, etc.)
+- **File-level**: Issues that apply to an entire file (missing exports, file structure, etc.)  
+- **Location-specific**: Issues tied to specific code locations (like most linting rules)
