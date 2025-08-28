@@ -1,8 +1,8 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
 import { mockWritable } from "../../../test/test-utils.ts";
-import { createPrinter } from "../../core/printer.ts";
 import type { RichDiagnostics, SimpleDiagnostics } from "../../diagnostics/index.ts";
+import { createPrinter } from "../../printer/printer.ts";
 import { printRichDiagnostics, printSimpleDiagnostics } from "./diagnostics-printer.ts";
 
 describe("reporter/summary-reporter/diagnostics-printer", () => {

@@ -2,12 +2,12 @@
  * List printing functions for markup elements.
  */
 
-import type { Printer } from "../../../core/printer.ts";
 import type {
 	MarkupBulletListElement,
 	MarkupGeneralElementContent,
 	MarkupOrderedListElement,
 } from "../../../diagnostics/markup/types.ts";
+import type { Printer } from "../../../printer/printer.ts";
 import type { PrintContext } from "./spacing.ts";
 import { hasNonTextElements, intentionToString } from "./utils.ts";
 

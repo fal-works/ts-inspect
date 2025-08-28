@@ -2,8 +2,8 @@
  * Internal functions for collecting and structuring diagnostic items.
  */
 
-import type { Printer } from "../../core/printer.ts";
 import type { CodeLocation, DetailedFinding, RichDiagnostics } from "../../diagnostics/index.ts";
+import type { Printer } from "../../printer/printer.ts";
 import {
 	printFileFinding,
 	printProjectFinding,

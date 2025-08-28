@@ -5,8 +5,8 @@
 import { strictEqual } from "node:assert";
 import { describe, it } from "node:test";
 import { mockWritable } from "../../../../test/test-utils.ts";
-import { createPrinter } from "../../../core/printer.ts";
 import { code, strong, text } from "../../../diagnostics/markup/builders.ts";
+import { createPrinter } from "../../../printer/printer.ts";
 import { printTextElement } from "./element-printer.ts";
 
 describe("reporter/summary-reporter/markup-printer/element-printer", () => {

@@ -2,8 +2,8 @@
  * Functions for printing diagnostics.
  */
 
-import type { Printer } from "../../core/printer.ts";
 import type { RichDiagnostics, SimpleDiagnostics } from "../../diagnostics/index.ts";
+import type { Printer } from "../../printer/printer.ts";
 import { collectRichDiagnosticItems, printRichDiagnosticItems } from "./diagnostic-items.ts";
 import { printLocationFinding } from "./finding-printer.ts";
 

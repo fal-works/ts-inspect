@@ -2,8 +2,8 @@
  * Console-specific markup rendering using Printer infrastructure.
  */
 
-import type { Printer } from "../../../core/printer.ts";
 import type { MarkupRootElement } from "../../../diagnostics/markup/types.ts";
+import type { Printer } from "../../../printer/printer.ts";
 import { printMarkupChildren } from "./element-printer.ts";
 
 /**

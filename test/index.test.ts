@@ -6,7 +6,6 @@ import assert from "node:assert";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import { TsInspectError } from "../src/error.ts";
-import { mockWritable } from "./test-utils.ts";
 import {
 	inspectFiles,
 	inspectProject,
@@ -14,6 +13,7 @@ import {
 	rawJsonReporter,
 	summaryReporter,
 } from "../src/index.ts";
+import { mockWritable } from "./test-utils.ts";
 
 describe("index", () => {
 	describe("inspectFiles", () => {

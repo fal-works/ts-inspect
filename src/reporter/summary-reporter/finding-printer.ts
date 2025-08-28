@@ -2,9 +2,9 @@
  * Low-level diagnostic type printing functions.
  */
 
-import type { Printer } from "../../core/printer.ts";
 import type { CodeLocation, DetailedFinding, DiagnosticSeverity } from "../../diagnostics/index.ts";
 import type { MarkupRootElement } from "../../diagnostics/markup/types.ts";
+import type { Printer } from "../../printer/printer.ts";
 import { formatCodeSnippet } from "./formatter.ts";
 import { printMarkup } from "./markup-printer/index.ts";
 

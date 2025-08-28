@@ -2,8 +2,8 @@
  * Element printing logic for markup elements.
  */
 
-import type { Printer } from "../../../core/printer.ts";
 import type { MarkupGeneralElementContent } from "../../../diagnostics/markup/types.ts";
+import type { Printer } from "../../../printer/printer.ts";
 import { printBulletList, printOrderedList } from "./list-printer.ts";
 import { printParagraph } from "./paragraph-printer.ts";
 import { type PrintContext, shouldAddEmptyLineBefore } from "./spacing.ts";

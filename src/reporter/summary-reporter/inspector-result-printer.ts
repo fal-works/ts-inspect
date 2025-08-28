@@ -2,8 +2,8 @@
  * Printing function for inspector result.
  */
 
-import type { Printer } from "../../core/printer.ts";
 import type { InspectorResult } from "../../inspector/index.ts";
+import type { Printer } from "../../printer/printer.ts";
 import { printRichDiagnostics, printSimpleDiagnostics } from "./diagnostics-printer.ts";
 import { printMarkup } from "./markup-printer/index.ts";
 

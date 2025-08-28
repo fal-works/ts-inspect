@@ -5,9 +5,9 @@
 import { strictEqual } from "node:assert";
 import { describe, it } from "node:test";
 import { mockWritable } from "../../../../test/test-utils.ts";
-import { createPrinter } from "../../../core/printer.ts";
 import { paragraph, text } from "../../../diagnostics/markup/builders.ts";
 import type { MarkupGeneralElementContent } from "../../../diagnostics/markup/types.ts";
+import { createPrinter } from "../../../printer/printer.ts";
 import { printParagraph, printParagraphContent } from "./paragraph-printer.ts";
 import type { PrintContext } from "./spacing.ts";
 

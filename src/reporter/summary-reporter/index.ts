@@ -2,8 +2,8 @@
  * Summary reporter that formats inspection results for human-readable console output.
  */
 
-import { createPrinter } from "../../core/printer.ts";
 import { getWorstSeverity } from "../../diagnostics/index.ts";
+import { createPrinter } from "../../printer/printer.ts";
 import type { Reporter } from "../reporter.ts";
 import { printInspectorResult } from "./inspector-result-printer.ts";
 

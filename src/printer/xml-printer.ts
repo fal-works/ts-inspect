@@ -3,12 +3,12 @@
  */
 
 import type { Writable } from "node:stream";
+import { objectToXmlAttributesString } from "../core/xml-string.ts";
 import {
 	createPrinter as createBasePrinter,
 	type Printer,
 	type PrinterOptions,
 } from "./printer.ts";
-import { objectToXmlAttributesString } from "./xml-string.ts";
 
 /**
  * XML printer interface that extends the base printer with XML-specific methods.
