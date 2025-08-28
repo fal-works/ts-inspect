@@ -7,7 +7,7 @@ import type {
 	MarkupGeneralElementContent,
 	MarkupOrderedListElement,
 } from "../../../diagnostics/markup/types.ts";
-import type { Printer } from "../../../printer/printer.ts";
+import type { Printer } from "../../../reporter/index.ts";
 import type { PrintContext } from "./spacing.ts";
 import { hasNonTextElements, intentionToString } from "./utils.ts";
 

@@ -4,11 +4,11 @@
 
 import assert from "node:assert/strict";
 import { describe, it, test } from "node:test";
-import { mockWritable } from "../../test/test-utils.ts";
+import { mockWritable } from "../../../test/test-utils.ts";
 import type { PrinterOptions } from "./printer.ts";
 import { createXmlPrinter } from "./xml-printer.ts";
 
-describe("printer/xml-printer", () => {
+describe("reporter/printer/xml-printer", () => {
 	describe("createXmlPrinter", () => {
 		test("returns XmlPrinter with all required methods", () => {
 			const stream = mockWritable();

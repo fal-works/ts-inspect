@@ -3,7 +3,7 @@
  */
 
 import type { MarkupGeneralElementContent } from "../../../diagnostics/markup/types.ts";
-import type { Printer } from "../../../printer/printer.ts";
+import type { Printer } from "../../../reporter/index.ts";
 import { printBulletList, printOrderedList } from "./list-printer.ts";
 import { printParagraph } from "./paragraph-printer.ts";
 import { type PrintContext, shouldAddEmptyLineBefore } from "./spacing.ts";

@@ -3,7 +3,7 @@
  */
 
 import type { InspectorResult } from "../../inspector/index.ts";
-import type { Printer } from "../../printer/printer.ts";
+import type { Printer } from "../../reporter/index.ts";
 import { printRichDiagnostics, printSimpleDiagnostics } from "./diagnostics-printer.ts";
 import { printMarkup } from "./markup-printer/index.ts";
 

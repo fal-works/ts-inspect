@@ -6,7 +6,7 @@ import { strictEqual } from "node:assert";
 import { describe, it } from "node:test";
 import { mockWritable } from "../../../../test/test-utils.ts";
 import { code, strong, text } from "../../../diagnostics/markup/builders.ts";
-import { createPrinter } from "../../../printer/printer.ts";
+import { createPrinter } from "../../../reporter/index.ts";
 import { printTextElement } from "./element-printer.ts";
 
 describe("builtin-reporters/summary/markup-printer/element-printer", () => {

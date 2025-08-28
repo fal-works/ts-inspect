@@ -1,9 +1,9 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { mockWritable } from "../../test/test-utils.ts";
+import { mockWritable } from "../../../test/test-utils.ts";
 import { createPrinter, type PrinterOptions } from "./printer.ts";
 
-describe("printer/printer", () => {
+describe("reporter/printer/printer", () => {
 	describe("createPrinter", () => {
 		it("returns Printer with all required methods", () => {
 			const printer = createPrinter(process.stdout);

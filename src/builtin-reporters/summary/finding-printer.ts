@@ -4,7 +4,7 @@
 
 import type { CodeLocation, DetailedFinding, DiagnosticSeverity } from "../../diagnostics/index.ts";
 import type { MarkupRootElement } from "../../diagnostics/markup/types.ts";
-import type { Printer } from "../../printer/printer.ts";
+import type { Printer } from "../../reporter/index.ts";
 import { formatCodeSnippet } from "./formatter.ts";
 import { printMarkup } from "./markup-printer/index.ts";
 

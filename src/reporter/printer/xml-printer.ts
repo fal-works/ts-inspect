@@ -3,7 +3,7 @@
  */
 
 import type { Writable } from "node:stream";
-import { objectToXmlAttributesString } from "../internal/utils/xml-string.ts";
+import { objectToXmlAttributesString } from "../../internal/utils/xml-string.ts";
 import {
 	createPrinter as createBasePrinter,
 	type Printer,

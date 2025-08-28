@@ -3,7 +3,7 @@
  */
 
 import type { RichDiagnostics, SimpleDiagnostics } from "../../diagnostics/index.ts";
-import type { Printer } from "../../printer/printer.ts";
+import type { Printer } from "../../reporter/index.ts";
 import { collectRichDiagnosticItems, printRichDiagnosticItems } from "./diagnostic-items.ts";
 import { printLocationFinding } from "./finding-printer.ts";
 

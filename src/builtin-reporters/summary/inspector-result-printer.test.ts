@@ -3,7 +3,7 @@ import { describe, it } from "node:test";
 import { mockWritable } from "../../../test/test-utils.ts";
 import { createTestRichDiagnostics, createTestSimpleDiagnostics } from "../../diagnostics/index.ts";
 import type { InspectorResult } from "../../inspector/index.ts";
-import { createPrinter } from "../../printer/printer.ts";
+import { createPrinter } from "../../reporter/index.ts";
 import { printInspectorResult } from "./inspector-result-printer.ts";
 
 describe("builtin-reporters/summary/inspector-result-printer", () => {

@@ -18,7 +18,7 @@ import {
 	strong,
 	text,
 } from "../../../diagnostics/markup/builders.ts";
-import { createPrinter } from "../../../printer/printer.ts";
+import { createPrinter } from "../../../reporter/index.ts";
 import { printMarkup } from "./index.ts";
 
 describe("builtin-reporters/summary/markup-printer", () => {

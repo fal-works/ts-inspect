@@ -3,7 +3,7 @@
  */
 
 import type { CodeLocation, DetailedFinding, RichDiagnostics } from "../../diagnostics/index.ts";
-import type { Printer } from "../../printer/printer.ts";
+import type { Printer } from "../../reporter/index.ts";
 import {
 	printFileFinding,
 	printProjectFinding,

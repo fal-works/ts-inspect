@@ -6,7 +6,7 @@ import type {
 	MarkupGeneralElementContent,
 	MarkupParagraphElement,
 } from "../../../diagnostics/markup/types.ts";
-import type { Printer } from "../../../printer/printer.ts";
+import type { Printer } from "../../../reporter/index.ts";
 import type { PrintContext } from "./spacing.ts";
 import { intentionToString } from "./utils.ts";
 

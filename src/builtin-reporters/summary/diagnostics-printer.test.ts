@@ -2,7 +2,7 @@ import assert from "node:assert";
 import { describe, it } from "node:test";
 import { mockWritable } from "../../../test/test-utils.ts";
 import type { RichDiagnostics, SimpleDiagnostics } from "../../diagnostics/index.ts";
-import { createPrinter } from "../../printer/printer.ts";
+import { createPrinter } from "../../reporter/index.ts";
 import { printRichDiagnostics, printSimpleDiagnostics } from "./diagnostics-printer.ts";
 
 describe("builtin-reporters/summary/diagnostics-printer", () => {

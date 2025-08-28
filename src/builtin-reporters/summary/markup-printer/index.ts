@@ -3,7 +3,7 @@
  */
 
 import type { MarkupRootElement } from "../../../diagnostics/markup/types.ts";
-import type { Printer } from "../../../printer/printer.ts";
+import type { Printer } from "../../../reporter/index.ts";
 import { printMarkupChildren } from "./element-printer.ts";
 
 /**

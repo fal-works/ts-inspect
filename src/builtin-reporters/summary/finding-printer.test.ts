@@ -2,7 +2,7 @@ import assert from "node:assert";
 import { describe, it } from "node:test";
 import { mockWritable } from "../../../test/test-utils.ts";
 import type { DetailedFinding } from "../../diagnostics/finding-types.ts";
-import { createPrinter } from "../../printer/printer.ts";
+import { createPrinter } from "../../reporter/index.ts";
 import {
 	printFileFinding,
 	printLocationFinding,

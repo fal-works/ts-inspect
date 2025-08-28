@@ -7,7 +7,7 @@ import { describe, it } from "node:test";
 import { mockWritable } from "../../../../test/test-utils.ts";
 import { bulletList, listItem, orderedList, text } from "../../../diagnostics/markup/builders.ts";
 import type { MarkupGeneralElementContent } from "../../../diagnostics/markup/types.ts";
-import { createPrinter } from "../../../printer/printer.ts";
+import { createPrinter } from "../../../reporter/index.ts";
 import {
 	printBulletList,
 	printListItem,
