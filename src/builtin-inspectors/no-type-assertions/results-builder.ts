@@ -35,7 +35,10 @@ const noTypeAssertionsFriendlyMessage = () =>
 				setCaption(
 					"Resolve design issues",
 					paragraph(
-						"Needing assertions often means the types aren't aligned. Consider redesigning the types or data flow so the compiler can infer types safely.",
+						[
+							"Needing assertions often means the types aren't aligned.",
+							"Consider redesigning the types or data flow so the compiler can infer types safely.",
+						].join("\n"),
 					),
 				),
 			],
@@ -44,7 +47,11 @@ const noTypeAssertionsFriendlyMessage = () =>
 					"Allow explicit exceptions",
 					paragraph([
 						text(
-							"If you truly must keep it (e.g., for an isolated utility function or third-party integration), and if it is explicitly permitted by the code maintainer, then add the comment: ",
+							[
+								"If you truly must keep it (e.g., for an isolated utility function or third-party integration),",
+								"and if it is explicitly permitted by the code maintainer,",
+								"then add the comment: ",
+							].join("\n"),
 						),
 						code(`/* ${IGNORE_COMMENT} */`),
 					]),
