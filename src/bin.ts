@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
 import { parseArgs } from "node:util";
+import { rawJsonReporter, summaryReporter } from "./builtin-reporters/index.ts";
 import {
 	type InspectOptions,
 	inspectProject,
 	type Reporter,
-	rawJsonReporter,
-	summaryReporter,
 	translateSeverityToExitCode,
 } from "./index.ts";
 import { executeWithFileOutput } from "./internal/utils/file-stream.ts";

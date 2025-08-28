@@ -11,7 +11,7 @@ import { createPrinter } from "../../../printer/printer.ts";
 import { printParagraph, printParagraphContent } from "./paragraph-printer.ts";
 import type { PrintContext } from "./spacing.ts";
 
-describe("reporter/summary-reporter/markup-printer/paragraph-printer", () => {
+describe("builtin-reporters/summary/markup-printer/paragraph-printer", () => {
 	const mockPrintChildren = (
 		children: MarkupGeneralElementContent[],
 		printer: any,

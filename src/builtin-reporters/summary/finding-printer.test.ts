@@ -10,7 +10,7 @@ import {
 	printRichLocationFinding,
 } from "./finding-printer.ts";
 
-describe("reporter/summary-reporter/finding-printer", () => {
+describe("builtin-reporters/summary/finding-printer", () => {
 	describe("printLocationFinding", () => {
 		it("prints location finding without snippet", () => {
 			const output = mockWritable();

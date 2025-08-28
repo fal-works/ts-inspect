@@ -13,7 +13,7 @@ import {
 } from "../../../diagnostics/markup/builders.ts";
 import { hasNonTextElements, intentionToString } from "./utils.ts";
 
-describe("reporter/summary-reporter/markup-printer/utils", () => {
+describe("builtin-reporters/summary/markup-printer/utils", () => {
 	describe("intentionToString", () => {
 		it("converts single word to title case", () => {
 			strictEqual(intentionToString("hint"), "Hint");

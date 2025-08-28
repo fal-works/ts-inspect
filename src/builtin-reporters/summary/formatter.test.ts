@@ -2,7 +2,7 @@ import assert from "node:assert";
 import { describe, it } from "node:test";
 import { formatCodeSnippet } from "./formatter.ts";
 
-describe("reporter/summary-reporter/formatter", () => {
+describe("builtin-reporters/summary/formatter", () => {
 	describe("formatCodeSnippet", () => {
 		it("returns single-line snippets unchanged", () => {
 			assert.strictEqual(formatCodeSnippet("value as any"), "value as any");

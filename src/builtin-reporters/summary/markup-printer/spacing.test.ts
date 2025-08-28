@@ -7,7 +7,7 @@ import { describe, it } from "node:test";
 import { bulletList, listItem, paragraph, text } from "../../../diagnostics/markup/builders.ts";
 import { type PrintContext, shouldAddEmptyLineBefore } from "./spacing.ts";
 
-describe("reporter/summary-reporter/markup-printer/spacing", () => {
+describe("builtin-reporters/summary/markup-printer/spacing", () => {
 	describe("shouldAddEmptyLineBefore", () => {
 		it("returns false for text elements", () => {
 			const element = text("Hello");

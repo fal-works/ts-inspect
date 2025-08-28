@@ -2,7 +2,7 @@
  * Raw JSON reporter that outputs inspection results as JSON without any conversion.
  */
 
-import type { Reporter } from "../reporter.ts";
+import type { Reporter } from "../../reporter/reporter.ts";
 import { toSerializable } from "./serializer.ts";
 
 /**

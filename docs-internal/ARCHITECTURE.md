@@ -14,6 +14,7 @@ making it efficient to run many specialized checks without N× performance costs
 - **`source-file/`**: TypeScript Compiler API abstraction layer for source file parsing
 - **`tsconfig/`**: tsconfig resolution and parsing
 - **`builtin-inspectors/`**: Concrete inspector implementations
+- **`builtin-reporters/`**: Built-in reporter implementations
 - **`internal/utils/`**: Shared utilities and types (should not depend on any other modules in this project)
 - **Entry points**: `index.ts` (API) and `bin.ts` (CLI) - thin orchestration layer
 

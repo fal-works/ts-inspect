@@ -21,7 +21,7 @@ import {
 import { createPrinter } from "../../../printer/printer.ts";
 import { printMarkup } from "./index.ts";
 
-describe("reporter/summary-reporter/markup-printer", () => {
+describe("builtin-reporters/summary/markup-printer", () => {
 	describe("printMarkup", () => {
 		it("prints simple text paragraph", () => {
 			const output = mockWritable();

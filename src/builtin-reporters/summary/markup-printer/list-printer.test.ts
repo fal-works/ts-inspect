@@ -16,7 +16,7 @@ import {
 } from "./list-printer.ts";
 import type { PrintContext } from "./spacing.ts";
 
-describe("reporter/summary-reporter/markup-printer/list-printer", () => {
+describe("builtin-reporters/summary/markup-printer/list-printer", () => {
 	const mockPrintChildren = (
 		children: MarkupGeneralElementContent[],
 		printer: any,

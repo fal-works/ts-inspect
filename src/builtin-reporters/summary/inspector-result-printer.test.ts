@@ -6,7 +6,7 @@ import type { InspectorResult } from "../../inspector/index.ts";
 import { createPrinter } from "../../printer/printer.ts";
 import { printInspectorResult } from "./inspector-result-printer.ts";
 
-describe("reporter/summary-reporter/inspector-result-printer", () => {
+describe("builtin-reporters/summary/inspector-result-printer", () => {
 	describe("printInspectorResult", () => {
 		it("prints inspector result even without findings (since filtering happens upstream)", () => {
 			const output = mockWritable();

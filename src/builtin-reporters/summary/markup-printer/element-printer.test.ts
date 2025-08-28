@@ -9,7 +9,7 @@ import { code, strong, text } from "../../../diagnostics/markup/builders.ts";
 import { createPrinter } from "../../../printer/printer.ts";
 import { printTextElement } from "./element-printer.ts";
 
-describe("reporter/summary-reporter/markup-printer/element-printer", () => {
+describe("builtin-reporters/summary/markup-printer/element-printer", () => {
 	describe("printTextElement", () => {
 		it("prints text content directly", () => {
 			const output = mockWritable();

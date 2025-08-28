@@ -5,7 +5,7 @@ import type { RichDiagnostics, SimpleDiagnostics } from "../../diagnostics/index
 import { createPrinter } from "../../printer/printer.ts";
 import { printRichDiagnostics, printSimpleDiagnostics } from "./diagnostics-printer.ts";
 
-describe("reporter/summary-reporter/diagnostics-printer", () => {
+describe("builtin-reporters/summary/diagnostics-printer", () => {
 	describe("printSimpleDiagnostics", () => {
 		it("prints simple diagnostics correctly", () => {
 			const output = mockWritable();

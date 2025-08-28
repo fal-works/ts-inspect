@@ -4,10 +4,11 @@
 
 import type { Writable } from "node:stream";
 import { createDefaultInspectors } from "./builtin-inspectors/index.ts";
+import { summaryReporter } from "./builtin-reporters/index.ts";
 import { type DiagnosticSeverity, getOverallWorstSeverity } from "./diagnostics/index.ts";
 import { type TsInspectError, wrapUnexpectedExceptionsAsync } from "./error.ts";
 import { type Inspector, runInspectors } from "./inspector/index.ts";
-import { type Reporter, summaryReporter } from "./reporter/index.ts";
+import type { Reporter } from "./reporter/index.ts";
 import {
 	inferParseSourceFilesOptions,
 	type ParseSourceFilesOptions,
@@ -92,6 +93,7 @@ export const inspectFiles = wrapUnexpectedExceptionsAsync(inspectFilesInternal);
 export const inspectProject = wrapUnexpectedExceptionsAsync(inspectProjectInternal);
 
 export { createAsAssertionInspector } from "./builtin-inspectors/index.ts";
+export { rawJsonReporter, summaryReporter } from "./builtin-reporters/index.ts";
 export type {
 	CodeLocation,
 	DetailedFinding,
@@ -115,5 +117,5 @@ export type {
 } from "./inspector/index.ts";
 export { createPrinter, type Printer, type PrinterOptions } from "./printer/printer.ts";
 export { createXmlPrinter, type XmlPrinter } from "./printer/xml-printer.ts";
-export { type Reporter, rawJsonReporter, summaryReporter } from "./reporter/index.ts";
+export type { Reporter } from "./reporter/index.ts";
 export type { TsInspectError };

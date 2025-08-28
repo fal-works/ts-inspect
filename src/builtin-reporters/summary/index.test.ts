@@ -5,7 +5,7 @@ import { createTestRichDiagnostics, createTestSimpleDiagnostics } from "../../di
 import type { InspectorResult } from "../../inspector/index.ts";
 import { summaryReporter } from "./index.ts";
 
-describe("reporter/summary-reporter/index", () => {
+describe("builtin-reporters/summary/index", () => {
 	describe("summaryReporter", () => {
 		it("handles empty results array", () => {
 			const output = mockWritable();

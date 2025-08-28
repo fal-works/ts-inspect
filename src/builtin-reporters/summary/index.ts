@@ -4,7 +4,7 @@
 
 import { getWorstSeverity } from "../../diagnostics/index.ts";
 import { createPrinter } from "../../printer/printer.ts";
-import type { Reporter } from "../reporter.ts";
+import type { Reporter } from "../../reporter/reporter.ts";
 import { printInspectorResult } from "./inspector-result-printer.ts";
 
 /**

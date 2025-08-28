@@ -5,7 +5,7 @@ import type { RichDiagnostics } from "../../diagnostics/index.ts";
 import { createPrinter } from "../../printer/printer.ts";
 import { collectRichDiagnosticItems, printRichDiagnosticItems } from "./diagnostic-items.ts";
 
-describe("reporter/summary-reporter/diagnostic-items", () => {
+describe("builtin-reporters/summary/diagnostic-items", () => {
 	describe("collectRichDiagnosticItems", () => {
 		it("collects items from empty rich diagnostics", () => {
 			const diagnostics: RichDiagnostics = {

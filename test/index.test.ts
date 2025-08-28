@@ -5,14 +5,9 @@
 import assert from "node:assert";
 import { join } from "node:path";
 import { describe, it } from "node:test";
+import { rawJsonReporter, summaryReporter } from "../src/builtin-reporters/index.ts";
 import { TsInspectError } from "../src/error.ts";
-import {
-	inspectFiles,
-	inspectProject,
-	type Reporter,
-	rawJsonReporter,
-	summaryReporter,
-} from "../src/index.ts";
+import { inspectFiles, inspectProject, type Reporter } from "../src/index.ts";
 import { mockWritable } from "./test-utils.ts";
 
 describe("index", () => {
