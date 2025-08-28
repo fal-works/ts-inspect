@@ -106,7 +106,7 @@ export type {
 	SimpleDiagnostics,
 	SimpleDiagnosticsFileScope,
 } from "./diagnostics/index.ts";
-export { translateSeverityToExitCode } from "./diagnostics/index.ts";
+export { markup, translateSeverityToExitCode } from "./diagnostics/index.ts";
 export type {
 	FileInspectionResult,
 	Inspector,
