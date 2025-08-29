@@ -5,7 +5,7 @@
 import assert from "node:assert";
 import { join } from "node:path";
 import { describe, it } from "node:test";
-import { TsInspectError } from "../src/error.ts";
+import { TsInspectError } from "../src/error/index.ts";
 import { inspectFiles, inspectProject } from "../src/index.ts";
 import {
 	createRawJsonReporter,

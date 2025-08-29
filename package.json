@@ -11,6 +11,10 @@
 			"import": "./dist/index.js",
 			"types": "./dist/index.d.ts"
 		},
+		"./error": {
+			"import": "./dist/error/index.js",
+			"types": "./dist/error/index.d.ts"
+		},
 		"./diagnostics": {
 			"import": "./dist/diagnostics/index.js",
 			"types": "./dist/diagnostics/index.d.ts"

@@ -3,11 +3,11 @@
  */
 
 import { type DiagnosticSeverity, getOverallWorstSeverity } from "../../diagnostics/index.ts";
-import { wrapUnexpectedExceptionsAsync } from "../../error.ts";
 import { runInspectors } from "../../inspector/index.ts";
 import { parseSourceFiles } from "../../source-file/index.ts";
 import { createDefaultInspectors } from "../builtin-inspectors/index.ts";
 import { createSummaryReporter } from "../builtin-reporters/index.ts";
+import { wrapUnexpectedExceptionsAsync } from "./exception-handling.ts";
 import { type InspectOptions, inferOptionsFromProject } from "./options.ts";
 
 /**

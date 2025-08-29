@@ -154,6 +154,7 @@ This pattern supports three scopes of findings:
 
 ```ts
 import { inspectProject, translateSeverityToExitCode } from "@fal-works/ts-inspect";
+import type { TsInspectError } from "@fal-works/ts-inspect/error";
 import type {
   CodeLocation,
   DiagnosticDetails,

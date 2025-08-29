@@ -4,7 +4,7 @@
 
 import { createWriteStream, type WriteStream } from "node:fs";
 import { finished } from "node:stream/promises";
-import { TsInspectError } from "../../error.ts";
+import { TsInspectError } from "../../error/index.ts";
 import { ensureDirectoryExists } from "./file-system.ts";
 
 /**

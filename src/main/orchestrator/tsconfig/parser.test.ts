@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { TsInspectError } from "../../../error.ts";
+import { TsInspectError } from "../../../error/index.ts";
 import { parseConfig } from "./parser.ts";
 
 describe("main/orchestrator/tsconfig/parser", () => {

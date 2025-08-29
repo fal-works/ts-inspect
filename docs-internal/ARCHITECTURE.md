@@ -9,6 +9,7 @@ making it efficient to run many specialized checks without N× performance costs
 ## Module Responsibility Boundaries
 
 - **`index.ts` (API) and `bin.ts` (CLI)**: Main entry points
+- **`error/`**: Error handling types and classes - foundational layer for all modules
 - **`main/`**: Re-exported through main entry point - high-level functionality
   - **`main/orchestrator/`**: High-level coordination - execution flow, options processing, and configuration management
   - **`main/builtin-inspectors/`**: Built-in inspector implementations (e.g., no-type-assertions)
@@ -26,6 +27,7 @@ making it efficient to run many specialized checks without N× performance costs
 The library exports functionality through multiple entry points for modularity:
 
 - **`.`**: Main inspection functions (`inspectProject`, `inspectFiles`, etc.)
+- **`./error`**: Error types and classes (`TsInspectError`, `TsInspectErrorType`, `errorTypeToMessage`)
 - **`./diagnostics`**: Type definitions and utilities for diagnostic data structures
 - **`./diagnostics/markup`**: Markup-specific diagnostic utilities
 - **`./inspector`**: Inspector framework types and utilities for creating custom inspectors

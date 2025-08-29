@@ -3,7 +3,7 @@
  */
 
 import { join, resolve } from "node:path";
-import { TsInspectError } from "../../../error.ts";
+import { TsInspectError } from "../../../error/index.ts";
 import { fileExists, isDirectory } from "../../../internal/utils/file-system.ts";
 
 /**

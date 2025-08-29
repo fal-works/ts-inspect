@@ -4,7 +4,7 @@
 
 import { dirname } from "node:path";
 import ts from "typescript";
-import { TsInspectError } from "../../../error.ts";
+import { TsInspectError } from "../../../error/index.ts";
 
 /**
  * Parses a TypeScript configuration file.

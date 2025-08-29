@@ -5,7 +5,7 @@
 import assert from "node:assert";
 import { before, describe, it } from "node:test";
 import { prepareTestOutputDirectory } from "../../../test/test-utils.ts";
-import { TsInspectError } from "../../error.ts";
+import { TsInspectError } from "../../error/index.ts";
 import { executeWithFileOutput } from "./file-stream.ts";
 
 describe("internal/utils/file-stream", () => {
