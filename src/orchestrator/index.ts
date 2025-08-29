@@ -2,4 +2,5 @@
  * Orchestrator module exports.
  */
 
-export { type InspectOptions, inspectFiles, inspectProject } from "./executor.ts";
+export { inspectFiles, inspectProject } from "./executor.ts";
+export type { InspectOptions } from "./options.ts";
