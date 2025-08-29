@@ -26,5 +26,4 @@ export {
 	getOverallWorstSeverity,
 	getWorstSeverity,
 	getWorstSeverityFromArray,
-	translateSeverityToExitCode,
 } from "./tools.ts";

@@ -9,7 +9,6 @@ import {
 	getOverallWorstSeverity,
 	getWorstSeverity,
 	getWorstSeverityFromArray,
-	translateSeverityToExitCode,
 } from "./index.ts";
 import { createTestRichDiagnostics, createTestSimpleDiagnostics } from "./test-helpers.ts";
 
@@ -63,24 +62,6 @@ describe("diagnostics/tools", () => {
 					`Failed for combination: ${combination.join(", ")}`,
 				);
 			}
-		});
-	});
-
-	describe("translateSeverityToExitCode", () => {
-		it("returns 1 for error severity", () => {
-			assert.strictEqual(translateSeverityToExitCode("error"), 1);
-		});
-
-		it("returns 0 for warning severity", () => {
-			assert.strictEqual(translateSeverityToExitCode("warning"), 0);
-		});
-
-		it("returns 0 for info severity", () => {
-			assert.strictEqual(translateSeverityToExitCode("info"), 0);
-		});
-
-		it("returns 0 for null severity (no issues)", () => {
-			assert.strictEqual(translateSeverityToExitCode(null), 0);
 		});
 	});
 

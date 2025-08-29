@@ -31,13 +31,6 @@ export function getWorstSeverityFromArray(
 }
 
 /**
- * Translates severity to exit code.
- */
-export function translateSeverityToExitCode(severity: DiagnosticSeverity | null): 0 | 1 {
-	return severity === "error" ? 1 : 0;
-}
-
-/**
  * Detects the worst severity from diagnostics.
  * Returns null if no diagnostics (treated as success).
  */
