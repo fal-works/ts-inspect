@@ -3,8 +3,8 @@
  */
 
 import { join, resolve } from "node:path";
-import { TsInspectError } from "../error.ts";
-import { fileExists, isDirectory } from "../internal/utils/file-system.ts";
+import { TsInspectError } from "../../error.ts";
+import { fileExists, isDirectory } from "../../internal/utils/file-system.ts";
 
 /**
  * Resolves a project path. Accepts either:

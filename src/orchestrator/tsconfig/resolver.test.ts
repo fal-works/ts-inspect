@@ -1,9 +1,9 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { TsInspectError } from "../error.ts";
+import { TsInspectError } from "../../error.ts";
 import { resolveProjectPath } from "./resolver.ts";
 
-describe("tsconfig/resolver", () => {
+describe("orchestrator/tsconfig/resolver", () => {
 	describe("resolveProjectPath", () => {
 		it("returns the path directly for .json files", async () => {
 			const result = await resolveProjectPath("test/fixtures/tsconfig.json");

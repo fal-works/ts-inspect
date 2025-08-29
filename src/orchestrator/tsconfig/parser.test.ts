@@ -1,9 +1,9 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { TsInspectError } from "../error.ts";
+import { TsInspectError } from "../../error.ts";
 import { parseConfig } from "./parser.ts";
 
-describe("tsconfig/parser", () => {
+describe("orchestrator/tsconfig/parser", () => {
 	describe("parseConfig", () => {
 		it("parses valid tsconfig.json", () => {
 			const result = parseConfig("test/fixtures/project-with-tsconfig/tsconfig.json");
