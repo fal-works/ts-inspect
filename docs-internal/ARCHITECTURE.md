@@ -8,15 +8,30 @@ making it efficient to run many specialized checks without N× performance costs
 
 ## Module Responsibility Boundaries
 
-- **`inspector/`**: Central framework - abstraction of pluggable inspectors and execution engine
+- **`orchestrator/`**: High-level coordination - execution flow, options processing, and configuration management
+  - **`orchestrator/tsconfig/`**: tsconfig.json resolution and parsing utilities
+- **`inspector/`**: Core inspection framework - abstraction of pluggable inspectors and execution engine
 - **`diagnostics/`**: Diagnostic types and severity handling utilities
-- **`reporter/`**: Output formatting and presentation layer (console, JSON, etc.)
+  - **`diagnostics/markup/`**: Markup-specific diagnostic utilities and builders
+- **`reporter/`**: Output formatting and presentation layer
+  - **`reporter/printer/`**: Low-level printing utilities for structured output
 - **`source-file/`**: TypeScript Compiler API abstraction layer for source file parsing
-- **`tsconfig/`**: tsconfig resolution and parsing
-- **`builtin-inspectors/`**: Concrete inspector implementations
-- **`builtin-reporters/`**: Built-in reporter implementations
+- **`builtin-inspectors/`**: Concrete inspector implementations (no-type-assertions)
+- **`builtin-reporters/`**: Built-in reporter implementations (summary, raw-json)
 - **`internal/utils/`**: Shared utilities and types (should not depend on any other modules in this project)
-- **Entry points**: `index.ts` (API) and `bin.ts` (CLI) - thin orchestration layer
+- **`index.ts` (API) and `bin.ts` (CLI)**: Main entry points
+
+## Public API Entry Points
+
+The library exports functionality through multiple entry points for modularity:
+
+- **`.`**: Main inspection functions (`inspectProject`, `inspectFiles`, etc.)
+- **`./diagnostics`**: Type definitions and utilities for diagnostic data structures
+- **`./diagnostics/markup`**: Markup-specific diagnostic utilities
+- **`./inspector`**: Inspector framework types and utilities for creating custom inspectors
+- **`./reporter`**: Reporter interface and built-in reporter implementations
+
+This modular approach allows consumers to import only the specific functionality they need.
 
 ## Execution Flow
 

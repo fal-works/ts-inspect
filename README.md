@@ -231,13 +231,13 @@ You can select built-in reporters or create custom ones.
 ### Built-in Reporters
 
 ```ts
-import { inspectProject, summaryReporter, rawJsonReporter } from "@fal-works/ts-inspect";
+import { inspectProject, createSummaryReporter, createRawJsonReporter } from "@fal-works/ts-inspect";
 
 // Use the summary reporter (default - human-readable output)
-await inspectProject("./my-project", { reporter: summaryReporter });
+await inspectProject("./my-project", { reporter: createSummaryReporter() });
 
 // Use the raw JSON reporter (machine-readable output)
-await inspectProject("./my-project", { reporter: rawJsonReporter });
+await inspectProject("./my-project", { reporter: createRawJsonReporter() });
 ```
 
 ### Custom Reporters
