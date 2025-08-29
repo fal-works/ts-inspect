@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { parseArgs } from "node:util";
-import { rawJsonReporter, summaryReporter } from "./builtin-reporters/index.ts";
+import { createRawJsonReporter, createSummaryReporter } from "./builtin-reporters/index.ts";
 import { type InspectOptions, inspectProject, translateSeverityToExitCode } from "./index.ts";
 import { executeWithFileOutput } from "./internal/utils/file-stream.ts";
 import type { Reporter } from "./reporter/index.ts";
@@ -24,10 +24,10 @@ async function mainInternal(): Promise<0 | 1> {
 	if (values.reporter) {
 		switch (values.reporter) {
 			case "summary":
-				reporter = summaryReporter;
+				reporter = createSummaryReporter();
 				break;
 			case "raw-json":
-				reporter = rawJsonReporter;
+				reporter = createRawJsonReporter();
 				break;
 			default:
 				throw new Error(

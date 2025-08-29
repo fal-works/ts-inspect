@@ -2,5 +2,5 @@
  * Built-in reporter exports.
  */
 
-export { rawJsonReporter } from "./raw-json/index.ts";
-export { summaryReporter } from "./summary/index.ts";
+export { createRawJsonReporter } from "./raw-json/index.ts";
+export { createSummaryReporter } from "./summary/index.ts";

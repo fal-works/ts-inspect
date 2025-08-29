@@ -3,10 +3,11 @@ import { describe, it } from "node:test";
 import { mockWritable } from "../../../test/test-utils.ts";
 import { createTestRichDiagnostics, createTestSimpleDiagnostics } from "../../diagnostics/index.ts";
 import type { InspectorResult } from "../../inspector/index.ts";
-import { summaryReporter } from "./index.ts";
+import { createSummaryReporter } from "./index.ts";
 
 describe("builtin-reporters/summary/index", () => {
 	describe("summaryReporter", () => {
+		const summaryReporter = createSummaryReporter();
 		it("handles empty results array", () => {
 			const output = mockWritable();
 			const results: InspectorResult[] = [];
@@ -278,6 +279,7 @@ describe("builtin-reporters/summary/index", () => {
 	});
 
 	describe("integration with real-world scenarios", () => {
+		const summaryReporter = createSummaryReporter();
 		it("handles typical no-type-assertions inspector output", () => {
 			const output = mockWritable();
 			const results: InspectorResult[] = [

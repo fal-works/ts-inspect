@@ -19,11 +19,11 @@ describe("test/exports", () => {
 		assert.strictEqual(typeof mainModule.inspectFiles, "function");
 
 		// Check builtin inspector
-		assert.strictEqual(typeof mainModule.createAsAssertionInspector, "function");
+		assert.strictEqual(typeof mainModule.createNoTypeAssertionsInspector, "function");
 
 		// Check builtin reporters
-		assert.strictEqual(typeof mainModule.summaryReporter, "function");
-		assert.strictEqual(typeof mainModule.rawJsonReporter, "function");
+		assert.strictEqual(typeof mainModule.createSummaryReporter, "function");
+		assert.strictEqual(typeof mainModule.createRawJsonReporter, "function");
 
 		// Check utility functions
 		assert.strictEqual(typeof mainModule.translateSeverityToExitCode, "function");

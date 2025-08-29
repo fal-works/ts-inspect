@@ -3,9 +3,9 @@
  */
 
 // Built-in inspector functions
-export { createAsAssertionInspector } from "./builtin-inspectors/index.ts";
+export { createNoTypeAssertionsInspector } from "./builtin-inspectors/index.ts";
 // Built-in reporter functions
-export { rawJsonReporter, summaryReporter } from "./builtin-reporters/index.ts";
+export { createRawJsonReporter, createSummaryReporter } from "./builtin-reporters/index.ts";
 // Diagnostics handling
 export { translateSeverityToExitCode } from "./diagnostics/index.ts";
 // Error handling

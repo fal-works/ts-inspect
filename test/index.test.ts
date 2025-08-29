@@ -5,7 +5,7 @@
 import assert from "node:assert";
 import { join } from "node:path";
 import { describe, it } from "node:test";
-import { rawJsonReporter, summaryReporter } from "../src/builtin-reporters/index.ts";
+import { createRawJsonReporter, createSummaryReporter } from "../src/builtin-reporters/index.ts";
 import { TsInspectError } from "../src/error.ts";
 import { inspectFiles, inspectProject } from "../src/index.ts";
 import type { Reporter } from "../src/reporter/index.ts";
@@ -59,7 +59,7 @@ describe("index", () => {
 			const filePaths = [join("test", "fixtures", "src", "sample.ts")];
 
 			const result = await inspectFiles(filePaths, {
-				reporter: rawJsonReporter,
+				reporter: createRawJsonReporter(),
 			});
 			assert.ok(result === null || ["error", "warning", "info"].includes(result));
 		});
@@ -68,7 +68,7 @@ describe("index", () => {
 			const filePaths = [join("test", "fixtures", "src", "sample.ts")];
 
 			const result = await inspectFiles(filePaths, {
-				reporter: summaryReporter,
+				reporter: createSummaryReporter(),
 			});
 			assert.ok(result === null || ["error", "warning", "info"].includes(result));
 		});

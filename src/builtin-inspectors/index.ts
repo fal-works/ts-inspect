@@ -11,4 +11,4 @@ export function createDefaultInspectors() {
 	return [createNoTypeAssertionsInspector()];
 }
 
-export { createNoTypeAssertionsInspector as createAsAssertionInspector };
+export { createNoTypeAssertionsInspector };

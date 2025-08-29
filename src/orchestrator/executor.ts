@@ -3,7 +3,7 @@
  */
 
 import { createDefaultInspectors } from "../builtin-inspectors/index.ts";
-import { summaryReporter } from "../builtin-reporters/index.ts";
+import { createSummaryReporter } from "../builtin-reporters/index.ts";
 import { type DiagnosticSeverity, getOverallWorstSeverity } from "../diagnostics/index.ts";
 import { wrapUnexpectedExceptionsAsync } from "../error.ts";
 import { runInspectors } from "../inspector/index.ts";
@@ -23,7 +23,7 @@ async function executeInspection(
 	const results = await runInspectors(resolvedInspectors, srcFilePromises);
 
 	// Format and output results using the configured reporter
-	const resolvedReporter = options?.reporter ?? summaryReporter;
+	const resolvedReporter = options?.reporter ?? createSummaryReporter();
 	const resolvedOutput = options?.output ?? process.stdout;
 	resolvedReporter(results, resolvedOutput);
 
