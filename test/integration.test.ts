@@ -1,5 +1,5 @@
 /**
- * Integration tests for the main API (index.ts).
+ * Integration tests for the ts-inspect library.
  */
 
 import assert from "node:assert";
@@ -11,7 +11,7 @@ import { inspectFiles, inspectProject } from "../src/index.ts";
 import type { Reporter } from "../src/reporter/index.ts";
 import { mockWritable } from "./test-utils.ts";
 
-describe("index", () => {
+describe("integration", () => {
 	describe("inspectFiles", () => {
 		it("does not throw error with valid TypeScript files", async () => {
 			const filePaths = [
