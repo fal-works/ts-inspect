@@ -8,18 +8,18 @@ making it efficient to run many specialized checks without N× performance costs
 
 ## Module Responsibility Boundaries
 
-- **`orchestrator/`**: High-level coordination - execution flow, options processing, and configuration management
-  - **`orchestrator/tsconfig/`**: tsconfig.json resolution and parsing utilities
+- **`index.ts` (API) and `bin.ts` (CLI)**: Main entry points
+- **`main/`**: Re-exported through main entry point - high-level functionality
+  - **`main/orchestrator/`**: High-level coordination - execution flow, options processing, and configuration management
+  - **`main/builtin-inspectors/`**: Built-in inspector implementations (e.g., no-type-assertions)
+  - **`main/builtin-reporters/`**: Built-in reporter implementations (summary, raw-json)
 - **`inspector/`**: Core inspection framework - abstraction of pluggable inspectors and execution engine
 - **`diagnostics/`**: Diagnostic types and severity handling utilities
   - **`diagnostics/markup/`**: Markup-specific diagnostic utilities and builders
 - **`reporter/`**: Output formatting and presentation layer
   - **`reporter/printer/`**: Low-level printing utilities for structured output
 - **`source-file/`**: TypeScript Compiler API abstraction layer for source file parsing
-- **`builtin-inspectors/`**: Concrete inspector implementations (no-type-assertions)
-- **`builtin-reporters/`**: Built-in reporter implementations (summary, raw-json)
 - **`internal/utils/`**: Shared utilities and types (should not depend on any other modules in this project)
-- **`index.ts` (API) and `bin.ts` (CLI)**: Main entry points
 
 ## Public API Entry Points
 
