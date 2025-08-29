@@ -1,11 +1,10 @@
-import {
-	type CodeLocation,
-	type DiagnosticDetails,
-	type Inspector,
-	inspectProject,
-	type SimpleDiagnostics,
-	translateSeverityToExitCode,
-} from "@fal-works/ts-inspect";
+import { inspectProject, translateSeverityToExitCode } from "@fal-works/ts-inspect";
+import type {
+	CodeLocation,
+	DiagnosticDetails,
+	SimpleDiagnostics,
+} from "@fal-works/ts-inspect/diagnostics";
+import type { Inspector } from "@fal-works/ts-inspect/inspector";
 import ts from "typescript";
 
 function createConsoleLogInspector(): Inspector<CodeLocation[]> {

@@ -10,6 +10,22 @@
 		".": {
 			"import": "./dist/index.js",
 			"types": "./dist/index.d.ts"
+		},
+		"./diagnostics": {
+			"import": "./dist/diagnostics/index.js",
+			"types": "./dist/diagnostics/index.d.ts"
+		},
+		"./diagnostics/markup": {
+			"import": "./dist/diagnostics/markup/index.js",
+			"types": "./dist/diagnostics/markup/index.d.ts"
+		},
+		"./inspector": {
+			"import": "./dist/inspector/index.js",
+			"types": "./dist/inspector/index.d.ts"
+		},
+		"./reporter": {
+			"import": "./dist/reporter/index.js",
+			"types": "./dist/reporter/index.d.ts"
 		}
 	},
 	"bin": "./dist/bin.js",

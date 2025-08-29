@@ -1,4 +1,5 @@
-import { inspectProject, type Reporter, translateSeverityToExitCode } from "@fal-works/ts-inspect";
+import { inspectProject, translateSeverityToExitCode } from "@fal-works/ts-inspect";
+import type { Reporter } from "@fal-works/ts-inspect/reporter";
 
 const customReporter: Reporter = (results, output) => {
 	output.write(`Found ${results.length} inspector results\n`);

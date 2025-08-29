@@ -2,13 +2,9 @@
 
 import { parseArgs } from "node:util";
 import { rawJsonReporter, summaryReporter } from "./builtin-reporters/index.ts";
-import {
-	type InspectOptions,
-	inspectProject,
-	type Reporter,
-	translateSeverityToExitCode,
-} from "./index.ts";
+import { type InspectOptions, inspectProject, translateSeverityToExitCode } from "./index.ts";
 import { executeWithFileOutput } from "./internal/utils/file-stream.ts";
+import type { Reporter } from "./reporter/index.ts";
 
 /**
  * Main CLI function without catching fatal errors.
