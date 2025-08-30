@@ -2,7 +2,7 @@
  * Summary reporter that formats inspection results for human-readable console output.
  */
 
-import { getWorstSeverity } from "../../../diagnostics/index.ts";
+import { getWorstSeverityFromDiagnostics } from "../../../diagnostics/index.ts";
 import { createPrinter } from "../../../reporter/index.ts";
 import type { Reporter } from "../../../reporter/reporter.ts";
 import { printInspectorResult } from "./inspector-result-printer.ts";
@@ -16,7 +16,7 @@ export function createSummaryReporter(): Reporter {
 
 		// Filter out results with no issues to avoid unnecessary spacing
 		const resultsWithDiagnostics = results.filter(
-			(result) => getWorstSeverity(result.diagnostics) !== null,
+			(result) => getWorstSeverityFromDiagnostics(result.diagnostics) !== null,
 		);
 
 		for (let i = 0; i < resultsWithDiagnostics.length; i++) {

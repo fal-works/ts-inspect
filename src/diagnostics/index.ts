@@ -23,6 +23,6 @@ export { createTestRichDiagnostics, createTestSimpleDiagnostics } from "./test-h
 // Export internal utility functions. Do not include in public API
 export {
 	getOverallWorstSeverity,
-	getWorstSeverity,
 	getWorstSeverityFromArray,
+	getWorstSeverityFromDiagnostics,
 } from "./tools.ts";

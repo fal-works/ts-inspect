@@ -34,7 +34,9 @@ export function getWorstSeverityFromArray(
  * Detects the worst severity from diagnostics.
  * Returns null if no diagnostics (treated as success).
  */
-export function getWorstSeverity(diagnostics: Diagnostics): DiagnosticSeverity | null {
+export function getWorstSeverityFromDiagnostics(
+	diagnostics: Diagnostics,
+): DiagnosticSeverity | null {
 	const severities: DiagnosticSeverity[] = [];
 
 	if (diagnostics.type === "simple") {
@@ -73,7 +75,7 @@ export function getOverallWorstSeverity(
 	results: { diagnostics: Diagnostics }[],
 ): DiagnosticSeverity | null {
 	const severities = results
-		.map((r) => getWorstSeverity(r.diagnostics))
+		.map((r) => getWorstSeverityFromDiagnostics(r.diagnostics))
 		.filter((s): s is DiagnosticSeverity => s !== null);
 
 	return getWorstSeverityFromArray(severities);
