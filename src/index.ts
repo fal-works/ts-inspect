@@ -2,7 +2,10 @@
  * Main entry point for the ts-inspect library providing TypeScript AST inspection utilities.
  */
 
-export { createNoTypeAssertionsInspector } from "./main/builtin-inspectors/index.ts";
+export {
+	createDefaultInspectors,
+	createNoTypeAssertionsInspector,
+} from "./main/builtin-inspectors/index.ts";
 export { createRawJsonReporter, createSummaryReporter } from "./main/builtin-reporters/index.ts";
 export {
 	type InspectOptions,
