@@ -4,8 +4,8 @@
 
 import assert from "node:assert";
 import { describe, it } from "node:test";
+import { createTestSimpleDiagnostics } from "../../../../test/diagnostic-test-helpers.ts";
 import { mockWritable } from "../../../../test/test-utils.ts";
-import { createTestSimpleDiagnostics } from "../../../diagnostics/index.ts";
 import type { InspectorResult } from "../../../inspector/index.ts";
 import { createRawJsonReporter } from "./index.ts";
 

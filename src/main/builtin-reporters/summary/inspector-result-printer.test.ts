@@ -1,10 +1,10 @@
 import assert from "node:assert";
 import { describe, it } from "node:test";
-import { mockWritable } from "../../../../test/test-utils.ts";
 import {
 	createTestRichDiagnostics,
 	createTestSimpleDiagnostics,
-} from "../../../diagnostics/index.ts";
+} from "../../../../test/diagnostic-test-helpers.ts";
+import { mockWritable } from "../../../../test/test-utils.ts";
 import type { InspectorResult } from "../../../inspector/index.ts";
 import { createPrinter } from "../../../reporter/index.ts";
 import { printInspectorResult } from "./inspector-result-printer.ts";

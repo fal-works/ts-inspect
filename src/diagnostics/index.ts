@@ -17,9 +17,6 @@ export type {
 // Export finding types
 export type { DetailedFinding, Finding } from "./finding-types.ts";
 
-// Export functions for testing. Do not include in public API
-export { createTestRichDiagnostics, createTestSimpleDiagnostics } from "./test-helpers.ts";
-
 // Export utility functions
 export {
 	getWorstSeverityFromArray,

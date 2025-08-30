@@ -1,15 +1,17 @@
 /**
  * Test helper utilities for creating diagnostic structures.
- * @package
  */
 
-import type { CodeLocation, DiagnosticDetails, DiagnosticSeverity } from "./common-types.ts";
-import type { RichDiagnostics, SimpleDiagnostics } from "./diagnostic-types.ts";
-import type { DetailedFinding, Finding } from "./finding-types.ts";
+import type {
+	CodeLocation,
+	DiagnosticDetails,
+	DiagnosticSeverity,
+} from "../src/diagnostics/common-types.ts";
+import type { RichDiagnostics, SimpleDiagnostics } from "../src/diagnostics/diagnostic-types.ts";
+import type { DetailedFinding, Finding } from "../src/diagnostics/finding-types.ts";
 
 /**
  * Creates a simple diagnostics structure for testing.
- * @package
  */
 export function createTestSimpleDiagnostics(
 	details: DiagnosticDetails,
@@ -40,7 +42,6 @@ export function createTestSimpleDiagnostics(
 
 /**
  * Creates a rich diagnostics structure for testing.
- * @package
  */
 export function createTestRichDiagnostics(
 	items?: Array<{

@@ -4,8 +4,11 @@
 
 import assert from "node:assert";
 import { describe, it } from "node:test";
+import {
+	createTestRichDiagnostics,
+	createTestSimpleDiagnostics,
+} from "../../test/diagnostic-test-helpers.ts";
 import type { DiagnosticSeverity } from "./common-types.ts";
-import { createTestRichDiagnostics, createTestSimpleDiagnostics } from "./test-helpers.ts";
 import { getWorstSeverityFromArray, getWorstSeverityFromDiagnostics } from "./tools.ts";
 
 describe("diagnostics/tools", () => {

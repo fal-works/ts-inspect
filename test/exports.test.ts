@@ -30,8 +30,8 @@ describe("test/exports", () => {
 	});
 
 	test("diagnostics entry point imports", () => {
-		// Check key diagnostic types and functions exist
-		assert.strictEqual(typeof diagnosticsModule.createTestSimpleDiagnostics, "function");
+		// Check that diagnostic utilities are available (no test helpers exposed)
+		assert.strictEqual(typeof diagnosticsModule.getWorstSeverityFromArray, "function");
 	});
 
 	test("diagnostics/markup entry point imports", () => {
