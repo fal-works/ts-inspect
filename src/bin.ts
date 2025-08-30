@@ -1,15 +1,10 @@
 #!/usr/bin/env node
 
 import { parseArgs } from "node:util";
-import { executeWithFileOutput } from "./core/file-stream.ts";
-import {
-	type InspectOptions,
-	inspectProject,
-	type Reporter,
-	rawJsonReporter,
-	summaryReporter,
-	translateSeverityToExitCode,
-} from "./index.ts";
+import { type InspectOptions, inspectProject, translateSeverityToExitCode } from "./index.ts";
+import { executeWithFileOutput } from "./internal/utils/file-stream.ts";
+import { createRawJsonReporter, createSummaryReporter } from "./main/builtin-reporters/index.ts";
+import type { Reporter } from "./reporter/index.ts";
 
 /**
  * Main CLI function without catching fatal errors.
@@ -29,10 +24,10 @@ async function mainInternal(): Promise<0 | 1> {
 	if (values.reporter) {
 		switch (values.reporter) {
 			case "summary":
-				reporter = summaryReporter;
+				reporter = createSummaryReporter();
 				break;
 			case "raw-json":
-				reporter = rawJsonReporter;
+				reporter = createRawJsonReporter();
 				break;
 			default:
 				throw new Error(

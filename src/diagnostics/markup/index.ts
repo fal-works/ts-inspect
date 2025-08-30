@@ -24,4 +24,21 @@ export {
 } from "./builders.ts";
 
 // Types and interfaces
-export type * from "./types.ts";
+export type {
+	BulletListIntentionType,
+	MarkupBulletListElement,
+	MarkupCodeElement,
+	MarkupElement,
+	MarkupElementName,
+	MarkupGeneralElementContent,
+	MarkupListItemElement,
+	MarkupNode,
+	MarkupNodeType,
+	MarkupOrderedListElement,
+	MarkupParagraphElement,
+	MarkupRootElement,
+	MarkupStrongElement,
+	MarkupTextLiteral,
+	OrderedListIntentionType,
+	ParagraphIntentionType,
+} from "./types.ts";

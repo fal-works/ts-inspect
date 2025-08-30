@@ -2,6 +2,6 @@
  * Reporter module exports.
  */
 
-export { rawJsonReporter } from "./raw-json-reporter/index.ts";
+export { createPrinter, type Printer, type PrinterOptions } from "./printer/printer.ts";
+export { createXmlPrinter, type XmlPrinter } from "./printer/xml-printer.ts";
 export type { Reporter } from "./reporter.ts";
-export { summaryReporter } from "./summary-reporter/index.ts";

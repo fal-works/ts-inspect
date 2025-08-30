@@ -31,17 +31,12 @@ export function getWorstSeverityFromArray(
 }
 
 /**
- * Translates severity to exit code.
- */
-export function translateSeverityToExitCode(severity: DiagnosticSeverity | null): 0 | 1 {
-	return severity === "error" ? 1 : 0;
-}
-
-/**
  * Detects the worst severity from diagnostics.
  * Returns null if no diagnostics (treated as success).
  */
-export function getWorstSeverity(diagnostics: Diagnostics): DiagnosticSeverity | null {
+export function getWorstSeverityFromDiagnostics(
+	diagnostics: Diagnostics,
+): DiagnosticSeverity | null {
 	const severities: DiagnosticSeverity[] = [];
 
 	if (diagnostics.type === "simple") {
@@ -69,19 +64,6 @@ export function getWorstSeverity(diagnostics: Diagnostics): DiagnosticSeverity |
 			}
 		}
 	}
-
-	return getWorstSeverityFromArray(severities);
-}
-
-/**
- * Gets worst severity from all inspector results.
- */
-export function getOverallWorstSeverity(
-	results: { diagnostics: Diagnostics }[],
-): DiagnosticSeverity | null {
-	const severities = results
-		.map((r) => getWorstSeverity(r.diagnostics))
-		.filter((s): s is DiagnosticSeverity => s !== null);
 
 	return getWorstSeverityFromArray(severities);
 }

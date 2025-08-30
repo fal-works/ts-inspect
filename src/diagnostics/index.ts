@@ -16,15 +16,9 @@ export type {
 
 // Export finding types
 export type { DetailedFinding, Finding } from "./finding-types.ts";
-// Export markup package
-export * as markup from "./markup/index.ts";
-// Export functions for testing. Do not include in public API
-export { createTestRichDiagnostics, createTestSimpleDiagnostics } from "./test-helpers.ts";
-// Export essential utility functions.
-// Some of these are for internal use and not part of the public API
+
+// Export utility functions
 export {
-	getOverallWorstSeverity,
-	getWorstSeverity,
 	getWorstSeverityFromArray,
-	translateSeverityToExitCode,
+	getWorstSeverityFromDiagnostics,
 } from "./tools.ts";

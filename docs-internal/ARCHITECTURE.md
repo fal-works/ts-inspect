@@ -6,16 +6,40 @@ This project is a **pluggable static analysis framework** built around the conce
 Multiple custom analysis rules (inspectors) share a single AST traversal per file,
 making it efficient to run many specialized checks without N× performance costs.
 
-## Module Responsibility Boundaries
+## Module Organization
 
-- **`inspector/`**: Central framework - abstraction of pluggable inspectors and execution engine
-- **`diagnostics/`**: Diagnostic types and severity handling utilities
-- **`reporter/`**: Output formatting and presentation layer (console, JSON, etc.)
-- **`source-file/`**: TypeScript Compiler API abstraction layer for source file parsing
-- **`tsconfig/`**: tsconfig resolution and parsing
-- **`builtin-inspectors/`**: Concrete inspector implementations
-- **`core/`**: Shared utilities and types (should not depend on any other modules in this project)
-- **Entry points**: `index.ts` (API) and `bin.ts` (CLI) - thin orchestration layer
+### Core Framework Modules
+
+- **`inspector/`**: Core inspection framework - pluggable inspector abstraction and execution engine
+- **`diagnostics/`**: Diagnostic data structures and severity handling
+  - **`diagnostics/markup/`**: Structured markup builders for rich diagnostic formatting
+- **`reporter/`**: Output formatting layer with pluggable reporter system
+  - **`reporter/printer/`**: Low-level text and XML printing utilities
+- **`error/`**: Error handling foundation used across all modules
+
+### Application Layer
+
+- **`main/orchestrator/`**: Execution flow, options processing, and configuration management
+- **`main/builtin-inspectors/`**: Default inspector implementations
+- **`main/builtin-reporters/`**: Default reporter implementations
+- **`index.ts`**: Main API exports
+- **`bin.ts`**: CLI entry point
+
+### Foundation
+
+- **`internal/`**: Pure utility modules with no external dependencies
+  - **`internal/utils/`**: Micellaneous utilities
+
+## Public API Entry Points
+
+The library provides modular entry points:
+
+- **`.`**: Main inspection functions, built-in inspectors, and reporters
+- **`./inspector`**: Types and utilities for creating custom inspectors
+- **`./diagnostics`**: Diagnostic data structures and severity utilities
+- **`./diagnostics/markup`**: Rich diagnostic content builders
+- **`./reporter`**: Reporter interface and printing utilities
+- **`./error`**: Error types and handling
 
 ## Execution Flow
 

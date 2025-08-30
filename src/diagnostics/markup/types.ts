@@ -3,7 +3,7 @@
  */
 
 import type * as xast from "xast"; // Using namespace import to help prevent accidental type leaks
-import { assertExtends } from "../../core/type-utils.ts";
+import { assertExtends } from "../../internal/utils/type-utils.ts";
 
 // -------------------- Literal types --------------------
 

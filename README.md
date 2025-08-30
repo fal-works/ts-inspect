@@ -94,11 +94,14 @@ Write output to a custom stream:
 
 ```ts
 import { createWriteStream } from "node:fs";
-import { inspectProject } from "@fal-works/ts-inspect";
+import { inspectProject, translateSeverityToExitCode } from "@fal-works/ts-inspect";
 
-const outputStream = createWriteStream("results.txt", { encoding: "utf8" });
-await inspectProject("./my-project", { output: outputStream });
+const outputStream = createWriteStream("inspection-results.txt", { encoding: "utf8" });
+const status = await inspectProject(undefined, { output: outputStream });
 outputStream.end();
+
+console.log("Results written to inspection-results.txt");
+process.exitCode = translateSeverityToExitCode(status);
 ```
 
 ## Built‑in Inspector: Suspicious Type Assertions
@@ -150,14 +153,13 @@ This pattern supports three scopes of findings:
 ### Example: Count `console.log` Calls
 
 ```ts
-import {
-  type CodeLocation,
-  type DiagnosticDetails,
-  type Inspector,
-  inspectProject,
-  type SimpleDiagnostics,
-  translateSeverityToExitCode,
-} from "@fal-works/ts-inspect";
+import { inspectProject, translateSeverityToExitCode } from "@fal-works/ts-inspect";
+import type {
+  CodeLocation,
+  DiagnosticDetails,
+  SimpleDiagnostics,
+} from "@fal-works/ts-inspect/diagnostics";
+import type { Inspector } from "@fal-works/ts-inspect/inspector";
 import ts from "typescript";
 
 function createConsoleLogInspector(): Inspector<CodeLocation[]> {
@@ -229,13 +231,13 @@ You can select built-in reporters or create custom ones.
 ### Built-in Reporters
 
 ```ts
-import { inspectProject, summaryReporter, rawJsonReporter } from "@fal-works/ts-inspect";
+import { inspectProject, createSummaryReporter, createRawJsonReporter } from "@fal-works/ts-inspect";
 
 // Use the summary reporter (default - human-readable output)
-await inspectProject("./my-project", { reporter: summaryReporter });
+await inspectProject("./my-project", { reporter: createSummaryReporter() });
 
 // Use the raw JSON reporter (machine-readable output)
-await inspectProject("./my-project", { reporter: rawJsonReporter });
+await inspectProject("./my-project", { reporter: createRawJsonReporter() });
 ```
 
 ### Custom Reporters
@@ -243,7 +245,8 @@ await inspectProject("./my-project", { reporter: rawJsonReporter });
 Create your own reporter by implementing the `Reporter` interface:
 
 ```ts
-import { inspectProject, type Reporter, translateSeverityToExitCode } from "@fal-works/ts-inspect";
+import { inspectProject, translateSeverityToExitCode } from "@fal-works/ts-inspect";
+import type { Reporter } from "@fal-works/ts-inspect/reporter";
 
 const customReporter: Reporter = (results, output) => {
   output.write(`Found ${results.length} inspector results\n`);

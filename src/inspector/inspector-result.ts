@@ -2,7 +2,11 @@
  * Inspector result types and structures.
  */
 
-import type { Diagnostics } from "../diagnostics/index.ts";
+import type { DiagnosticSeverity, Diagnostics } from "../diagnostics/index.ts";
+import {
+	getWorstSeverityFromArray,
+	getWorstSeverityFromDiagnostics,
+} from "../diagnostics/tools.ts";
 
 /**
  * Structured result returned by an inspector's ResultsBuilder.
@@ -22,3 +26,16 @@ export interface InspectorResult {
  * This is the top-level structure passed to reporters for formatting.
  */
 export type InspectorResults = InspectorResult[];
+
+/**
+ * Gets worst severity from all inspector results.
+ */
+export function getWorstSeverityFromInspectorResults(
+	results: { diagnostics: Diagnostics }[],
+): DiagnosticSeverity | null {
+	const severities = results
+		.map((r) => getWorstSeverityFromDiagnostics(r.diagnostics))
+		.filter((s): s is DiagnosticSeverity => s !== null);
+
+	return getWorstSeverityFromArray(severities);
+}
