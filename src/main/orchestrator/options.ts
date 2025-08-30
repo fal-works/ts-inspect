@@ -5,10 +5,7 @@
 import type { Writable } from "node:stream";
 import type { Inspector } from "../../inspector/index.ts";
 import type { Reporter } from "../../reporter/index.ts";
-import {
-	inferParseSourceFilesOptions,
-	type ParseSourceFilesOptions,
-} from "../../source-file/index.ts";
+import { inferParseSourceFilesOptions, type ParseSourceFilesOptions } from "./source-file/index.ts";
 import { parseConfig, resolveProjectPath } from "./tsconfig/index.ts";
 
 /**

@@ -3,7 +3,7 @@
  */
 
 import ts from "typescript";
-import type { FileType } from "./file-type.ts";
+import type { FileType } from "../../../inspector/source-file-types.ts";
 
 /**
  * Configuration options for parsing source files.

@@ -19,8 +19,8 @@ making it efficient to run many specialized checks without N× performance costs
   - **`diagnostics/markup/`**: Markup-specific diagnostic utilities and builders
 - **`reporter/`**: Output formatting and presentation layer
   - **`reporter/printer/`**: Low-level printing utilities for structured output
-- **`source-file/`**: TypeScript Compiler API abstraction layer for source file parsing
-- **`internal/utils/`**: Shared utilities and types (should not depend on any other modules in this project)
+- **`internal/`**: Internal implementation details never exposed to consumers
+  - **`internal/utils/`**: Shared utilities and types (should not depend on any other modules in this project)
 
 ## Public API Entry Points
 

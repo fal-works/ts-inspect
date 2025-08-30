@@ -1,9 +1,8 @@
 /**
- * Types for source files after parsing.
+ * Source file type definitions for inspector framework.
  */
 
 import type ts from "typescript";
-import type { FileType } from "./file-type.ts";
 
 /**
  * Represents a parsed source file with its TypeScript AST and metadata.
@@ -38,3 +37,8 @@ export interface ParsedSourceFileMetadata {
 	 */
 	isTest: boolean;
 }
+
+/**
+ * Supported file types for TypeScript source inspection.
+ */
+export type FileType = "ts" | "tsx" | "js" | "jsx" | "json";

@@ -4,9 +4,9 @@
 
 import { readFile } from "node:fs/promises";
 import ts from "typescript";
+import type { ParsedSourceFile } from "../../../inspector/source-file-types.ts";
 import { createFileTypeValidator, getFileTypeFromExtension, getScriptKind } from "./file-type.ts";
-import type { ParsedSourceFile } from "./parsed.ts";
-import { inferParseSourceFilesOptions, type ParseSourceFilesOptions } from "./parser-options.ts";
+import { inferParseSourceFilesOptions, type ParseSourceFilesOptions } from "./options.ts";
 
 const testFileNameDefaultRegex = /\.test\.(ts|tsx|js|jsx)$/;
 

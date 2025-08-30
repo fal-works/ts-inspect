@@ -4,11 +4,11 @@
 
 import { type DiagnosticSeverity, getOverallWorstSeverity } from "../../diagnostics/index.ts";
 import { runInspectors } from "../../inspector/index.ts";
-import { parseSourceFiles } from "../../source-file/index.ts";
 import { createDefaultInspectors } from "../builtin-inspectors/index.ts";
 import { createSummaryReporter } from "../builtin-reporters/index.ts";
 import { wrapUnexpectedExceptionsAsync } from "./exception-handling.ts";
 import { type InspectOptions, inferOptionsFromProject } from "./options.ts";
+import { parseSourceFiles } from "./source-file/index.ts";
 
 /**
  * Executes inspection on the provided file paths with the given options.

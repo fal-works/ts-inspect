@@ -4,12 +4,8 @@
 
 import { extname } from "node:path";
 import ts from "typescript";
-import { setHasValue } from "../internal/utils/data-structure.ts";
-
-/**
- * Supported file types for TypeScript source inspection.
- */
-export type FileType = "ts" | "tsx" | "js" | "jsx" | "json";
+import type { FileType } from "../../../inspector/source-file-types.ts";
+import { setHasValue } from "../../../internal/utils/data-structure.ts";
 
 /**
  * Determines the file type from a file name's extension.

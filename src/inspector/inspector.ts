@@ -3,8 +3,8 @@
  */
 
 import type ts from "typescript";
-import type { ParsedSourceFile } from "../source-file/index.ts";
 import type { InspectorResult } from "./inspector-result.ts";
+import type { ParsedSourceFile } from "./source-file-types.ts";
 
 /**
  * Result object of inspecting a single file.
