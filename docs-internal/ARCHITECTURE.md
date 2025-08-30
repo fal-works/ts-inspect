@@ -6,34 +6,40 @@ This project is a **pluggable static analysis framework** built around the conce
 Multiple custom analysis rules (inspectors) share a single AST traversal per file,
 making it efficient to run many specialized checks without N× performance costs.
 
-## Module Responsibility Boundaries
+## Module Organization
 
-- **`index.ts` (API) and `bin.ts` (CLI)**: Main entry points
-- **`error/`**: Error handling types and classes - foundational layer for all modules
-- **`main/`**: Re-exported through main entry point - high-level functionality
-  - **`main/orchestrator/`**: High-level coordination - execution flow, options processing, and configuration management
-  - **`main/builtin-inspectors/`**: Built-in inspector implementations (e.g., no-type-assertions)
-  - **`main/builtin-reporters/`**: Built-in reporter implementations (summary, raw-json)
-- **`inspector/`**: Core inspection framework - abstraction of pluggable inspectors and execution engine
-- **`diagnostics/`**: Diagnostic types and severity handling utilities
-  - **`diagnostics/markup/`**: Markup-specific diagnostic utilities and builders
-- **`reporter/`**: Output formatting and presentation layer
-  - **`reporter/printer/`**: Low-level printing utilities for structured output
-- **`internal/`**: Internal implementation details never exposed to consumers
-  - **`internal/utils/`**: Shared utilities and types (should not depend on any other modules in this project)
+### Core Framework Modules
+
+- **`inspector/`**: Core inspection framework - pluggable inspector abstraction and execution engine
+- **`diagnostics/`**: Diagnostic data structures and severity handling
+  - **`diagnostics/markup/`**: Structured markup builders for rich diagnostic formatting
+- **`reporter/`**: Output formatting layer with pluggable reporter system
+  - **`reporter/printer/`**: Low-level text and XML printing utilities
+- **`error/`**: Error handling foundation used across all modules
+
+### Application Layer
+
+- **`main/orchestrator/`**: Execution flow, options processing, and configuration management
+- **`main/builtin-inspectors/`**: Default inspector implementations
+- **`main/builtin-reporters/`**: Default reporter implementations
+- **`index.ts`**: Main API exports
+- **`bin.ts`**: CLI entry point
+
+### Foundation
+
+- **`internal/`**: Pure utility modules with no external dependencies
+  - **`internal/utils/`**: Micellaneous utilities
 
 ## Public API Entry Points
 
-The library exports functionality through multiple entry points for modularity:
+The library provides modular entry points:
 
-- **`.`**: Main inspection functions (`inspectProject`, `inspectFiles`, etc.)
-- **`./error`**: Error types and classes (`TsInspectError`, `TsInspectErrorType`, `errorTypeToMessage`)
-- **`./diagnostics`**: Type definitions and utilities for diagnostic data structures
-- **`./diagnostics/markup`**: Markup-specific diagnostic utilities
-- **`./inspector`**: Inspector framework types and utilities for creating custom inspectors
-- **`./reporter`**: Reporter interface and built-in reporter implementations
-
-This modular approach allows consumers to import only the specific functionality they need.
+- **`.`**: Main inspection functions, built-in inspectors, and reporters
+- **`./inspector`**: Types and utilities for creating custom inspectors
+- **`./diagnostics`**: Diagnostic data structures and severity utilities
+- **`./diagnostics/markup`**: Rich diagnostic content builders
+- **`./reporter`**: Reporter interface and printing utilities
+- **`./error`**: Error types and handling
 
 ## Execution Flow
 
