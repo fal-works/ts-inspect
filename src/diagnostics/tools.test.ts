@@ -6,11 +6,7 @@ import assert from "node:assert";
 import { describe, it } from "node:test";
 import type { DiagnosticSeverity } from "./common-types.ts";
 import { createTestRichDiagnostics, createTestSimpleDiagnostics } from "./test-helpers.ts";
-import {
-	getOverallWorstSeverity,
-	getWorstSeverityFromArray,
-	getWorstSeverityFromDiagnostics,
-} from "./tools.ts";
+import { getWorstSeverityFromArray, getWorstSeverityFromDiagnostics } from "./tools.ts";
 
 describe("diagnostics/tools", () => {
 	describe("getWorstSeverityFromArray", () => {
@@ -98,56 +94,6 @@ describe("diagnostics/tools", () => {
 				},
 			]);
 			assert.strictEqual(getWorstSeverityFromDiagnostics(diagnostics), "warning");
-		});
-	});
-
-	describe("getOverallWorstSeverity", () => {
-		it("returns null for empty results", () => {
-			assert.strictEqual(getOverallWorstSeverity([]), null);
-		});
-
-		it("returns worst severity across multiple inspector results", () => {
-			const results = [
-				{
-					diagnostics: createTestSimpleDiagnostics({ message: "Found warning." }, [
-						{
-							type: "location" as const,
-							severity: "warning" as const,
-							file: "test.ts",
-							location: { line: 1 },
-						},
-					]),
-				},
-				{
-					diagnostics: createTestSimpleDiagnostics({ message: "Found error." }, [
-						{
-							type: "location" as const,
-							severity: "error" as const,
-							file: "test.ts",
-							location: { line: 2 },
-						},
-					]),
-				},
-				{
-					diagnostics: createTestSimpleDiagnostics({ message: "Found info." }, [
-						{
-							type: "location" as const,
-							severity: "info" as const,
-							file: "test.ts",
-							location: { line: 3 },
-						},
-					]),
-				},
-			];
-			assert.strictEqual(getOverallWorstSeverity(results), "error");
-		});
-
-		it("returns null when all results have empty diagnostics", () => {
-			const results = [
-				{ diagnostics: createTestSimpleDiagnostics({ message: "No issues." }, []) },
-				{ diagnostics: createTestSimpleDiagnostics({ message: "No issues." }, []) },
-			];
-			assert.strictEqual(getOverallWorstSeverity(results), null);
 		});
 	});
 });

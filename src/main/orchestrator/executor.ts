@@ -2,8 +2,9 @@
  * Orchestrator executor for inspection operations.
  */
 
-import { type DiagnosticSeverity, getOverallWorstSeverity } from "../../diagnostics/index.ts";
+import type { DiagnosticSeverity } from "../../diagnostics/index.ts";
 import { runInspectors } from "../../inspector/index.ts";
+import { getWorstSeverityFromInspectorResults } from "../../inspector/inspector-result.ts";
 import { createDefaultInspectors } from "../builtin-inspectors/index.ts";
 import { createSummaryReporter } from "../builtin-reporters/index.ts";
 import { wrapUnexpectedExceptionsAsync } from "./exception-handling.ts";
@@ -28,7 +29,7 @@ async function executeInspection(
 	resolvedReporter(results, resolvedOutput);
 
 	// Return the overall severity directly
-	return getOverallWorstSeverity(results);
+	return getWorstSeverityFromInspectorResults(results);
 }
 
 /** @see inspectFiles */

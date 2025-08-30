@@ -20,9 +20,8 @@ export type { DetailedFinding, Finding } from "./finding-types.ts";
 // Export functions for testing. Do not include in public API
 export { createTestRichDiagnostics, createTestSimpleDiagnostics } from "./test-helpers.ts";
 
-// Export internal utility functions. Do not include in public API
+// Export utility functions
 export {
-	getOverallWorstSeverity,
 	getWorstSeverityFromArray,
 	getWorstSeverityFromDiagnostics,
 } from "./tools.ts";

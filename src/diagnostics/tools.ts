@@ -67,16 +67,3 @@ export function getWorstSeverityFromDiagnostics(
 
 	return getWorstSeverityFromArray(severities);
 }
-
-/**
- * Gets worst severity from all inspector results.
- */
-export function getOverallWorstSeverity(
-	results: { diagnostics: Diagnostics }[],
-): DiagnosticSeverity | null {
-	const severities = results
-		.map((r) => getWorstSeverityFromDiagnostics(r.diagnostics))
-		.filter((s): s is DiagnosticSeverity => s !== null);
-
-	return getWorstSeverityFromArray(severities);
-}

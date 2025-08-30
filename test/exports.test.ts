@@ -31,7 +31,6 @@ describe("test/exports", () => {
 
 	test("diagnostics entry point imports", () => {
 		// Check key diagnostic types and functions exist
-		assert.strictEqual(typeof diagnosticsModule.getOverallWorstSeverity, "function");
 		assert.strictEqual(typeof diagnosticsModule.createTestSimpleDiagnostics, "function");
 	});
 
