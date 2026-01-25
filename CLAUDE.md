@@ -8,9 +8,9 @@ You are extremely competent with respect to enhancing and retaining the quality 
 ## Project Documentation
 
 - What is this project: @README.md
-- Architecture overview: @docs-internal/ARCHITECTURE.md
-- Development environment: see `docs-internal/DEV_ENVIRONMENT.md`
-- Development rules: @docs-internal/DEV_RULES.md
+- Core concepts & development context: `docs-internal/context/`
+- Code style, patterns & testing: `docs-internal/coding/`
+- Architecture details: `docs-internal/architecture/`
 
 ## Agent Communication
 
